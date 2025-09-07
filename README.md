@@ -477,7 +477,7 @@ All work must go through **branches + PRs**.
 
 ---
 
-**Payment Integration**
+                                                                               ****Payment Integration****
 There’s no way to get totally free payment integration (as in no fees ever) if you want to process real payments.
 
 Here’s why:
@@ -486,7 +486,8 @@ Here’s why:
 •	The only unavoidable cost is the per-transaction fee once you start taking real money.
 
 Options for Payment Integration
-✅ Stripe
+✅ 
+Stripe
 •	Best for: Most websites (secure, global, easy Next.js SDK).
 •	Cost: Free integration, fees per transaction (2.9% + 30¢).
 •	Features: Cards, wallets, bank transfers, subscriptions.
@@ -497,7 +498,8 @@ Options for Payment Integration
 3.	Add an API route (/pages/api/checkout_sessions.js) to create checkout sessions with your secret key.
 4.	Use Stripe’s client SDK (stripe.redirectToCheckout) on the frontend.
 ________________________________________
-✅ PayPal
+✅ 
+PayPal
 •	Best for: E-commerce and global customers.
 •	Cost: Free integration, fees per transaction (2.9% + fixed fee).
 •	Features: PayPal wallets, cards, Pay Later.
@@ -508,7 +510,8 @@ ________________________________________
 3.	Render PayPal buttons in a React component.
 4.	Handle onApprove (success) and onCancel (failure).
 ________________________________________
-✅ Bank Transfer (Manual, Free)
+✅ 
+Bank Transfer (Manual, Free)
 •	Best for: Small businesses or side projects in Canada.
 •	Cost: No payment gateway fees (only bank/Interac fees if any).
 •	Features: Customers send money via Interac e-Transfer.
@@ -517,7 +520,8 @@ o	Show payment instructions (e.g., “Send e-Transfer to: your@email.com”).
 o	Ask customers to include order ID in the note.
 o	Confirm payment manually before shipping or delivering service.
 ________________________________________
-✅ Crypto Payments (Optional)
+✅ 
+Crypto Payments (Optional)
 •	Best for: Tech-savvy or global audiences.
 •	Cost: Can be 0% fees (BTCPay Server self-hosted).
 •	Features: Bitcoin, Ethereum, stablecoins.
