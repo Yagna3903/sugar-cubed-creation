@@ -26,3 +26,6 @@ replay_pid*
 npx gitignore node
 echo ".next" >> .gitignore
 echo ".env" >> .gitignore
+
+# Ignore node_modules
+node_modules/
