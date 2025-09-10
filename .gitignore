@@ -27,5 +27,13 @@ npx gitignore node
 echo ".next" >> .gitignore
 echo ".env" >> .gitignore
 
-# Ignore node_modules
+# Environment
+.env
+.env.local
+frontend/.env.local
+.env.*.local
+
+# Build & dependencies
 node_modules/
+.next/
+dist/
