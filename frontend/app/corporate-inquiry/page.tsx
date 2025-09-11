@@ -4,6 +4,7 @@ import Link from "next/link";
 
 export default function CorporateInquiryPage() {
   const [sent, setSent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
     name: "",
     company: "",
@@ -15,10 +16,38 @@ export default function CorporateInquiryPage() {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Front-end demo only. Hook this up to an API/email service later.
-    setSent(true);
+    setSubmitting(true);
+
+    const formData = new FormData();
+    formData.append("access_key", process.env.NEXT_PUBLIC_WEB3FORMS_KEY || ""); // ✅ your Web3Forms key
+    formData.append("name", form.name);
+    formData.append("company", form.company);
+    formData.append("email", form.email);
+    formData.append("product", form.product);
+
+    // Auto-responder setup
+    formData.append("replyto", form.email); // ✅ customer gets confirmation
+    formData.append("from_name", "Sugar Cubed Creations"); // your brand name
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        setSent(true);
+      } else {
+        alert("Something went wrong. Please try again.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error sending form. Try again later.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (sent) {
@@ -26,8 +55,8 @@ export default function CorporateInquiryPage() {
       <section className="mx-auto max-w-3xl px-6 py-12">
         <h1 className="text-3xl font-bold">Thanks — message sent!</h1>
         <p className="mt-3 opacity-80">
-          Your corporate inquiry has been submitted. A confirmation will be
-          emailed to you shortly.
+          Your corporate inquiry has been submitted. A confirmation has been
+          emailed to <b>{form.email}</b>.
         </p>
         <div className="mt-6 flex gap-3">
           <Link href="/" className="rounded-xl border px-5 py-3">
@@ -108,8 +137,12 @@ export default function CorporateInquiryPage() {
         </label>
 
         <div className="mt-2">
-          <button className="rounded-xl bg-brand-brown text-white px-6 py-3">
-            Submit inquiry
+          <button
+            type="submit"
+            disabled={submitting}
+            className="rounded-xl bg-brand-brown text-white px-6 py-3"
+          >
+            {submitting ? "Sending..." : "Submit inquiry"}
           </button>
         </div>
 
