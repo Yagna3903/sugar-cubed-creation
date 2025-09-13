@@ -2,7 +2,7 @@
 ## Deployment Guide for CorporateInquiryPage (Next.js + Web3Forms)
 
 ### Step 1: Create Web3Forms Access Key
-1. Go to [Web3Forms](https://web3forms.com/) and sign up / log in.
+1. Go to [Web3Forms](https://web3forms.com/) and sign up / log in. (for client make sure you enter clients email so that they receive proper email for corporate inquiry).
 2. Navigate to your dashboard and create a new access key.
 3. Copy the key — it will be used in your project.
 
