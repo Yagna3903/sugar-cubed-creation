@@ -2,17 +2,19 @@
 
 datasource db {
   provider  = "postgresql"
-  url       = env("DATABASE_URL")   // pooled (6543) for runtime
-  directUrl = env("DIRECT_URL")     // direct (5432) for migrate/studio
+  url       = env("DATABASE_URL") // pooled (6543) for runtime
+  directUrl = env("DIRECT_URL") // direct (5432) for migrate/studio
 }
 
 generator client {
   provider = "prisma-client-js"
 }
 
-/* =========================
-   Enums
-   ========================= */
+/**
+ * =========================
+ * Enums
+ * =========================
+ */
 
 enum OrderStatus {
   pending
@@ -26,24 +28,26 @@ enum UserRole {
   customer
 }
 
-/* =========================
-   Core Store Models (yours)
-   ========================= */
+/**
+ * =========================
+ * Core Store Models (yours)
+ * =========================
+ */
 
 model Product {
-  id          String    @id            // e.g. "h1","h2" from your seed data
-  slug        String    @unique        // used by /shop and product pages
+  id          String   @id // e.g. "h1","h2" from your seed data
+  slug        String   @unique // used by /shop and product pages
   name        String
   description String?
   priceCents  Int
   imageUrl    String?
-  badges      String[]  @default([])   // text[] in Postgres
-  active      Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  badges      String[] @default([]) // text[] in Postgres
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  inventory   Inventory?
-  items       OrderItem[]
+  inventory Inventory?
+  items     OrderItem[]
 }
 
 model Inventory {
@@ -54,34 +58,36 @@ model Inventory {
 }
 
 model Order {
-  id           String       @id @default(cuid())
+  id           String      @id @default(cuid())
   email        String
   customerName String
-  status       OrderStatus  @default(pending)
+  status       OrderStatus @default(pending)
   totalCents   Int
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 
-  items        OrderItem[]
+  items OrderItem[]
 }
 
 model OrderItem {
-  id              String  @id @default(cuid())
-  orderId         String
-  productId       String
-  qty             Int
-  unitPriceCents  Int
+  id             String @id @default(cuid())
+  orderId        String
+  productId      String
+  qty            Int
+  unitPriceCents Int
 
-  order           Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product         Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
 
   @@index([orderId])
   @@index([productId])
 }
 
-/* =========================
-   NextAuth Models (new)
-   ========================= */
+/**
+ * =========================
+ * NextAuth Models (new)
+ * =========================
+ */
 
 model User {
   id            String    @id @default(cuid())
@@ -92,8 +98,8 @@ model User {
   createdAt     DateTime  @default(now())
 
   // NextAuth relations
-  accounts      Account[]
-  sessions      Session[]
+  accounts Account[]
+  sessions Session[]
 }
 
 model Account {
