@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/cart-store";
 
 type OrderResponse = { orderId: string; checkoutUrl: string };
 
 export default function CheckoutClient() {
+  const router = useRouter();
   const { items, clear } = useCart();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -18,8 +21,8 @@ export default function CheckoutClient() {
     e.preventDefault();
     setError(null);
 
-    if (!items.length) { setError("Your cart is empty."); return; }
-    if (!name.trim() || !email.trim()) { setError("Please enter your name and email."); return; }
+    if (!items.length) return setError("Your cart is empty.");
+    if (!name.trim() || !email.trim()) return setError("Please enter your name and email.");
 
     setSubmitting(true);
     try {
@@ -33,21 +36,18 @@ export default function CheckoutClient() {
       });
 
       const json = (await res.json().catch(() => ({}))) as Partial<OrderResponse>;
-      if (!res.ok || !json?.checkoutUrl) {
-        throw new Error(typeof (json as any)?.error === "string" ? (json as any).error : "Checkout failed");
-      }
+      if (!res.ok || !json?.checkoutUrl) throw new Error("Checkout failed");
 
       const url = String(json.checkoutUrl);
 
-      // Clear the cart, let persist() flush to localStorage, then navigate
+      // Clear cart, then navigate. SPA replace + hard fallback.
       clear();
-      await new Promise((r) => setTimeout(r, 40));
-
-      // Hard nav + fallback
-      window.location.replace(url);
       setTimeout(() => {
-        if (window.location.href !== url) window.location.href = url;
-      }, 75);
+        router.replace(url);
+        setTimeout(() => {
+          if (window.location.href !== url) window.location.href = url;
+        }, 150);
+      }, 0);
 
       return;
     } catch (err: any) {
@@ -59,6 +59,13 @@ export default function CheckoutClient() {
 
   return (
     <form onSubmit={onSubmit} className="max-w-xl mx-auto px-4 py-10 space-y-6">
+      {/* Hidden Link to encourage Next to prefetch success route safely */}
+      <div style={{ position: "absolute", left: -9999, top: -9999 }}>
+        <Link href="/checkout/success" prefetch>
+          prefetch
+        </Link>
+      </div>
+
       <h1 className="text-2xl font-semibold">Checkout</h1>
 
       <div className="space-y-2">
