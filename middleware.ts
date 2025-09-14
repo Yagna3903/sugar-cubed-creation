@@ -1,28 +1,25 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
+
+const ADMIN_PREFIX = "/admin";
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Always allow login page & auth endpoints
-  if (
-    pathname.startsWith("/admin/login") ||
-    pathname.startsWith("/api/auth")
-  ) return NextResponse.next();
+  // Allow the public login route
+  if (pathname.startsWith(`${ADMIN_PREFIX}/login`)) return NextResponse.next();
 
-  // Protect everything else under /admin
-  if (pathname.startsWith("/admin")) {
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-    const role = (token as any)?.role;
-    if (!token || role !== "admin") {
-      const url = new URL("/admin/login", req.url);
+  if (pathname.startsWith(ADMIN_PREFIX)) {
+    const token = await getToken({ req });
+    if (!token || (token as any).role !== "admin") {
+      const url = req.nextUrl.clone();
+      url.pathname = `${ADMIN_PREFIX}/login`;
       url.searchParams.set("callbackUrl", pathname);
       return NextResponse.redirect(url);
     }
   }
-
   return NextResponse.next();
 }
 
 export const config = { matcher: ["/admin/:path*"] };
-// Protect /admin and its sub-paths
