@@ -1,27 +1,13 @@
 import { Product, BlogPost, Promo } from "./types";
 
-const img = (label: string) =>
-  `data:image/svg+xml;utf8,${encodeURIComponent(
-    `<svg xmlns='http://www.w3.org/2000/svg' width='800' height='800'>
-      <defs>
-        <linearGradient id='g' x1='0' x2='1'>
-          <stop offset='0%' stop-color='#F6D5E1'/>
-          <stop offset='100%' stop-color='#FFF8F2'/>
-        </linearGradient>
-      </defs>
-      <rect width='100%' height='100%' fill='url(#g)'/>
-      <circle cx='400' cy='400' r='300' fill='#ffffff' stroke='#5C3A21' stroke-width='8' />
-      <text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='46' font-family='Arial' fill='#5C3A21'>${label}</text>
-    </svg>`
-  )}`;
-
+// Use public image paths. Anything in /public is served from the root.
 export const products: Product[] = [
   {
     id: "h1",
     slug: "holiday-vanilla-sugar",
     name: "Holiday Sugar Cookie — Vanilla",
     price: 4.25,
-    image: img(".Holiday Vanilla"),
+    image: "/images/holiday-vanilla-sugar.jpg",
     badges: ["seasonal", "best-seller"],
     description: "Holiday-themed sugar cookie. Standard flavour: vanilla.",
   },
@@ -30,7 +16,7 @@ export const products: Product[] = [
     slug: "holiday-special-gingerbread",
     name: "Holiday Special — Gingerbread ",
     price: 4.75,
-    image: img(".Gingerbread"),
+    image: "/images/holiday-special-gingerbread.jpg",
     badges: ["seasonal", "new"],
     description:
       "Special holiday flavour available only for this cookie (one special per season).",
@@ -40,7 +26,7 @@ export const products: Product[] = [
     slug: "printed-vanilla",
     name: "Printed Cookies — Vanilla",
     price: 5.0,
-    image: img(".Printed Vanilla"),
+    image: "/images/printed-vanilla.jpg",
     badges: ["printed", "corporate", "best-seller"],
     description:
       "Printed on a food-safe printer (not hand-piped). Perfect for custom designs and events.",
@@ -50,7 +36,7 @@ export const products: Product[] = [
     slug: "printed-choc-chip",
     name: "Printed Cookies — Chocolate Chip",
     price: 5.25,
-    image: img(".Printed Choc Chip"),
+    image: "/images/printed-choc-chip.jpg",
     badges: ["printed", "corporate"],
     description:
       "Printed (not hand-piped). Ideal for corporate logo cookies in chocolate chip.",
@@ -60,7 +46,7 @@ export const products: Product[] = [
     slug: "classic-vanilla-sugar",
     name: "Classic Vanilla Sugar Cookie",
     price: 4.0,
-    image: img(".Vanilla"),
+    image: "/images/classic-vanilla-sugar.jpg",
     badges: ["best-seller"],
     description: "Our standard flavour is vanilla—simple and delicious.",
   },
@@ -72,7 +58,7 @@ export const promos: Promo[] = [
     blurb: "Limited-time festive flavors.",
     cta: "Explore",
     href: "/offers",
-    image: img("Holiday"),
+    image: "/images/holiday-vanilla-sugar.jpg",
   },
 ];
 
