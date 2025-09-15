@@ -15,12 +15,6 @@ export default function AdminNavClient() {
 
   return (
     <>
-      <div className="space-x-4 text-sm">
-        <Link href="/admin/products">Products</Link>
-        <Link href="/admin/orders">Orders</Link>
-        <Link href="/admin/inventory">Inventory</Link>
-      </div>
-
       <button
         onClick={() => signOut({ callbackUrl: "/" })}
         className="rounded-xl bg-brand-brown px-3 py-1.5 text-white"

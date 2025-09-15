@@ -1,3 +1,4 @@
+import BackButton from "@/components/BackButton";
 export const metadata = {
   title: "FAQs — Sugar Cubed Creation",
   description:
@@ -50,6 +51,10 @@ export default function FAQPage() {
 
   return (
     <section className="mx-auto max-w-3xl px-6 py-12">
+      <div className="mb-1">
+        <BackButton fallbackHref="/admin" label="Back to dashboard" />
+      </div>
+      <br></br>
       <h1 className="text-3xl font-bold">Frequently Asked Questions</h1>
       <p className="mt-2 text-sm opacity-70">
         Quick answers about flavours, printed cookies, orders, and more.

@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-
+import BackButton from "@/components/BackButton";
 export default function CorporateInquiryPage() {
   const [sent, setSent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -11,11 +11,15 @@ export default function CorporateInquiryPage() {
     email: "",
     product: "",
   });
-
-  const onChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => setForm({ ...form, [e.target.name]: e.target.value });
-
+  function onChange(
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) {
+    const onChange = (
+      e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    ) => setForm({ ...form, [e.target.name]: e.target.value });
+  }
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitting(true);
@@ -69,6 +73,9 @@ export default function CorporateInquiryPage() {
 
   return (
     <section className="mx-auto max-w-3xl px-6 py-12">
+      <div className="mb-4">
+        <BackButton fallbackHref="/" label="Back" />
+      </div>
       <h1 className="text-3xl font-bold">Corporate inquiry</h1>
       <p className="mt-2 text-sm opacity-70">
         Printed logo cookies for events and corporate gifting. Fill this quick
@@ -117,23 +124,18 @@ export default function CorporateInquiryPage() {
 
         <label className="grid gap-1">
           <span className="text-sm font-medium">
-            What cookies are you inquiring about?
+            What are you inquiring about?
           </span>
-          <select
-            className="border rounded-xl px-3 py-2"
-            name="product"
+          <textarea
+            name="product" // or rename to "inquiry" if you’ll update the backend too
             value={form.product}
             onChange={onChange}
             required
-          >
-            <option value="" disabled>
-              Select a cookie
-            </option>
-            <option>Printed Logo — Vanilla</option>
-            <option>Printed Logo — Chocolate Chip</option>
-            <option>Holiday Themed</option>
-            <option>Classic Vanilla Sugar Cookie</option>
-          </select>
+            rows={3}
+            maxLength={500}
+            placeholder="Tell us what you need (quantity, size, date, logo, flavours, etc.)"
+            className="border rounded-xl px-3 py-2"
+          />
         </label>
 
         <div className="mt-2">
