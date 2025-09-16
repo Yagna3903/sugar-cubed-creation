@@ -2,7 +2,7 @@
 import { z } from "zod";
 
 /* ------------------------------------------------------------------ */
-/*  Checkout (unchanged)                                               */
+/*  Checkout (unchanged)                                              */
 /* ------------------------------------------------------------------ */
 
 export const OrderItemInput = z.object({
@@ -38,7 +38,7 @@ const boolFromForm = z
   .transform((v) => {
     if (typeof v === "boolean") return v;
     if (typeof v === "number") return v !== 0;
-    const s = v.toLowerCase();
+    const s = (v as string).toLowerCase();
     return s === "on" || s === "true" || s === "1" || s === "yes";
   });
 
@@ -61,9 +61,9 @@ const imageUrlFromInput = z
   .transform((v) => (v ? v : undefined));
 
 /* ------------------------------------------------------------------ */
-/*  Products – two compatible shapes                                   */
-/*    1) ProductCreate/Update → price as string (actions do cents)     */
-/*    2) UpsertProductInput     → price as number                      */
+/*  Products – two compatible shapes                                  */
+/*    1) ProductCreate/Update → price as string (actions do cents)    */
+/*    2) UpsertProductInput     → price as number                     */
 /* ------------------------------------------------------------------ */
 
 // 1) Price as STRING (good when your action converts dollars → cents)
@@ -116,3 +116,24 @@ export const UpdateOrderStatusInput = z.object({
   status: z.enum(["pending", "paid", "fulfilled", "cancelled"]),
 });
 export type UpdateOrderStatus = z.infer<typeof UpdateOrderStatusInput>;
+
+/* ------------------------------------------------------------------ */
+/*  FAQ (admin) – NEW                                                  */
+/* ------------------------------------------------------------------ */
+
+export const FaqBase = z.object({
+  question: z.string().min(1, "Question required"),
+  answer: z.string().min(1, "Answer required"),
+  active: boolFromForm.optional().default(true),
+  sort: z
+    .preprocess((v) => (v === "" || v == null ? undefined : v), z.coerce.number().int())
+    .optional(),
+});
+
+export const FaqCreateInput = FaqBase;
+export const FaqUpdateInput = FaqBase.partial().extend({
+  id: z.string().min(1),
+});
+
+export type FaqCreate = z.infer<typeof FaqCreateInput>;
+export type FaqUpdate = z.infer<typeof FaqUpdateInput>;
