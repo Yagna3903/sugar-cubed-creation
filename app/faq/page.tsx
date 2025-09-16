@@ -1,50 +1,29 @@
+// app/faq/page.tsx
+import { prisma } from "@/lib/db";
+
 export const metadata = {
   title: "FAQs — Sugar Cubed Creation",
   description:
     "Answers about flavours, printed custom cookies, lead times, pickup/shipping and orders.",
 };
 
-type QA = { q: string; a: string };
+export default async function FaqPublicPage() {
+  const faqs = await prisma.faq.findMany({
+    where: { active: true },
+    orderBy: [{ sort: "asc" }, { createdAt: "desc" }],
+    select: { id: true, question: true, answer: true },
+  });
 
-const faqs: QA[] = [
-  {
-    q: "Do you offer vegan or gluten-free cookies?",
-    a: "We do not offer vegan cookies at this time. Our standard lineup is not gluten-free.",
-  },
-  {
-    q: "What flavours are available?",
-    a: "Our standard flavour is vanilla. For holiday drops we sometimes offer one special flavour for a specific cookie. Corporate logo cookies are available in vanilla and chocolate chip.",
-  },
-  {
-    q: "How do printed custom cookies work?",
-    a: "All custom cookies are printed on a food-safe printer (not hand-piped). Send a high-quality PNG/SVG/JPG; vector or 300 DPI is best for crisp results. We’ll size and center it for the cookie.",
-  },
-  {
-    q: "Lead time — when should I order?",
-    a: "For small orders, please place your order 5–7 days in advance. For larger or corporate orders, 10–14 days is recommended.",
-  },
-  {
-    q: "Do you ship? Can I pick up?",
-    a: "Pickup is preferred for local customers. Shipping availability depends on the order and season. Contact us and we’ll confirm options.",
-  },
-  {
-    q: "Allergens",
-    a: "Cookies may contain wheat, dairy, eggs, and may be produced in a kitchen that handles nuts.",
-  },
-  {
-    q: "Order confirmation & status",
-    a: "After checkout, a confirmation email is sent to the owner. Your order is approved or denied by the owner and you’ll be notified by email either way.",
-  },
-];
+  // Infer the element type of `faqs` for strong typing in .map()
+  type FaqRow = (typeof faqs)[number];
 
-export default function FAQPage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: faqs.map((f) => ({
+    mainEntity: faqs.map((f: FaqRow) => ({
       "@type": "Question",
-      name: f.q,
-      acceptedAnswer: { "@type": "Answer", text: f.a },
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
     })),
   };
 
@@ -55,21 +34,33 @@ export default function FAQPage() {
         Quick answers about flavours, printed cookies, orders, and more.
       </p>
 
-      <div className="mt-8 space-y-3">
-        {faqs.map((f) => (
-          <details
-            key={f.q}
-            className="group rounded-2xl border bg-white p-4 [&_p]:leading-relaxed"
-          >
-            <summary className="cursor-pointer select-none text-lg font-medium">
-              {f.q}
-            </summary>
-            <p className="mt-2 text-[15px] opacity-80">{f.a}</p>
-          </details>
-        ))}
-      </div>
+      {faqs.length === 0 ? (
+        <p className="mt-8 text-zinc-600">
+          No FAQs yet. Check back soon—or{" "}
+          <a href="/contact" className="underline">
+            contact us
+          </a>
+          .
+        </p>
+      ) : (
+        <div className="mt-8 space-y-3">
+          {faqs.map((f: FaqRow) => (
+            <details
+              key={f.id}
+              className="group rounded-2xl border bg-white p-4 [&_p]:leading-relaxed"
+            >
+              <summary className="cursor-pointer select-none text-lg font-medium">
+                {f.question}
+              </summary>
+              <p className="mt-2 text-[15px] opacity-80 whitespace-pre-line">
+                {f.answer}
+              </p>
+            </details>
+          ))}
+        </div>
+      )}
 
-      {/* SEO: FAQ structured data */}
+      {/* SEO: FAQ structured data (from DB) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
