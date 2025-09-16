@@ -1,0 +1,15 @@
+name: Deploy to Vercel on main
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+concurrency: vercel-deploy-main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Vercel Deploy Hook
+        env:
+          VERCEL_DEPLOY_HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+        run: |
+          curl -fsS --retry 3 --retry-all-errors -X POST "$VERCEL_DEPLOY_HOOK_URL"
