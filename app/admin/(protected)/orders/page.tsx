@@ -1,4 +1,4 @@
-// app/admin/(protected)/orders/page.tsx
-export default function AdminOrders() {
-    return <h2 className="text-xl font-semibold">Orders</h2>;
+export default function AdminOrdersPage() {
+    return <h1 className="text-2xl font-semibold">Orders</h1>;
   }
+  
