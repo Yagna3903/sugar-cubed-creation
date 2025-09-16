@@ -3,7 +3,7 @@
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL") // pooled (6543) for runtime
-  directUrl = env("DIRECT_URL") // direct (5432) for migrate/studio
+  directUrl = env("DIRECT_URL")   // direct (5432) for migrate/studio
 }
 
 generator client {
@@ -85,7 +85,23 @@ model OrderItem {
 
 /**
  * =========================
- * NextAuth Models (new)
+ * FAQ Model (new)
+ * =========================
+ */
+
+model Faq {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String
+  active    Boolean  @default(true)
+  sort      Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/**
+ * =========================
+ * NextAuth Models
  * =========================
  */
 
