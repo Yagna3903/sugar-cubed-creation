@@ -1,11 +1,11 @@
-// app/admin/(protected)/products/actions.ts
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { ProductCreateInput, ProductUpdateInput } from "@/lib/server/validators";
 import { uploadProductImage } from "@/lib/storage";
-import { requireAdmin } from "@/lib/server/admin"; // you already have this
+import { requireAdmin } from "@/lib/server/admin";
 
 function toCents(priceStr: string) {
   const n = Number(priceStr);
@@ -13,7 +13,13 @@ function toCents(priceStr: string) {
   return Math.round(n * 100);
 }
 
-export async function createProduct(_: unknown, formData: FormData) {
+// ---- helper: detect unique-constraint errors without instanceof
+function isUniqueConstraintError(e: unknown): boolean {
+  return typeof e === "object" && e !== null && (e as any).code === "P2002";
+}
+
+/** CREATE */
+export async function createProduct(formData: FormData) {
   await requireAdmin();
 
   const raw = Object.fromEntries(formData.entries());
@@ -24,39 +30,38 @@ export async function createProduct(_: unknown, formData: FormData) {
 
   const { name, slug, price, description, badges, active, stock, maxPerOrder } = parsed.data;
 
-  // 1) create product
-  const product = await prisma.product.create({
-    data: {
-      id: slug, // optional: keep your seed ids separate; or use cuid() if you prefer
-      slug,
-      name,
-      description: description || null,
-      priceCents: toCents(price),
-      badges,
-      active: active ?? true,
-      inventory: {
-        create: {
-          stock: stock ?? 0,
-          maxPerOrder: maxPerOrder ?? 12,
-        },
+  try {
+    const product = await prisma.product.create({
+      data: {
+        id: slug, // using slug as id per your schema (no default)
+        slug,
+        name,
+        description: description || null,
+        priceCents: toCents(price),
+        badges,
+        active: active ?? true,
+        inventory: { create: { stock: stock ?? 0, maxPerOrder: maxPerOrder ?? 12 } },
       },
-    },
-  });
-
-  // 2) optional image upload
-  const file = formData.get("image") as File | null;
-  if (file && file.size > 0) {
-    const url = await uploadProductImage(file, product.id);
-    await prisma.product.update({
-      where: { id: product.id },
-      data: { imageUrl: url },
     });
+
+    const file = formData.get("image") as File | null;
+    if (file && file.size > 0) {
+      const url = await uploadProductImage(file, product.id);
+      await prisma.product.update({ where: { id: product.id }, data: { imageUrl: url } });
+    }
+  } catch (e) {
+    if (isUniqueConstraintError(e)) {
+      return { ok: false, error: "That slug already exists. Try a different slug." };
+    }
+    console.error("createProduct error:", e);
+    return { ok: false, error: "Failed to create product." };
   }
 
   revalidatePath("/admin/products");
-  return { ok: true, id: product.id };
+  redirect("/admin/products");
 }
 
+/** UPDATE */
 export async function updateProduct(id: string, formData: FormData) {
   await requireAdmin();
 
@@ -68,8 +73,7 @@ export async function updateProduct(id: string, formData: FormData) {
 
   const { name, slug, price, description, badges, active, stock, maxPerOrder } = parsed.data;
 
-  // 1) update product
-  const updateData: any = {
+  const data: any = {
     ...(name != null && { name }),
     ...(slug != null && { slug }),
     ...(description !== undefined && { description: description || null }),
@@ -91,25 +95,44 @@ export async function updateProduct(id: string, formData: FormData) {
       : {}),
   };
 
-  const product = await prisma.product.update({ where: { id }, data: updateData });
+  const product = await prisma.product.update({ where: { id }, data });
 
-  // 2) optional image replacement
   const file = formData.get("image") as File | null;
   if (file && file.size > 0) {
     const url = await uploadProductImage(file, product.id);
-    await prisma.product.update({
-      where: { id: product.id },
-      data: { imageUrl: url },
-    });
+    await prisma.product.update({ where: { id: product.id }, data: { imageUrl: url } });
   }
 
   revalidatePath("/admin/products");
   return { ok: true, id: product.id };
 }
 
-export async function deleteProduct(id: string) {
+/** SOFT DELETE (archive) */
+export async function archiveProduct(id: string) {
   await requireAdmin();
-  await prisma.product.delete({ where: { id } });
+  await prisma.product.update({ where: { id }, data: { active: false } });
+  revalidatePath("/admin/products");
+  return { ok: true };
+}
+
+/** RESTORE from archive */
+export async function restoreProduct(id: string) {
+  await requireAdmin();
+  await prisma.product.update({ where: { id }, data: { active: true } });
+  revalidatePath("/admin/products");
+  return { ok: true };
+}
+
+/** HARD DELETE (only if not referenced by orders) */
+export async function forceDeleteProduct(id: string) {
+  await requireAdmin();
+
+  const refs = await prisma.orderItem.count({ where: { productId: id } });
+  if (refs > 0) {
+    return { ok: false, error: "Cannot delete: product is referenced by past orders. Keep it archived." };
+  }
+
+  await prisma.product.delete({ where: { id } }); // Inventory cascades via schema
   revalidatePath("/admin/products");
   return { ok: true };
 }
