@@ -87,7 +87,7 @@ export default function CorporateInquiryPage() {
             value={form.name}
             onChange={onChange}
             required
-            placeholder="Jane Doe"
+            placeholder="Aditya Dave"
           />
         </label>
 
