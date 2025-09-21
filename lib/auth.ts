@@ -6,65 +6,57 @@ import EmailProvider from "next-auth/providers/email";
 import { prisma } from "@/lib/db";
 import { Resend } from "resend";
 
-const isDev = process.env.NODE_ENV !== "production";
-
-// 30-minute session, no sliding refresh
 const ADMIN_SESSION_SECONDS = 60 * 30;
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
 
-  // Short-lived admin session
   session: {
     strategy: "jwt",
-    maxAge: ADMIN_SESSION_SECONDS, // expire after 30 min
-    updateAge: 0,                  // don't extend on activity
-  },
-
-  // (also set JWT maxAge for good measure)
-  jwt: {
     maxAge: ADMIN_SESSION_SECONDS,
+    updateAge: 0,
   },
+  jwt: { maxAge: ADMIN_SESSION_SECONDS },
 
   providers: [
-    // Dev-only credentials provider
     Credentials({
-      name: "Developer Login",
+      name: "Developer/Admin Login",
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
       async authorize(creds) {
-        // Safety: block in prod
-        if (!isDev) return null;
+        // ✅ Allow creds in dev, or when explicitly enabled in prod
+        const allowCreds =
+          process.env.NODE_ENV !== "production" ||
+          process.env.ALLOW_CREDENTIALS_LOGIN === "true";
+        if (!allowCreds) return null;
 
-        // Narrow types so we have plain strings (not string | undefined)
-        const rawEmail = creds?.email?.toLowerCase().trim();
+        const email = creds?.email?.toLowerCase().trim();
         const password = creds?.password?.trim();
-        if (!rawEmail || !password) return null;
+        if (!email || !password) return null;
 
-        const email = rawEmail;
-
-        if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
+        // Check env-configured admin login
+        if (
+          email === (process.env.ADMIN_EMAIL || "").toLowerCase() &&
+          password === process.env.ADMIN_PASSWORD
+        ) {
           const user = await prisma.user.upsert({
             where: { email },
-            update: { role: "admin" },
+            update: { role: "admin", name: "Admin" },
             create: { email, role: "admin", name: "Admin" },
           });
-
-          // Return a minimal user object for NextAuth (can include custom fields)
           return { id: user.id, email: user.email, name: user.name ?? "Admin", role: user.role } as any;
         }
-
-        return null;
+        return null; // Wrong creds
       },
     }),
 
-    // (Optional) Email magic-link via Resend
+    // OPTIONAL: keep Email magic-link if you use it
     ...(process.env.RESEND_API_KEY
       ? [
           EmailProvider({
-            from: process.env.EMAIL_FROM!, // required
+            from: process.env.EMAIL_FROM!,
             async sendVerificationRequest({ identifier, url }) {
               const resend = new Resend(process.env.RESEND_API_KEY);
               await resend.emails.send({
@@ -81,13 +73,10 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async jwt({ token, user }) {
-      // Persist id/role on first sign-in
       if (user) {
         (token as any).id = (user as any).id ?? (token as any).id;
         (token as any).role = (user as any).role ?? (token as any).role;
       }
-
-      // If no user object (subsequent requests), hydrate from DB when we have an email
       if (!user && token?.email) {
         const u = await prisma.user.findUnique({
           where: { email: token.email as string },
@@ -98,18 +87,14 @@ export const authOptions: NextAuthOptions = {
           (token as any).role = u.role;
         }
       }
-
       return token;
     },
-
     async session({ session, token }) {
       if ((token as any)?.id) (session.user as any).id = (token as any).id;
       if ((token as any)?.role) (session.user as any).role = (token as any).role;
       return session;
     },
-
     async signIn({ user }) {
-      // Only allow sign-in if we have an email
       return !!user?.email;
     },
   },
