@@ -2,15 +2,22 @@ import { products } from "@/lib/data";
 import { notFound } from "next/navigation";
 import AddToCart from "@/components/add-to-cart";
 
-export default function ProductPage({ params }: { params: { slug: string } }) {
-  const p = products.find((x) => x.slug === params.slug);
+export default async function ProductPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params; // ✅ await because params is a Promise
+  const p = products.find((x) => x.slug === slug);
+
   if (!p) return notFound();
+
   return (
     <section className="mx-auto max-w-7xl px-6 py-10 grid md:grid-cols-2 gap-10">
       <div className="relative aspect-square rounded-2xl overflow-hidden bg-white shadow-soft">
         <img
           src={p.image}
-          alt={p.name + " (Hello)"}
+          alt={`${p.name} (Hello)`}
           className="w-full h-full object-cover"
         />
       </div>

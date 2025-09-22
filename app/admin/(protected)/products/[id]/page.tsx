@@ -1,12 +1,30 @@
 // app/admin/(protected)/products/[id]/page.tsx
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import ProductForm from "../_form";
 import { updateProduct } from "../actions";
 
-export default async function EditProductPage({ params }: { params: { id: string } }) {
+type Params = { id: string };
+
+// Dynamic metadata (Next 15: params is a Promise)
+export async function generateMetadata(
+  { params }: { params: Promise<Params> }
+): Promise<Metadata> {
+  const { id } = await params;
+  return { title: `Edit product ${id}` };
+}
+
+// Page component (Next 15: params is a Promise)
+export default async function EditProductPage({
+  params,
+}: {
+  params: Promise<Params>;
+}) {
+  const { id } = await params;
+
   const p = await prisma.product.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: { inventory: true },
   });
   if (!p) return notFound();

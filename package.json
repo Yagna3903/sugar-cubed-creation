@@ -11,8 +11,6 @@
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
     "test:ci": "jest --ci --coverage"
-
-    
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",
