@@ -36,7 +36,7 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
       : "pending";
 
   const where = status === "all" ? {} : { status };
-
+// --------------------------------------------------
   const orders = await prisma.order.findMany({
     where,
     orderBy: { createdAt: "desc" },
@@ -46,8 +46,8 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
       },
     },
   });
-
-  // ----- Add explicit types for map() callbacks -----
+// --------------------------------------------------
+  // Add explicit types for map() callbacks 
   type OrderRow = (typeof orders)[number];
   type ItemRow = OrderRow["items"][number];
   // --------------------------------------------------

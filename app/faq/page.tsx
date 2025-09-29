@@ -78,8 +78,32 @@ export const metadata = {
     "Answers about flavours, printed custom cookies, lead times, pickup/shipping and orders.",
 };
 
+<<<<<<< HEAD
 export default function FAQPage() {
   const jsonLd = generateFaqJsonLd(FAQS);
+=======
+export default async function FaqPublicPage() {
+  //------------------------------------------------
+  const faqs = await prisma.faq.findMany({
+    where: { active: true },
+    orderBy: [{ sort: "asc" }, { createdAt: "desc" }],
+    select: { id: true, question: true, answer: true },
+  });
+//------------------------------------------------
+
+  // Infer the element type of `faqs` for strong typing in .map()
+  type FaqRow = (typeof faqs)[number];
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((f: FaqRow) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  };
+>>>>>>> supabase-auth-migration
 
   return (
     <section className="mx-auto max-w-3xl px-6 py-12">
