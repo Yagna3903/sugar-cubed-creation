@@ -21,9 +21,10 @@ function isUniqueConstraintError(e: unknown): boolean {
 /** CREATE */
 export async function createProduct(formData: FormData) {
   await requireAdmin();
-
+// ----------------------------------------
   const raw = Object.fromEntries(formData.entries());
   const parsed = ProductCreateInput.safeParse(raw);
+  // ----------------------------------------
   if (!parsed.success) {
     return { ok: false, error: parsed.error.flatten().formErrors.join(", ") || "Invalid input" };
   }
@@ -31,9 +32,10 @@ export async function createProduct(formData: FormData) {
   const { name, slug, price, description, badges, active, stock, maxPerOrder } = parsed.data;
 
   try {
+    //--------------------------------
     const product = await prisma.product.create({
       data: {
-        id: slug, // using slug as id per your schema (no default)
+        id: slug, // using slug as id per schema (no default)
         slug,
         name,
         description: description || null,
@@ -43,7 +45,7 @@ export async function createProduct(formData: FormData) {
         inventory: { create: { stock: stock ?? 0, maxPerOrder: maxPerOrder ?? 12 } },
       },
     });
-
+     //--------------------------------
     const file = formData.get("image") as File | null;
     if (file && file.size > 0) {
       const url = await uploadProductImage(file, product.id);
