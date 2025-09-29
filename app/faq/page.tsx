@@ -8,11 +8,13 @@ export const metadata = {
 };
 
 export default async function FaqPublicPage() {
+  //------------------------------------------------
   const faqs = await prisma.faq.findMany({
     where: { active: true },
     orderBy: [{ sort: "asc" }, { createdAt: "desc" }],
     select: { id: true, question: true, answer: true },
   });
+//------------------------------------------------
 
   // Infer the element type of `faqs` for strong typing in .map()
   type FaqRow = (typeof faqs)[number];
