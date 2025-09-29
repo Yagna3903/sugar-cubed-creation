@@ -1,9 +1,8 @@
 // lib/server/validators.ts
 import { z } from "zod";
 
-/* ------------------------------------------------------------------ */
-/*  Checkout (unchanged)                                              */
-/* ------------------------------------------------------------------ */
+//  Checkout (unchanged)
+
 
 export const OrderItemInput = z.object({
   id: z.string().min(1), // product id
@@ -28,9 +27,9 @@ export const CreateOrderInput = z.object({
 });
 export type CreateOrder = z.infer<typeof CreateOrderInput>;
 
-/* ------------------------------------------------------------------ */
-/*  Admin helpers                                                      */
-/* ------------------------------------------------------------------ */
+
+//  Admin helpers
+
 
 // Handles HTML checkbox values ("on"), "true"/"false", 1/0, and booleans.
 const boolFromForm = z
@@ -60,11 +59,9 @@ const imageUrlFromInput = z
   .or(z.literal(""))
   .transform((v) => (v ? v : undefined));
 
-/* ------------------------------------------------------------------ */
 /*  Products – two compatible shapes                                  */
 /*    1) ProductCreate/Update → price as string (actions do cents)    */
 /*    2) UpsertProductInput     → price as number                     */
-/* ------------------------------------------------------------------ */
 
 // 1) Price as STRING (good when your action converts dollars → cents)
 const ProductBaseStringPrice = z.object({
@@ -107,9 +104,9 @@ export const UpsertProductInput = z.object({
 });
 export type UpsertProduct = z.infer<typeof UpsertProductInput>;
 
-/* ------------------------------------------------------------------ */
-/*  Orders (admin)                                                     */
-/* ------------------------------------------------------------------ */
+
+//  Orders (admin)
+
 
 export const UpdateOrderStatusInput = z.object({
   id: z.string().min(1),
@@ -117,9 +114,8 @@ export const UpdateOrderStatusInput = z.object({
 });
 export type UpdateOrderStatus = z.infer<typeof UpdateOrderStatusInput>;
 
-/* ------------------------------------------------------------------ */
-/*  FAQ (admin) – NEW                                                  */
-/* ------------------------------------------------------------------ */
+
+//  FAQ (admin) – NEW
 
 export const FaqBase = z.object({
   question: z.string().min(1, "Question required"),
