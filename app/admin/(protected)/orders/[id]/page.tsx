@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import BackLink from "@/app/admin/_components/BackLink";
 import { prisma } from "@/lib/db";
-import { setOrderStatus } from "../actions";
+import { setOrderStatus, archiveOrder, deleteOrder } from "../actions";
 
 export default async function OrderDetailPage({ params }: { params: { id: string } }) {
   const o = await prisma.order.findUnique({
@@ -40,12 +40,7 @@ export default async function OrderDetailPage({ params }: { params: { id: string
           <div className="mt-1 text-lg font-semibold">${(o.totalCents / 100).toFixed(2)}</div>
 
           {/* Status selector */}
-          <form
-            action={async (formData) => {
-              await setOrderStatus(o.id, formData);
-            }}
-            className="mt-3"
-          >
+          <form action={setOrderStatus.bind(null, o.id)} className="mt-3">
             <label className="text-xs text-zinc-500">Status</label>
             <select
               name="status"
@@ -61,6 +56,22 @@ export default async function OrderDetailPage({ params }: { params: { id: string
               Update status
             </button>
           </form>
+
+          {/* Archive/Delete if cancelled */}
+          {o.status === "cancelled" && (
+            <div className="mt-3 flex gap-2">
+              <form action={archiveOrder.bind(null, o.id)}>
+                <button className="rounded-xl border px-3 py-1.5 text-sm">
+                  Archive
+                </button>
+              </form>
+              <form action={deleteOrder.bind(null, o.id)}>
+                <button className="rounded-xl border px-3 py-1.5 text-sm text-red-600">
+                  Delete permanently
+                </button>
+              </form>
+            </div>
+          )}
         </div>
       </div>
 
