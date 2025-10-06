@@ -4,13 +4,14 @@ import { prisma } from "@/lib/db";
 import { cancelOrder, markFulfilled, markPaid } from "./actions";
 
 type PageProps = { searchParams?: { status?: string } };
-type AdminStatus = "all" | "pending" | "paid" | "fulfilled" | "cancelled";
+type AdminStatus = "all" | "pending" | "paid" | "fulfilled" | "cancelled" | "archived";
 
 const STATUS_LABEL: Record<Exclude<AdminStatus, "all">, string> = {
   pending: "Pending",
   paid: "Paid",
   fulfilled: "Fulfilled",
   cancelled: "Cancelled",
+  archived: "Archived",
 };
 
 function statusBadgeClass(s: Exclude<AdminStatus, "all">) {
@@ -23,6 +24,8 @@ function statusBadgeClass(s: Exclude<AdminStatus, "all">) {
       return "bg-green-100 text-green-800";
     case "cancelled":
       return "bg-red-100 text-red-700";
+    case "archived":
+      return "bg-zinc-200 text-zinc-700";
     default:
       return "bg-zinc-100 text-zinc-700";
   }
@@ -31,12 +34,18 @@ function statusBadgeClass(s: Exclude<AdminStatus, "all">) {
 export default async function AdminOrdersPage({ searchParams }: PageProps) {
   const raw = (searchParams?.status || "pending").toLowerCase();
   const status: AdminStatus =
-    raw === "all" || raw === "paid" || raw === "fulfilled" || raw === "cancelled"
+    raw === "all" || raw === "paid" || raw === "fulfilled" || raw === "cancelled" || raw === "archived"
       ? (raw as AdminStatus)
       : "pending";
 
-  const where = status === "all" ? {} : { status };
-// --------------------------------------------------
+  // 👇 Build query depending on status
+  const where =
+    status === "all"
+      ? {}
+      : status === "archived"
+      ? { archived: true }
+      : { status, archived: false };
+
   const orders = await prisma.order.findMany({
     where,
     orderBy: { createdAt: "desc" },
@@ -46,11 +55,9 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
       },
     },
   });
-// --------------------------------------------------
-  // Add explicit types for map() callbacks 
+
   type OrderRow = (typeof orders)[number];
   type ItemRow = OrderRow["items"][number];
-  // --------------------------------------------------
 
   const FilterPill = ({ label, href, active }: { label: string; href: string; active: boolean }) => (
     <Link
@@ -78,6 +85,7 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
           <FilterPill href="/admin/orders?status=paid" label="Paid" active={status === "paid"} />
           <FilterPill href="/admin/orders?status=fulfilled" label="Fulfilled" active={status === "fulfilled"} />
           <FilterPill href="/admin/orders?status=cancelled" label="Cancelled" active={status === "cancelled"} />
+          <FilterPill href="/admin/orders?status=archived" label="Archived" active={status === "archived"} />
         </nav>
       </div>
 
@@ -87,14 +95,13 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
         <div className="divide-y rounded-2xl border bg-white">
           {orders.map((o: OrderRow) => (
             <div key={o.id} className="grid grid-cols-12 items-center gap-4 p-4">
-              {/* Left: customer + meta */}
               <div className="col-span-6">
                 <div className="flex items-center gap-2">
                   <Link href={`/admin/orders/${o.id}`} className="font-medium hover:underline">
                     {o.customerName || o.email}
                   </Link>
                   <span className={`rounded-full px-2 py-0.5 text-xs ${statusBadgeClass(o.status as any)}`}>
-                    {STATUS_LABEL[o.status as Exclude<AdminStatus, "all">]}
+                    {o.archived ? "Archived" : STATUS_LABEL[o.status as Exclude<AdminStatus, "all">]}
                   </span>
                 </div>
                 <div className="text-xs text-zinc-500">
@@ -108,35 +115,12 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
                 )}
               </div>
 
-              {/* Total */}
               <div className="col-span-2 text-sm">${(o.totalCents / 100).toFixed(2)}</div>
 
-              {/* Quick actions */}
               <div className="col-span-4 flex justify-end gap-2">
                 <Link href={`/admin/orders/${o.id}`} className="rounded-xl border px-3 py-1.5 text-sm">
                   View
                 </Link>
-
-                {o.status === "pending" && (
-                  <>
-                    <form action={markPaid.bind(null, o.id)}>
-                      <button className="rounded-xl border px-3 py-1.5 text-sm">Mark paid</button>
-                    </form>
-                    <form action={cancelOrder.bind(null, o.id)}>
-                      <button className="rounded-xl border px-3 py-1.5 text-sm text-red-700">Cancel</button>
-                    </form>
-                  </>
-                )}
-                {o.status === "paid" && (
-                  <>
-                    <form action={markFulfilled.bind(null, o.id)}>
-                      <button className="rounded-xl border px-3 py-1.5 text-sm">Mark fulfilled</button>
-                    </form>
-                    <form action={cancelOrder.bind(null, o.id)}>
-                      <button className="rounded-xl border px-3 py-1.5 text-sm text-red-700">Cancel</button>
-                    </form>
-                  </>
-                )}
               </div>
             </div>
           ))}
