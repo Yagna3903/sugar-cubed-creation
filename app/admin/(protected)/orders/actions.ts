@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/server/admin";
 import { UpdateOrderStatusInput } from "@/lib/server/validators";
@@ -48,10 +49,10 @@ export async function archiveOrder(id: string) {
   await requireAdmin();
   await prisma.order.update({
     where: { id },
-    data: { status: "cancelled" }, // still cancelled
+    data: { archived: true },   // requires `archived Boolean @default(false)` in schema
   });
-  // You could also add an "archived" column if you want more tracking
-  revalidateAll(id);
+  revalidateAll();
+  redirect("/admin/orders");    // go back to list
 }
 
 /** HARD DELETE → permanently remove */
@@ -59,4 +60,5 @@ export async function deleteOrder(id: string) {
   await requireAdmin();
   await prisma.order.delete({ where: { id } });
   revalidateAll();
+  redirect("/admin/orders");    // go back after deletion
 }
