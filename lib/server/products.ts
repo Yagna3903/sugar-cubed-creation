@@ -1,4 +1,3 @@
-// lib/server/products.ts
 import { prisma } from "@/lib/db";
 import type { Product } from "@/lib/types";
 
@@ -11,7 +10,7 @@ function mapRow(r: {
   imageUrl: string | null;
   badges: string[];
   description: string | null;
-  inventory?: { stock: number | null; maxPerOrder: number | null } | null;
+  inventory: { stock: number; maxPerOrder: number } | null;
 }): Product {
   return {
     id: r.id,
@@ -21,8 +20,8 @@ function mapRow(r: {
     image: r.imageUrl ?? "/images/Main-Cookie.png",
     badges: (r.badges ?? []) as Product["badges"],
     description: r.description ?? undefined,
-    stock: r.inventory?.stock ?? undefined,
-    maxPerOrder: r.inventory?.maxPerOrder ?? undefined,
+    stock: r.inventory?.stock ?? null,          // ✅ add stock
+    maxPerOrder: r.inventory?.maxPerOrder ?? null, // ✅ add maxPerOrder
   };
 }
 
@@ -31,7 +30,16 @@ export async function listProducts(): Promise<Product[]> {
   const rows = await prisma.product.findMany({
     where: { active: true },
     orderBy: { createdAt: "asc" },
-    include: { inventory: true }, // ✅ include inventory
+    select: {
+      id: true,
+      slug: true,
+      name: true,
+      priceCents: true,
+      imageUrl: true,
+      badges: true,
+      description: true,
+      inventory: { select: { stock: true, maxPerOrder: true } }, // ✅ include inventory
+    },
   });
   return rows.map(mapRow);
 }
@@ -40,7 +48,16 @@ export async function listProducts(): Promise<Product[]> {
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   const r = await prisma.product.findUnique({
     where: { slug },
-    include: { inventory: true }, // ✅ include inventory
+    select: {
+      id: true,
+      slug: true,
+      name: true,
+      priceCents: true,
+      imageUrl: true,
+      badges: true,
+      description: true,
+      inventory: { select: { stock: true, maxPerOrder: true } }, // ✅ include inventory
+    },
   });
   return r ? mapRow(r) : null;
 }
@@ -49,7 +66,16 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
 export async function findById(id: string): Promise<Product | null> {
   const r = await prisma.product.findUnique({
     where: { id },
-    include: { inventory: true }, // ✅ include inventory
+    select: {
+      id: true,
+      slug: true,
+      name: true,
+      priceCents: true,
+      imageUrl: true,
+      badges: true,
+      description: true,
+      inventory: { select: { stock: true, maxPerOrder: true } }, // ✅ include inventory
+    },
   });
   return r ? mapRow(r) : null;
 }
