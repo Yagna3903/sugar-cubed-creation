@@ -1,38 +1,35 @@
 // app/admin/(protected)/products/[id]/page.tsx
-import { notFound } from "next/navigation";
-import BackLink from "@/app/admin/_components/BackLink";
 import { prisma } from "@/lib/db";
+import BackLink from "@/app/admin/_components/BackLink";
 import ProductForm from "../_form";
 import { updateProduct } from "../actions";
 
-export default async function EditProductPage({ params }: { params: { id: string } }) {
+export default async function ProductEditPage({ params }: { params: { id: string } }) {
   const p = await prisma.product.findUnique({
     where: { id: params.id },
     include: { inventory: true },
   });
-  if (!p) return notFound();
+  if (!p) return null;
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div>
       <BackLink href="/admin/products">Back to Products</BackLink>
-      <h1 className="mb-5 mt-3 text-2xl font-semibold">Edit product</h1>
+      <h1 className="mt-3 text-2xl font-semibold">Edit product</h1>
 
       <ProductForm
         mode="edit"
-        action={updateProduct.bind(null, p.id) as any}
+        action={updateProduct.bind(null, p.id)}
         initial={{
           id: p.id,
           name: p.name,
           slug: p.slug,
-          // If your ProductForm expects dollars, convert here instead:
-          // price: (p.priceCents / 100).toString(),
           priceCents: p.priceCents,
-          description: p.description ?? undefined,
-          badges: p.badges,
+          description: p.description ?? "",
+          badges: p.badges ?? [],
           active: p.active,
           stock: p.inventory?.stock ?? 0,
           maxPerOrder: p.inventory?.maxPerOrder ?? 12,
-          imageUrl: p.imageUrl ?? undefined,
+          imageUrl: p.imageUrl ?? "",
         }}
       />
     </div>

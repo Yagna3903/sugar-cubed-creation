@@ -1,41 +1,47 @@
-// app/admin/(public)/login/page.tsx
 "use client";
 
-import { signIn } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
+import { supabaseClient } from "@/lib/supabase/client";
 
 export default function AdminLoginPage() {
   const sp = useSearchParams();
+  const router = useRouter();
   const err = sp.get("error");
+  const callbackUrl = sp.get("callbackUrl") || "/admin";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
-  const [msg, setMsg] = useState<string | null>(null);
+  const [msg, setMsg] = useState<string | null>(err ? "Sign-in failed." : null);
 
   async function onPasswordLogin(e: React.FormEvent) {
     e.preventDefault();
     setMsg(null);
     setBusy(true);
-    const res = await signIn("credentials", {
-      email,
-      password,
-      callbackUrl: "/admin",
-      redirect: true, // let NextAuth redirect on success/failure
-    });
+    const supabase = supabaseClient();
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     setBusy(false);
-    if (!res?.ok) setMsg("Invalid email or password.");
+    if (error) {
+      setMsg(error.message || "Invalid email or password.");
+    } else {
+      router.replace(callbackUrl);
+    }
   }
 
   async function onMagicLink(e: React.FormEvent) {
     e.preventDefault();
     setMsg(null);
     setBusy(true);
-    const res = await signIn("email", { email, callbackUrl: "/admin", redirect: true });
+    const supabase = supabaseClient();
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: `${window.location.origin}/admin` },
+    });
     setBusy(false);
-    if (!res?.ok) setMsg("Could not send magic link.");
+    if (error) setMsg(error.message || "Could not send magic link.");
+    else setMsg("Check your email for the login link.");
   }
 
   return (
@@ -43,21 +49,20 @@ export default function AdminLoginPage() {
       <h1 className="text-2xl font-semibold">Admin login</h1>
       <p className="mb-6 text-sm text-zinc-600">Authorized staff only.</p>
 
-      {(err || msg) && (
-        <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
-          {msg ?? "Sign-in failed. Check your credentials."}
-        </p>
+      {msg && (
+        <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{msg}</p>
       )}
 
       <form onSubmit={onPasswordLogin} className="rounded-2xl border bg-white p-5 shadow-soft space-y-4">
         <div>
           <label className="block text-sm font-medium">Email</label>
-        <input
+          <input
             type="email"
             className="mt-1 w-full rounded-xl border px-3 py-2"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="owner@example.com"
+            required
           />
         </div>
 
@@ -68,7 +73,8 @@ export default function AdminLoginPage() {
             className="mt-1 w-full rounded-xl border px-3 py-2"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
+            placeholder="•••••••"
+            required
           />
         </div>
 
