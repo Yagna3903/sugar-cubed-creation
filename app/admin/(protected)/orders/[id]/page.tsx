@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import BackLink from "@/app/admin/_components/BackLink";
@@ -60,12 +60,24 @@ export default async function OrderDetailPage({ params }: { params: { id: string
           {/* Archive/Delete if cancelled */}
           {o.status === "cancelled" && (
             <div className="mt-3 flex gap-2">
-              <form action={archiveOrder.bind(null, o.id)}>
+              <form
+                action={async () => {
+                  "use server";
+                  await archiveOrder(o.id);
+                  redirect("/admin/orders"); // ✅ bounce back after archive
+                }}
+              >
                 <button className="rounded-xl border px-3 py-1.5 text-sm">
                   Archive
                 </button>
               </form>
-              <form action={deleteOrder.bind(null, o.id)}>
+              <form
+                action={async () => {
+                  "use server";
+                  await deleteOrder(o.id);
+                  redirect("/admin/orders"); // ✅ bounce back after delete
+                }}
+              >
                 <button className="rounded-xl border px-3 py-1.5 text-sm text-red-600">
                   Delete permanently
                 </button>
