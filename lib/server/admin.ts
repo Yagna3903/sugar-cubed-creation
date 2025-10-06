@@ -1,26 +1,29 @@
-// lib/server/admin.ts
-import { getServerSession } from "next-auth";
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { authOptions } from "@/lib/auth";
 
-/** Get the current session (helper you can reuse anywhere) */
-export async function currentSession() {
-  return await getServerSession(authOptions);
-}
+const ADMIN_EMAILS = ["admin@gmail.com", "yagna3903@gmail.com"]; // ⬅ change to your real admin(s)
 
-/** Use inside server actions / API routes to enforce admin */
 export async function requireAdmin() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) throw new Error("Not authenticated");
-  if ((session.user as any).role !== "admin") throw new Error("Forbidden");
-  return session; // return if you need user info
+  const supabase = createServerComponentClient({ cookies });
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) throw new Error("Not authenticated");
+  if (!ADMIN_EMAILS.includes(user.email ?? "")) throw new Error("Forbidden");
+
+  return user;
 }
 
-/** Use in server components/pages to redirect unauthenticated users */
 export async function requireAdminOrRedirect() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user || (session.user as any).role !== "admin") {
+  const supabase = createServerComponentClient({ cookies });
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user || !ADMIN_EMAILS.includes(user.email ?? "")) {
     redirect("/admin/login");
   }
-  return session;
+  return user;
 }
