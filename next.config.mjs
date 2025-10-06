@@ -1,11 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    reactStrictMode: true,
-    images: {
-      remotePatterns: [
-        // { protocol: 'https', hostname: 'cdn.example.com' }
-      ],
-    },
-  };
-  export default nextConfig;
-  
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "idsfkvwjaiwadpitgjnu.supabase.co", // <= change to your project id host
+        pathname: "/storage/v1/object/public/**",
+      },
+    ],
+  },
+};
+
+export default nextConfig;
