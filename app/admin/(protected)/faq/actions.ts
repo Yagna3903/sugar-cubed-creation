@@ -1,3 +1,4 @@
+// app/admin/(protected)/faq/actions.ts
 "use server";
 
 import { revalidatePath } from "next/cache";
@@ -12,13 +13,17 @@ export async function createFaq(formData: FormData): Promise<void> {
   const raw = Object.fromEntries(formData.entries());
   const parsed = FaqCreateInput.safeParse(raw);
   if (!parsed.success) {
-    // Instead of returning, throw or redirect with an error if needed
     throw new Error(parsed.error.flatten().formErrors.join(", ") || "Invalid input");
   }
   const { question, answer, active, sort } = parsed.data;
 
   await prisma.faq.create({
-    data: { question, answer, active: active ?? true, sort: sort ?? null },
+    data: {
+      question,
+      answer,
+      active: active ?? true,
+      sort: sort ?? null, // ✅ handle optional
+    },
   });
 
   revalidatePath("/admin/faq");
@@ -42,7 +47,7 @@ export async function updateFaq(id: string, formData: FormData): Promise<void> {
       ...(question != null && { question }),
       ...(answer != null && { answer }),
       ...(active != null && { active }),
-      ...(sort !== undefined && { sort: sort ?? null }),
+      sort: sort ?? null, // ✅ safe optional
     },
   });
 
