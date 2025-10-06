@@ -3,7 +3,6 @@ import { z } from "zod";
 
 //  Checkout (unchanged)
 
-
 export const OrderItemInput = z.object({
   id: z.string().min(1), // product id
   qty: z.number().int().min(1).max(99),
@@ -27,9 +26,7 @@ export const CreateOrderInput = z.object({
 });
 export type CreateOrder = z.infer<typeof CreateOrderInput>;
 
-
 //  Admin helpers
-
 
 // Handles HTML checkbox values ("on"), "true"/"false", 1/0, and booleans.
 const boolFromForm = z
@@ -104,9 +101,7 @@ export const UpsertProductInput = z.object({
 });
 export type UpsertProduct = z.infer<typeof UpsertProductInput>;
 
-
 //  Orders (admin)
-
 
 export const UpdateOrderStatusInput = z.object({
   id: z.string().min(1),
@@ -114,15 +109,20 @@ export const UpdateOrderStatusInput = z.object({
 });
 export type UpdateOrderStatus = z.infer<typeof UpdateOrderStatusInput>;
 
-
-//  FAQ (admin) – NEW
+//  FAQ (admin) – FIXED
 
 export const FaqBase = z.object({
   question: z.string().min(1, "Question required"),
   answer: z.string().min(1, "Answer required"),
   active: boolFromForm.optional().default(true),
   sort: z
-    .preprocess((v) => (v === "" || v == null ? undefined : v), z.coerce.number().int())
+    .preprocess(
+      (v) => {
+        if (v === "" || v == null) return undefined; // blank = undefined
+        return Number(v);
+      },
+      z.number().int().optional()
+    )
     .optional(),
 });
 
