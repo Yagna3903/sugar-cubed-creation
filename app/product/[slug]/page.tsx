@@ -1,17 +1,20 @@
 import { products } from "@/lib/data";
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import AddToCart from "@/components/add-to-cart";
 
 export default function ProductPage({ params }: { params: { slug: string } }) {
   const p = products.find((x) => x.slug === params.slug);
   if (!p) return notFound();
+
   return (
     <section className="mx-auto max-w-7xl px-6 py-10 grid md:grid-cols-2 gap-10">
       <div className="relative aspect-square rounded-2xl overflow-hidden bg-white shadow-soft">
-        <img
+        <Image
           src={p.image}
           alt={p.name + " (Hello)"}
-          className="w-full h-full object-cover"
+          fill
+          className="object-cover"
         />
       </div>
       <div>
