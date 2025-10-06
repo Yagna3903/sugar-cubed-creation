@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 
 type ProductFormProps = {
   initialData?: {
@@ -94,11 +95,14 @@ export default function ProductForm({
         <label className="block text-sm font-medium">Image</label>
         <input type="file" name="image" accept="image/*" />
         {initialData?.imageUrl && (
-          <img
-            src={initialData.imageUrl}
-            alt="Current"
-            className="mt-2 h-20 w-20 rounded object-cover border"
-          />
+          <div className="mt-2 h-20 w-20 relative rounded-lg overflow-hidden border">
+            <Image
+              src={initialData.imageUrl}
+              alt="Current"
+              fill
+              className="object-cover rounded"
+            />
+          </div>
         )}
       </div>
 
