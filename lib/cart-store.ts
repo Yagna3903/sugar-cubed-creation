@@ -1,9 +1,21 @@
+// lib/cart-store.ts
 "use client";
 
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
-type Item = { id: string; slug: string; name: string; price: number; image: string; qty: number };
+// ✅ Extended Item type
+export type Item = {
+  id: string;
+  slug: string;
+  name: string;
+  price: number;
+  image: string;
+  qty: number;
+  stock?: number;        // product stock
+  maxPerOrder?: number;  // order limit
+};
+
 type State = {
   items: Item[];
   add: (i: Omit<Item, "qty">, qty?: number) => void;
@@ -26,8 +38,14 @@ export const useCart = create<State>()(
           }
           return { items: [...s.items, { ...i, qty }] };
         }),
-      setQty: (id, qty) => set((s) => ({ items: s.items.map((x) => (x.id === id ? { ...x, qty } : x)) })),
-      remove: (id) => set((s) => ({ items: s.items.filter((x) => x.id !== id) })),
+      setQty: (id, qty) =>
+        set((s) => ({
+          items: s.items.map((x) => (x.id === id ? { ...x, qty } : x)),
+        })),
+      remove: (id) =>
+        set((s) => ({
+          items: s.items.filter((x) => x.id !== id),
+        })),
       clear: () => set({ items: [] }),
     }),
     {
