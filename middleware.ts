@@ -1,25 +1,28 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
-
-const ADMIN_PREFIX = "/admin";
+import { NextResponse, type NextRequest } from "next/server";
+import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
 
 export async function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl;
+  const url = req.nextUrl;
+  const res = NextResponse.next();
 
-  // Allow the public login route
-  if (pathname.startsWith(`${ADMIN_PREFIX}/login`)) return NextResponse.next();
+  // Only guard /admin/*, allow /admin/login
+  if (!url.pathname.startsWith("/admin")) return res;
+  if (url.pathname.startsWith("/admin/login")) return res;
 
-  if (pathname.startsWith(ADMIN_PREFIX)) {
-    const token = await getToken({ req });
-    if (!token || (token as any).role !== "admin") {
-      const url = req.nextUrl.clone();
-      url.pathname = `${ADMIN_PREFIX}/login`;
-      url.searchParams.set("callbackUrl", pathname);
-      return NextResponse.redirect(url);
-    }
+  const supabase = createMiddlewareClient({ req, res });
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    const loginUrl = new URL("/admin/login", req.url);
+    loginUrl.searchParams.set("callbackUrl", url.href);
+    return NextResponse.redirect(loginUrl);
   }
-  return NextResponse.next();
+
+  return res;
 }
 
-export const config = { matcher: ["/admin/:path*"] };
+export const config = {
+  matcher: ["/admin/:path*"],
+};
