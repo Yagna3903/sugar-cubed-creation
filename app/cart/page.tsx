@@ -2,11 +2,29 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useCart } from "@/lib/cart-store";
+import { useCart, type Item } from "@/lib/cart-store";
 
 export default function CartPage() {
   const { items, setQty, remove } = useCart();
   const subtotal = items.reduce((a, i) => a + i.price * i.qty, 0);
+
+  function handleQtyChange(item: Item, newQty: number) {
+    if (newQty < 1) return;
+
+    // ✅ enforce per-order limit
+    if (item.maxPerOrder && newQty > item.maxPerOrder) {
+      alert(`You can only order up to ${item.maxPerOrder} of this product.`);
+      return;
+    }
+
+    // ✅ enforce stock availability
+    if (item.stock && newQty > item.stock) {
+      alert(`Only ${item.stock} left in stock.`);
+      return;
+    }
+
+    setQty(item.id, newQty);
+  }
 
   return (
     <section className="mx-auto max-w-5xl px-6 py-10">
@@ -28,7 +46,7 @@ export default function CartPage() {
               <div className="relative w-20 h-20 rounded-xl overflow-hidden">
                 <Image
                   src={i.image}
-                  alt={i.name + " (AI-generated)"}
+                  alt={i.name}
                   width={80}
                   height={80}
                   className="w-full h-full object-cover"
@@ -36,18 +54,24 @@ export default function CartPage() {
               </div>
               <div className="flex-1">
                 <div className="font-medium">{i.name}</div>
-                <div className="text-sm opacity-70">${i.price.toFixed(2)}</div>
+                <div className="text-sm opacity-70">
+                  ${i.price.toFixed(2)}
+                </div>
+                <div className="text-xs text-zinc-500">
+                  In stock: {i.stock ?? "∞"} | Limit per order:{" "}
+                  {i.maxPerOrder ?? "∞"}
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => setQty(i.id, Math.max(1, i.qty - 1))}
+                  onClick={() => handleQtyChange(i, i.qty - 1)}
                   className="px-3 py-1 border rounded"
                 >
                   -
                 </button>
                 <span>{i.qty}</span>
                 <button
-                  onClick={() => setQty(i.id, i.qty + 1)}
+                  onClick={() => handleQtyChange(i, i.qty + 1)}
                   className="px-3 py-1 border rounded"
                 >
                   +
