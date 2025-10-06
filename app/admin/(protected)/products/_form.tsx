@@ -1,59 +1,121 @@
 "use client";
 
-import { useFormStatus } from "react-dom";
-import Image from "next/image";
+import { useState } from "react";
 
-type Props = {
-  mode: "create" | "edit";
-  action: (formData: FormData) => Promise<void>;
-  initial?: {
-    id: string;
-    name: string;
-    slug: string;
-    priceCents: number;
-    description?: string | null;
-    badges: string[];
-    active: boolean;
-    stock?: number | null;
-    maxPerOrder?: number | null;
-    imageUrl?: string | null;
-  };
-};
+export default function ProductForm({
+  initial,
+  action,
+  mode,
+}: {
+  initial?: any;
+  action: (formData: FormData) => void;
+  mode: "new" | "edit";
+}) {
+  const [busy, setBusy] = useState(false);
 
-function SubmitButton({ label }: { label: string }) {
-  const { pending } = useFormStatus();
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    const formData = new FormData(e.currentTarget as HTMLFormElement);
+    await action(formData);
+    setBusy(false);
+  }
+
   return (
-    <button
-      disabled={pending}
-      className="rounded-xl bg-brand-brown px-5 py-2 text-white disabled:opacity-60"
-    >
-      {pending ? "Saving…" : label}
-    </button>
-  );
-}
+    <form onSubmit={handleSubmit} className="space-y-4 max-w-lg">
+      <div>
+        <label className="block text-sm font-medium">Name</label>
+        <input
+          name="name"
+          defaultValue={initial?.name}
+          required
+          className="mt-1 w-full rounded-xl border px-3 py-2"
+        />
+      </div>
 
-export default function ProductForm({ mode, action, initial }: Props) {
-  return (
-    <form action={action} className="grid gap-5 max-w-2xl">
-      {/* ... unchanged fields ... */}
+      <div>
+        <label className="block text-sm font-medium">Slug</label>
+        <input
+          name="slug"
+          defaultValue={initial?.slug}
+          required
+          className="mt-1 w-full rounded-xl border px-3 py-2"
+        />
+      </div>
 
-      <div className="grid gap-2">
-        <label className="text-sm font-medium">Image</label>
-        <input type="file" name="image" accept="image/*" />
+      <div>
+        <label className="block text-sm font-medium">Price (in dollars)</label>
+        <input
+          type="number"
+          step="0.01"
+          name="price"
+          defaultValue={initial?.priceCents ? initial.priceCents / 100 : ""}
+          required
+          className="mt-1 w-full rounded-xl border px-3 py-2"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium">Description</label>
+        <textarea
+          name="description"
+          defaultValue={initial?.description}
+          rows={3}
+          className="mt-1 w-full rounded-xl border px-3 py-2"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium">Stock</label>
+        <input
+          type="number"
+          name="stock"
+          defaultValue={initial?.stock ?? 0}
+          min={0}
+          className="mt-1 w-full rounded-xl border px-3 py-2"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium">Max per order</label>
+        <input
+          type="number"
+          name="maxPerOrder"
+          defaultValue={initial?.maxPerOrder ?? 12}
+          min={1}
+          className="mt-1 w-full rounded-xl border px-3 py-2"
+        />
+      </div>
+
+      <div className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          name="active"
+          defaultChecked={initial?.active}
+          className="rounded"
+        />
+        <label className="text-sm">Active (visible in store)</label>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium">Image</label>
+        <input type="file" name="image" className="mt-1" />
         {initial?.imageUrl && (
-          <Image
+          <img
             src={initial.imageUrl}
-            alt={initial.name}
-            width={112}
-            height={112}
-            className="mt-2 h-28 w-28 rounded-xl object-cover border"
+            alt="Preview"
+            className="mt-2 h-24 rounded-lg border object-cover"
           />
         )}
       </div>
 
-      <div className="pt-2">
-        <SubmitButton label={mode === "create" ? "Create product" : "Save changes"} />
-      </div>
+      <button
+        type="submit"
+        disabled={busy}
+        className="rounded-xl bg-brand-brown px-4 py-2 text-white disabled:opacity-70"
+      >
+        {busy ? "Saving…" : mode === "new" ? "Create product" : "Save changes"}
+      </button>
     </form>
   );
 }
