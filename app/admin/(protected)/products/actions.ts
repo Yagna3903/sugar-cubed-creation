@@ -87,6 +87,9 @@ export async function updateProduct(id: string, formData: FormData): Promise<voi
   }
 
   revalidatePath("/admin/products");
+
+  // ✅ Redirect back after successful edit
+  redirect("/admin/products");
 }
 
 export async function archiveProduct(id: string): Promise<void> {
