@@ -12,14 +12,15 @@ function revalidateAll(id?: string) {
   if (id) revalidatePath(`/admin/orders/${id}`); // detail
 }
 
-/** Generic status setter used by form + quick buttons */
-export async function setOrderStatus(id: string, formData: FormData) {
+/** Generic status setter used by <form action={setOrderStatus}> */
+export async function setOrderStatus(id: string, formData: FormData): Promise<void> {
   await requireAdmin();
 
   const raw = { id, status: String(formData.get("status") || "") };
   const parsed = UpdateOrderStatusInput.safeParse(raw);
   if (!parsed.success) {
-    return { ok: false, error: "Invalid status" };
+    // You could log an error here if needed, but don't return anything
+    return;
   }
 
   await prisma.order.update({
@@ -28,27 +29,23 @@ export async function setOrderStatus(id: string, formData: FormData) {
   });
 
   revalidateAll(id);
-  return { ok: true };
 }
 
-/** Quick buttons (no form) */
-export async function markPaid(id: string) {
+/** Quick buttons (bound with .bind in JSX) */
+export async function markPaid(id: string): Promise<void> {
   await requireAdmin();
   await prisma.order.update({ where: { id }, data: { status: "paid" } });
   revalidateAll(id);
-  return { ok: true };
 }
 
-export async function markFulfilled(id: string) {
+export async function markFulfilled(id: string): Promise<void> {
   await requireAdmin();
   await prisma.order.update({ where: { id }, data: { status: "fulfilled" } });
   revalidateAll(id);
-  return { ok: true };
 }
 
-export async function cancelOrder(id: string) {
+export async function cancelOrder(id: string): Promise<void> {
   await requireAdmin();
   await prisma.order.update({ where: { id }, data: { status: "cancelled" } });
   revalidateAll(id);
-  return { ok: true };
 }
