@@ -1,3 +1,4 @@
+// components/product-card.tsx
 "use client";
 
 import Link from "next/link";
@@ -14,7 +15,7 @@ export function ProductCard({ p }: { p: Product }) {
         <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-white">
           <Image
             src={p.image}
-            alt={p.name + " (AI-generated)"}
+            alt={p.name}
             fill
             className="object-cover"
           />
@@ -32,15 +33,23 @@ export function ProductCard({ p }: { p: Product }) {
           </span>
         ))}
       </div>
+      <div className="mt-1 text-xs text-zinc-500">
+        In stock: {p.stock ?? "∞"} | Limit per order: {p.maxPerOrder ?? "∞"}
+      </div>
       <button
         onClick={() =>
-          add({
-            id: p.id,
-            slug: p.slug,
-            name: p.name,
-            price: p.price,
-            image: p.image,
-          })
+          add(
+            {
+              id: p.id,
+              slug: p.slug,
+              name: p.name,
+              price: p.price,
+              image: p.image,
+              stock: p.stock,
+              maxPerOrder: p.maxPerOrder,
+            },
+            1
+          )
         }
         className="mt-4 rounded-xl bg-brand-brown text-white py-2"
       >
