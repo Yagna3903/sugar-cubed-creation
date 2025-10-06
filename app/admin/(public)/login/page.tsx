@@ -20,13 +20,16 @@ export default function AdminLoginPage() {
     e.preventDefault();
     setMsg(null);
     setBusy(true);
+
     const supabase = supabaseClient();
     const { error } = await supabase.auth.signInWithPassword({ email, password });
+
     setBusy(false);
     if (error) {
       setMsg(error.message || "Invalid email or password.");
     } else {
-      router.replace(callbackUrl);
+      router.push(callbackUrl); // ✅ navigate straight to admin
+      router.refresh();         // ✅ refresh session immediately
     }
   }
 
@@ -34,14 +37,19 @@ export default function AdminLoginPage() {
     e.preventDefault();
     setMsg(null);
     setBusy(true);
+
     const supabase = supabaseClient();
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: { emailRedirectTo: `${window.location.origin}/admin` },
     });
+
     setBusy(false);
-    if (error) setMsg(error.message || "Could not send magic link.");
-    else setMsg("Check your email for the login link.");
+    if (error) {
+      setMsg(error.message || "Could not send magic link.");
+    } else {
+      setMsg("Check your email for the login link.");
+    }
   }
 
   return (
@@ -53,7 +61,10 @@ export default function AdminLoginPage() {
         <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{msg}</p>
       )}
 
-      <form onSubmit={onPasswordLogin} className="rounded-2xl border bg-white p-5 shadow-soft space-y-4">
+      <form
+        onSubmit={onPasswordLogin}
+        className="rounded-2xl border bg-white p-5 shadow-soft space-y-4"
+      >
         <div>
           <label className="block text-sm font-medium">Email</label>
           <input
@@ -86,7 +97,11 @@ export default function AdminLoginPage() {
           {busy ? "Signing in…" : "Sign in with password"}
         </button>
 
-        <button onClick={onMagicLink} disabled={busy} className="w-full rounded-xl border px-4 py-2">
+        <button
+          onClick={onMagicLink}
+          disabled={busy}
+          className="w-full rounded-xl border px-4 py-2"
+        >
           Or send magic link
         </button>
       </form>
