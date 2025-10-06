@@ -1,15 +1,16 @@
+// app/admin/(protected)/page.tsx
 import Link from "next/link";
 import BackLink from "../_components/BackLink";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { requireAdmin } from "@/lib/server/admin";
 
 export default async function AdminHome() {
-  const session = await getServerSession(authOptions);
-  const name = (session?.user as any)?.name ?? "Admin";
-  const email = session?.user?.email ?? "";
+  // Enforce Supabase authentication (throws/redirects if not allowed)
+  const user = await requireAdmin();
+  const name = (user.user_metadata?.name as string | undefined) ?? "Admin";
+  const email = user.email ?? "";
 
-  // Count active / archived / orders
+  // Stats for dashboard cards
   const [activeCount, archivedCount, pendingOrders, totalOrders] = await Promise.all([
     prisma.product.count({ where: { active: true } }),
     prisma.product.count({ where: { active: false } }),
@@ -61,7 +62,10 @@ export default async function AdminHome() {
             className="group relative overflow-hidden rounded-2xl border bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-brand-brown/40"
           >
             <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-2xl" aria-hidden>
+              <div
+                className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-2xl"
+                aria-hidden
+              >
                 {c.emoji}
               </div>
               <div className="min-w-0">
