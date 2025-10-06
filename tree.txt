@@ -11,7 +11,8 @@ sugar-cubed-creation
 │   │   │   └── login
 │   │   ├── _components
 │   │   │   ├── AdminHeader.tsx
-│   │   │   └── BackLink.tsx
+│   │   │   ├── BackLink.tsx
+│   │   │   └── ProductForm.tsx
 │   │   └── layout.tsx
 │   ├── api
 │   │   ├── dev
@@ -65,7 +66,6 @@ sugar-cubed-creation
 │   ├── product-grid.tsx
 │   └── shop-client.tsx
 ├── lib
-│   ├── auth.ts
 │   ├── cart-store.ts
 │   ├── data.ts
 │   ├── db.ts
