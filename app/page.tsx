@@ -1,9 +1,13 @@
+// app/page.tsx
 import { Hero } from "@/components/hero";
 import { ProductGrid } from "@/components/product-grid";
-import { products, promos, posts } from "@/lib/data";
+import { listProducts } from "@/lib/server/products"; // ✅ use live DB
 import Link from "next/link";
 
-export default function HomePage() {
+export default async function HomePage() {
+  // fetch products from DB
+  const products = await listProducts();
+
   const best = products.filter((p) => p.badges?.includes("best-seller"));
   const newest = products.filter((p) => p.badges?.includes("new"));
 
@@ -52,14 +56,8 @@ export default function HomePage() {
           <div className="rounded-2xl bg-white p-8 shadow-soft">
             <h3 className="text-xl font-bold mb-2">Read what&apos;s new</h3>
             <ul className="space-y-3">
-              {posts.map((p) => (
-                <li key={p.slug}>
-                  <Link href={`/blog/${p.slug}`} className="font-medium underline">
-                    {p.title}
-                  </Link>
-                  <div className="text-sm opacity-70">{p.excerpt}</div>
-                </li>
-              ))}
+              {/* you can still use static blog posts if needed */}
+              {/* Or fetch from DB if you want in the future */}
             </ul>
           </div>
         </div>
