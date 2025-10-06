@@ -11,15 +11,15 @@ export default function CartPage() {
   function handleQtyChange(item: Item, newQty: number) {
     if (newQty < 1) return;
 
-    // ✅ enforce per-order limit
-    if (item.maxPerOrder && newQty > item.maxPerOrder) {
-      alert(`You can only order up to ${item.maxPerOrder} of this product.`);
+    // ✅ enforce stock availability first
+    if (item.stock !== undefined && newQty > item.stock) {
+      alert(`Only ${item.stock} left in stock.`);
       return;
     }
 
-    // ✅ enforce stock availability
-    if (item.stock && newQty > item.stock) {
-      alert(`Only ${item.stock} left in stock.`);
+    // ✅ enforce per-order limit
+    if (item.maxPerOrder !== undefined && newQty > item.maxPerOrder) {
+      alert(`You can only order up to ${item.maxPerOrder} of this product.`);
       return;
     }
 
@@ -38,53 +38,60 @@ export default function CartPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {items.map((i) => (
-            <div
-              key={i.id}
-              className="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-soft"
-            >
-              <div className="relative w-20 h-20 rounded-xl overflow-hidden">
-                <Image
-                  src={i.image}
-                  alt={i.name}
-                  width={80}
-                  height={80}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="flex-1">
-                <div className="font-medium">{i.name}</div>
-                <div className="text-sm opacity-70">
-                  ${i.price.toFixed(2)}
-                </div>
-                <div className="text-xs text-zinc-500">
-                  In stock: {i.stock ?? "∞"} | Limit per order:{" "}
-                  {i.maxPerOrder ?? "∞"}
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => handleQtyChange(i, i.qty - 1)}
-                  className="px-3 py-1 border rounded"
-                >
-                  -
-                </button>
-                <span>{i.qty}</span>
-                <button
-                  onClick={() => handleQtyChange(i, i.qty + 1)}
-                  className="px-3 py-1 border rounded"
-                >
-                  +
-                </button>
-              </div>
-              <button
-                onClick={() => remove(i.id)}
-                className="ml-2 text-sm underline"
+          {items.map((i) => {
+            const isOutOfStock = (i.stock ?? 0) <= 0;
+
+            return (
+              <div
+                key={i.id}
+                className="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-soft"
               >
-                Remove
-              </button>
-            </div>
-          ))}
+                <div className="relative w-20 h-20 rounded-xl overflow-hidden">
+                  <Image
+                    src={i.image}
+                    alt={i.name}
+                    width={80}
+                    height={80}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="flex-1">
+                  <div className="font-medium">{i.name}</div>
+                  <div className="text-sm opacity-70">
+                    ${i.price.toFixed(2)}
+                  </div>
+                  <div className="text-xs text-zinc-500">
+                    {isOutOfStock
+                      ? "Out of stock"
+                      : `In stock: ${i.stock} | Limit per order: ${i.maxPerOrder ?? "∞"}`}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleQtyChange(i, i.qty - 1)}
+                    disabled={i.qty <= 1}
+                    className="px-3 py-1 border rounded disabled:opacity-50"
+                  >
+                    -
+                  </button>
+                  <span>{i.qty}</span>
+                  <button
+                    onClick={() => handleQtyChange(i, i.qty + 1)}
+                    disabled={isOutOfStock || (i.stock !== undefined && i.qty >= i.stock)}
+                    className="px-3 py-1 border rounded disabled:opacity-50"
+                  >
+                    +
+                  </button>
+                </div>
+                <button
+                  onClick={() => remove(i.id)}
+                  className="ml-2 text-sm underline"
+                >
+                  Remove
+                </button>
+              </div>
+            );
+          })}
           <div className="text-right mt-4">
             <div className="text-lg">
               Subtotal: <strong>${subtotal.toFixed(2)}</strong>
