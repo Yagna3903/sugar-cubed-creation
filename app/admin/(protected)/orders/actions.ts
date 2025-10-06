@@ -5,23 +5,17 @@ import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/server/admin";
 import { UpdateOrderStatusInput } from "@/lib/server/validators";
 
-// Revalidate all places that show order info
 function revalidateAll(id?: string) {
-  revalidatePath("/admin");           // dashboard cards
-  revalidatePath("/admin/orders");    // list
-  if (id) revalidatePath(`/admin/orders/${id}`); // detail
+  revalidatePath("/admin");
+  revalidatePath("/admin/orders");
+  if (id) revalidatePath(`/admin/orders/${id}`);
 }
 
-/** Generic status setter used by <form action={setOrderStatus}> */
 export async function setOrderStatus(id: string, formData: FormData): Promise<void> {
   await requireAdmin();
-
   const raw = { id, status: String(formData.get("status") || "") };
   const parsed = UpdateOrderStatusInput.safeParse(raw);
-  if (!parsed.success) {
-    // You could log an error here if needed, but don't return anything
-    return;
-  }
+  if (!parsed.success) return;
 
   await prisma.order.update({
     where: { id },
@@ -31,21 +25,38 @@ export async function setOrderStatus(id: string, formData: FormData): Promise<vo
   revalidateAll(id);
 }
 
-/** Quick buttons (bound with .bind in JSX) */
-export async function markPaid(id: string): Promise<void> {
+export async function markPaid(id: string) {
   await requireAdmin();
   await prisma.order.update({ where: { id }, data: { status: "paid" } });
   revalidateAll(id);
 }
 
-export async function markFulfilled(id: string): Promise<void> {
+export async function markFulfilled(id: string) {
   await requireAdmin();
   await prisma.order.update({ where: { id }, data: { status: "fulfilled" } });
   revalidateAll(id);
 }
 
-export async function cancelOrder(id: string): Promise<void> {
+export async function cancelOrder(id: string) {
   await requireAdmin();
   await prisma.order.update({ where: { id }, data: { status: "cancelled" } });
   revalidateAll(id);
+}
+
+/** SOFT DELETE → archive cancelled order */
+export async function archiveOrder(id: string) {
+  await requireAdmin();
+  await prisma.order.update({
+    where: { id },
+    data: { status: "cancelled" }, // still cancelled
+  });
+  // You could also add an "archived" column if you want more tracking
+  revalidateAll(id);
+}
+
+/** HARD DELETE → permanently remove */
+export async function deleteOrder(id: string) {
+  await requireAdmin();
+  await prisma.order.delete({ where: { id } });
+  revalidateAll();
 }
