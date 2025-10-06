@@ -6,6 +6,7 @@ import Link from "next/link";
 export default function HomePage() {
   const best = products.filter((p) => p.badges?.includes("best-seller"));
   const newest = products.filter((p) => p.badges?.includes("new"));
+
   return (
     <>
       <Hero />
@@ -28,7 +29,6 @@ export default function HomePage() {
 
       <section className="mx-auto max-w-7xl px-6 py-12">
         <h2 className="text-2xl font-bold mb-6">Corporate Inquiry</h2>
-
         <div className="grid md:grid-cols-2 gap-6">
           <Link
             href="/corporate-inquiry"
@@ -50,14 +50,11 @@ export default function HomePage() {
             <div className="aspect-video bg-black/5 rounded-xl" />
           </div>
           <div className="rounded-2xl bg-white p-8 shadow-soft">
-            <h3 className="text-xl font-bold mb-2">Read what's new</h3>
+            <h3 className="text-xl font-bold mb-2">Read what&apos;s new</h3>
             <ul className="space-y-3">
               {posts.map((p) => (
                 <li key={p.slug}>
-                  <Link
-                    href={`/blog/${p.slug}`}
-                    className="font-medium underline"
-                  >
+                  <Link href={`/blog/${p.slug}`} className="font-medium underline">
                     {p.title}
                   </Link>
                   <div className="text-sm opacity-70">{p.excerpt}</div>
