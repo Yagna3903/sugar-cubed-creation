@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import BackLink from "@/app/admin/_components/BackLink";
 import { prisma } from "@/lib/db";
 import { setOrderStatus } from "../actions";
@@ -15,7 +16,6 @@ export default async function OrderDetailPage({ params }: { params: { id: string
   });
   if (!o) return notFound();
 
-  // 👇 Give the items an explicit element type for map()
   type ItemRow = (typeof o)["items"][number];
 
   return (
@@ -40,7 +40,12 @@ export default async function OrderDetailPage({ params }: { params: { id: string
           <div className="mt-1 text-lg font-semibold">${(o.totalCents / 100).toFixed(2)}</div>
 
           {/* Status selector */}
-          <form action={setOrderStatus.bind(null, o.id)} className="mt-3">
+          <form
+            action={async (formData) => {
+              await setOrderStatus(o.id, formData);
+            }}
+            className="mt-3"
+          >
             <label className="text-xs text-zinc-500">Status</label>
             <select
               name="status"
@@ -66,22 +71,29 @@ export default async function OrderDetailPage({ params }: { params: { id: string
           {o.items.map((it: ItemRow) => (
             <div key={it.id} className="grid grid-cols-12 items-center gap-4 p-4">
               <div className="col-span-6 flex items-center gap-3">
-                <img
+                <Image
                   src={it.product?.imageUrl || "/images/Main-Cookie.png"}
                   alt={it.product?.name || "Product"}
+                  width={40}
+                  height={40}
                   className="h-10 w-10 rounded object-cover border"
                 />
                 <div>
                   <div className="font-medium">{it.product?.name ?? "Product"}</div>
-                  <div className="text-xs text-zinc-500">Unit ${(it.unitPriceCents / 100).toFixed(2)}</div>
+                  <div className="text-xs text-zinc-500">
+                    Unit ${(it.unitPriceCents / 100).toFixed(2)}
+                  </div>
                 </div>
               </div>
               <div className="col-span-2 text-sm">Qty {it.qty}</div>
               <div className="col-span-2 text-sm">
-                ${( (it.unitPriceCents * it.qty) / 100 ).toFixed(2)}
+                ${((it.unitPriceCents * it.qty) / 100).toFixed(2)}
               </div>
               <div className="col-span-2 text-right">
-                <Link href={`/admin/products/${it.productId}`} className="text-xs text-zinc-600 hover:underline">
+                <Link
+                  href={`/admin/products/${it.productId}`}
+                  className="text-xs text-zinc-600 hover:underline"
+                >
                   View product
                 </Link>
               </div>
