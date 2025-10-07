@@ -1,19 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabaseClient } from "@/lib/supabase/client";
 
-function passwordStrength(pw: string) {
-  let score = 0;
-  if (pw.length >= 8) score++;
-  if (/[A-Z]/.test(pw)) score++;
-  if (/[0-9]/.test(pw)) score++;
-  if (/[^A-Za-z0-9]/.test(pw)) score++;
-  return score;
-}
-
-export default function UpdatePasswordPage() {
+function UpdatePasswordInner() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
@@ -23,7 +14,15 @@ export default function UpdatePasswordPage() {
   const searchParams = useSearchParams();
   const code = searchParams.get("code");
 
-  const strength = passwordStrength(password);
+  const strength = (() => {
+    let score = 0;
+    if (password.length >= 8) score++;
+    if (/[A-Z]/.test(password)) score++;
+    if (/[0-9]/.test(password)) score++;
+    if (/[^A-Za-z0-9]/.test(password)) score++;
+    return score;
+  })();
+
   const labels = ["Weak", "Fair", "Good", "Strong", "Very strong"];
   const colors = [
     "bg-red-500",
@@ -33,7 +32,7 @@ export default function UpdatePasswordPage() {
     "bg-green-700",
   ];
 
-  // 🔹 On mount, verify recovery code and create session
+  // Verify recovery code and establish session
   useEffect(() => {
     async function verifyRecovery() {
       if (!code) {
@@ -45,7 +44,6 @@ export default function UpdatePasswordPage() {
         token_hash: code,
         type: "recovery",
       });
-
       if (error) {
         setMsg("⚠️ Session could not be established. Please request a new reset link.");
       } else {
@@ -125,5 +123,13 @@ export default function UpdatePasswordPage() {
         </button>
       </form>
     </div>
+  );
+}
+
+export default function UpdatePasswordPage() {
+  return (
+    <Suspense fallback={<p>Loading…</p>}>
+      <UpdatePasswordInner />
+    </Suspense>
   );
 }

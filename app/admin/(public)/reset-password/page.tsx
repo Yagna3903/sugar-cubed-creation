@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabaseClient } from "@/lib/supabase/client";
 
-export default function ResetPasswordPage() {
+// 🔹 Inner component so we can wrap it with <Suspense>
+function ResetPasswordInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const code = searchParams.get("code");
@@ -13,7 +14,6 @@ export default function ResetPasswordPage() {
   const [msg, setMsg] = useState<string | null>(null);
   const [strength, setStrength] = useState(0);
 
-  // 🔹 simple password strength meter
   function checkStrength(pw: string) {
     let score = 0;
     if (pw.length >= 8) score++;
@@ -64,7 +64,6 @@ export default function ResetPasswordPage() {
           />
         </div>
 
-        {/* Password strength meter */}
         <div className="h-2 w-full bg-gray-200 rounded">
           <div
             className={`h-2 rounded ${
@@ -93,5 +92,13 @@ export default function ResetPasswordPage() {
         </button>
       </form>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<p>Loading…</p>}>
+      <ResetPasswordInner />
+    </Suspense>
   );
 }
