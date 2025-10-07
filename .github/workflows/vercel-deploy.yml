@@ -7,7 +7,7 @@ on:
 
 concurrency:
   group: vercel-deploy-main
-  cancel-in-progress: true  # cancel previous runs if a new one starts
+  cancel-in-progress: true  # Cancel previous runs if a new one starts
 
 jobs:
   deploy:
@@ -38,7 +38,7 @@ jobs:
           echo "Response body:"
           cat /tmp/response.txt
           
-          if [ "$response" -ne 200 ]; then
+          if [ "$response" -ne 200 ] && [ "$response" -ne 201 ]; then
             echo "Vercel deploy hook failed."
             exit 1
           fi
