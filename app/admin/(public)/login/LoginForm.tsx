@@ -15,7 +15,9 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(err ? "Sign-in failed." : null);
+  const [msgType, setMsgType] = useState<"error" | "success">("error");
 
+  // Normal password login
   async function onPasswordLogin(e: React.FormEvent) {
     e.preventDefault();
     setMsg(null);
@@ -27,28 +29,37 @@ export default function LoginForm() {
     setBusy(false);
     if (error) {
       setMsg(error.message || "Invalid email or password.");
+      setMsgType("error");
     } else {
       router.push(callbackUrl);
       router.refresh();
     }
   }
 
-  async function onMagicLink(e: React.FormEvent) {
-    e.preventDefault();
+  // Forgot password → Supabase reset flow
+  async function onForgotPassword() {
+    if (!email) {
+      setMsg("Please enter your email first.");
+      setMsgType("error");
+      return;
+    }
+
     setMsg(null);
     setBusy(true);
 
     const supabase = supabaseClient();
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: `${window.location.origin}/admin` },
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      // IMPORTANT: this must match your real public reset page
+      redirectTo: `${window.location.origin}/admin/update-password`,
     });
 
     setBusy(false);
     if (error) {
-      setMsg(error.message || "Could not send magic link.");
+      setMsg(error.message || "Could not send reset email.");
+      setMsgType("error");
     } else {
-      setMsg("Check your email for the login link.");
+      setMsg("✅ Check your email for the password reset link.");
+      setMsgType("success");
     }
   }
 
@@ -58,7 +69,15 @@ export default function LoginForm() {
       <p className="mb-6 text-sm text-zinc-600">Authorized staff only.</p>
 
       {msg && (
-        <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{msg}</p>
+        <p
+          className={`mb-4 rounded-lg px-3 py-2 text-sm ${
+            msgType === "error"
+              ? "bg-red-50 text-red-700"
+              : "bg-green-50 text-green-700"
+          }`}
+        >
+          {msg}
+        </p>
       )}
 
       <form
@@ -98,16 +117,19 @@ export default function LoginForm() {
         </button>
 
         <button
-          onClick={onMagicLink}
-          disabled={busy}
-          className="w-full rounded-xl border px-4 py-2"
+          type="button"
+          onClick={onForgotPassword}
+          disabled={busy || !email}
+          className="w-full rounded-xl border px-4 py-2 disabled:opacity-60"
         >
-          Or send magic link
+          Forgot password?
         </button>
       </form>
 
       <p className="mt-6 text-center text-sm text-zinc-500">
-        <Link className="underline" href="/">← Back to site</Link>
+        <Link className="underline" href="/">
+          ← Back to site
+        </Link>
       </p>
     </div>
   );
