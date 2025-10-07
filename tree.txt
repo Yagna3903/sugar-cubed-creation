@@ -4,16 +4,19 @@ sugar-cubed-creation
 │   ├── admin
 │   │   ├── (protected)
 │   │   │   ├── faq
+│   │   │   ├── layout.tsx
 │   │   │   ├── orders
 │   │   │   ├── page.tsx
 │   │   │   └── products
 │   │   ├── (public)
-│   │   │   └── login
-│   │   ├── _components
-│   │   │   ├── AdminHeader.tsx
-│   │   │   ├── BackLink.tsx
-│   │   │   └── ProductForm.tsx
-│   │   └── layout.tsx
+│   │   │   ├── layout.tsx
+│   │   │   ├── login
+│   │   │   ├── reset-password
+│   │   │   └── update-password
+│   │   └── _components
+│   │       ├── AdminHeader.tsx
+│   │       ├── BackLink.tsx
+│   │       └── ProductForm.tsx
 │   ├── api
 │   │   ├── dev
 │   │   │   └── seed
@@ -89,6 +92,8 @@ sugar-cubed-creation
 │   │   ├── 20250914055048_init_schema
 │   │   │   └── migration.sql
 │   │   ├── 20250916060556_add_faq
+│   │   │   └── migration.sql
+│   │   ├── 20251006205922_add_order_archive
 │   │   │   └── migration.sql
 │   │   └── migration_lock.toml
 │   └── schema.prisma
