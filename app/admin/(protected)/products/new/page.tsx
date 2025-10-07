@@ -1,6 +1,8 @@
 import BackLink from "../../../_components/BackLink";
 import { createProduct } from "../actions";
 
+export const dynamic = "force-dynamic";
+
 export default function NewProductPage() {
   return (
     <section className="mx-auto max-w-3xl">

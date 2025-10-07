@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { notFound } from "next/navigation";
 import BackLink from "@/app/admin/_components/BackLink";
 import { prisma } from "@/lib/db";

@@ -1,4 +1,7 @@
 // app/admin/(protected)/layout.tsx
+
+export const dynamic = "force-dynamic";
+
 import type { ReactNode } from "react";
 import AdminHeader from "@/app/admin/_components/AdminHeader";
 

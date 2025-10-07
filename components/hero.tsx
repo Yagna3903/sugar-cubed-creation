@@ -1,5 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
+
+export const dynamic = "force-dynamic";
+
 export function Hero() {
   return (
     <section className="bg-brand-pink/40">

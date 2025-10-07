@@ -1,5 +1,6 @@
 // app/admin/(protected)/faq/actions.ts
 "use server";
+export const dynamic = "force-dynamic";
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";

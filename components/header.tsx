@@ -3,6 +3,9 @@ import Link from "next/link";
 import { useCart } from "@/lib/cart-store";
 import { usePathname } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
+
 const NavLink = ({
   href,
   children,

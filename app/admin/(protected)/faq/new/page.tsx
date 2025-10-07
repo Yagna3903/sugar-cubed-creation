@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import BackLink from "@/app/admin/_components/BackLink";
 import FaqForm from "../_form";
 import { createFaq } from "../actions";

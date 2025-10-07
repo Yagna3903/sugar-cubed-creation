@@ -4,6 +4,8 @@ import BackLink from "@/app/admin/_components/BackLink";
 import ProductForm from "../_form";
 import { updateProduct } from "../actions";
 
+export const dynamic = "force-dynamic";
+
 export default async function ProductEditPage({ params }: { params: { id: string } }) {
   const p = await prisma.product.findUnique({
     where: { id: params.id },
