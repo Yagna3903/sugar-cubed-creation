@@ -1,15 +1,48 @@
-name: Deploy to Vercel on main
+name: Deploy to Vercel (main)
+
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch: {}
-concurrency: vercel-deploy-main
+    branches: [ main ]   # Trigger only on pushes to main
+  workflow_dispatch: {}   # Allow manual trigger from Actions tab
+
+concurrency:
+  group: vercel-deploy-main
+  cancel-in-progress: true  # cancel previous runs if a new one starts
+
 jobs:
   deploy:
+    name: Trigger Vercel Deployment
     runs-on: ubuntu-latest
+
     steps:
-      - name: Trigger Vercel Deploy Hook
-        env:
-          VERCEL_DEPLOY_HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify Deploy Hook Secret
         run: |
-          curl -fsS --retry 3 --retry-all-errors -X POST "$VERCEL_DEPLOY_HOOK_URL"
+          if [ -z "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}" ]; then
+            echo "ERROR: VERCEL_DEPLOY_HOOK_URL is not set in GitHub Secrets."
+            exit 1
+          fi
+          echo "Deploy hook found. Proceeding..."
+
+      - name: Trigger Vercel Deploy Hook
+        id: vercel
+        run: |
+          echo "Triggering Vercel deployment..."
+          response=$(curl -s -o /tmp/response.txt -w "%{http_code}" \
+            -X POST "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}" \
+            -H "Content-Type: application/json")
+
+          echo "HTTP response code: $response"
+          echo "Response body:"
+          cat /tmp/response.txt
+          
+          if [ "$response" -ne 200 ]; then
+            echo "Vercel deploy hook failed."
+            exit 1
+          fi
+
+      - name: Confirm Success
+        if: success()
+        run: echo "Vercel deploy successfully triggered."
