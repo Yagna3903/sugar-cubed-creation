@@ -1,4 +1,7 @@
 // app/admin/(protected)/products/page.tsx
+
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import Image from "next/image";
 import BackLink from "@/app/admin/_components/BackLink";

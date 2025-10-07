@@ -1,5 +1,7 @@
 // app/admin/(public)/login/page.tsx
 "use client";
+export const dynamic = "force-dynamic";
+
 
 import { Suspense } from "react";
 import LoginForm from "./LoginForm";

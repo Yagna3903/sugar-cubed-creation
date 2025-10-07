@@ -1,4 +1,6 @@
 // app/admin/(protected)/page.tsx
+
+export const dynamic = "force-dynamic";
 import Link from "next/link";
 import BackLink from "../_components/BackLink";
 import { prisma } from "@/lib/db";

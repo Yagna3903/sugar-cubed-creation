@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import Link from "next/link";
 import BackLink from "@/app/admin/_components/BackLink";
 import { prisma } from "@/lib/db";
