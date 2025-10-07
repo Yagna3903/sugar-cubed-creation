@@ -4,15 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabaseClient } from "@/lib/supabase/client";
 
-function passwordStrength(pw: string) {
-  let score = 0;
-  if (pw.length >= 8) score++;
-  if (/[A-Z]/.test(pw)) score++;
-  if (/[0-9]/.test(pw)) score++;
-  if (/[^A-Za-z0-9]/.test(pw)) score++;
-  return score;
-}
-
 export default function UpdatePasswordPage() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -21,25 +12,18 @@ export default function UpdatePasswordPage() {
 
   const router = useRouter();
   const searchParams = useSearchParams();
+
   const code = searchParams.get("code");
+  const type = searchParams.get("type");
 
-  const strength = passwordStrength(password);
-  const labels = ["Weak", "Fair", "Good", "Strong", "Very strong"];
-  const colors = [
-    "bg-red-500",
-    "bg-yellow-500",
-    "bg-blue-500",
-    "bg-green-500",
-    "bg-green-700",
-  ];
-
-  // 🔹 On mount, verify recovery code and create session
+  // Step 1: Verify the recovery code and establish session
   useEffect(() => {
     async function verifyRecovery() {
-      if (!code) {
-        setMsg("❌ Reset code missing.");
+      if (!code || type !== "recovery") {
+        setMsg("❌ Invalid or missing recovery token.");
         return;
       }
+
       const supabase = supabaseClient();
       const { error } = await supabase.auth.verifyOtp({
         token_hash: code,
@@ -47,14 +31,16 @@ export default function UpdatePasswordPage() {
       });
 
       if (error) {
+        console.error("verifyOtp error:", error);
         setMsg("⚠️ Session could not be established. Please request a new reset link.");
       } else {
         setSessionReady(true);
       }
     }
     verifyRecovery();
-  }, [code]);
+  }, [code, type]);
 
+  // Step 2: Update password once session is active
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
@@ -75,14 +61,10 @@ export default function UpdatePasswordPage() {
   return (
     <div className="mx-auto max-w-md py-14">
       <h1 className="text-2xl font-semibold">Set a new password</h1>
-      <p className="mb-6 text-sm text-zinc-600">
-        Choose a strong password for your admin account.
-      </p>
+      <p className="mb-6 text-sm text-zinc-600">Choose a strong password for your admin account.</p>
 
       {msg && (
-        <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
-          {msg}
-        </p>
+        <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{msg}</p>
       )}
 
       <form
@@ -101,20 +83,6 @@ export default function UpdatePasswordPage() {
             disabled={!sessionReady}
           />
         </div>
-
-        {password && (
-          <div className="space-y-1">
-            <div className="h-2 w-full rounded bg-zinc-200">
-              <div
-                className={`h-2 rounded ${colors[strength - 1] || "bg-red-500"}`}
-                style={{ width: `${(strength / 4) * 100}%` }}
-              ></div>
-            </div>
-            <p className="text-xs text-zinc-600">
-              Strength: {labels[strength] || "Too short"}
-            </p>
-          </div>
-        )}
 
         <button
           type="submit"
