@@ -5,9 +5,18 @@ export async function middleware(req: NextRequest) {
   const url = req.nextUrl;
   const res = NextResponse.next();
 
-  // Only guard /admin/*, allow /admin/login
+  // Only guard /admin/*
   if (!url.pathname.startsWith("/admin")) return res;
-  if (url.pathname.startsWith("/admin/login")) return res;
+
+  // Allow public admin routes
+  const publicRoutes = [
+    "/admin/login",
+    "/admin/update-password", // ✅ allow reset page
+  ];
+
+  if (publicRoutes.some((path) => url.pathname.startsWith(path))) {
+    return res;
+  }
 
   const supabase = createMiddlewareClient({ req, res });
   const {
