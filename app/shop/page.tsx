@@ -2,7 +2,6 @@
 import ShopClient from "@/components/shop-client";
 import { listProducts } from "@/lib/server/products";
 export const dynamic = "force-dynamic";
-export const revalidate = 30; // refresh every 30s
 
 
 export default async function ShopPage() {

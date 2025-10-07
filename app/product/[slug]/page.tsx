@@ -4,8 +4,6 @@ import Image from "next/image";
 import AddToCart from "@/components/add-to-cart";
 
 export const dynamic = "force-dynamic";
-export const revalidate = 30;
-
 
 export default function ProductPage({ params }: { params: { slug: string } }) {
   const p = products.find((x) => x.slug === params.slug);
