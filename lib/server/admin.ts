@@ -1,9 +1,11 @@
+// lib/server/admin.ts
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-const ADMIN_EMAILS = ["admin@gmail.com", "yagna3903@gmail.com"]; // ⬅ change to your real admin(s)
-
+/**
+ * Require admin role (throws if not logged in or not admin).
+ */
 export async function requireAdmin() {
   const supabase = createServerComponentClient({ cookies });
   const {
@@ -11,18 +13,21 @@ export async function requireAdmin() {
   } = await supabase.auth.getUser();
 
   if (!user) throw new Error("Not authenticated");
-  if (!ADMIN_EMAILS.includes(user.email ?? "")) throw new Error("Forbidden");
+  if (user.app_metadata?.role !== "admin") throw new Error("Forbidden");
 
   return user;
 }
 
+/**
+ * Require admin role but redirect to /admin/login if not authorized.
+ */
 export async function requireAdminOrRedirect() {
   const supabase = createServerComponentClient({ cookies });
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user || !ADMIN_EMAILS.includes(user.email ?? "")) {
+  if (!user || user.app_metadata?.role !== "admin") {
     redirect("/admin/login");
   }
   return user;
