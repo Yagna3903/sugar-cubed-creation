@@ -17,7 +17,6 @@ export default function LoginForm() {
   const [msg, setMsg] = useState<string | null>(err ? "Sign-in failed." : null);
   const [msgType, setMsgType] = useState<"error" | "success">("error");
 
-  // Normal password login
   async function onPasswordLogin(e: React.FormEvent) {
     e.preventDefault();
     setMsg(null);
@@ -36,7 +35,6 @@ export default function LoginForm() {
     }
   }
 
-  // Forgot password → Supabase reset flow
   async function onForgotPassword() {
     if (!email) {
       setMsg("Please enter your email first.");
@@ -49,8 +47,8 @@ export default function LoginForm() {
 
     const supabase = supabaseClient();
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      // IMPORTANT: this must match your real public reset page
-      redirectTo: `${window.location.origin}/admin/update-password`,
+      // Supabase will append ?code=...&type=recovery to this URL
+      redirectTo: `${window.location.origin}/admin/update-password?type=recovery`,
     });
 
     setBusy(false);
@@ -71,19 +69,14 @@ export default function LoginForm() {
       {msg && (
         <p
           className={`mb-4 rounded-lg px-3 py-2 text-sm ${
-            msgType === "error"
-              ? "bg-red-50 text-red-700"
-              : "bg-green-50 text-green-700"
+            msgType === "error" ? "bg-red-50 text-red-700" : "bg-green-50 text-green-700"
           }`}
         >
           {msg}
         </p>
       )}
 
-      <form
-        onSubmit={onPasswordLogin}
-        className="rounded-2xl border bg-white p-5 shadow-soft space-y-4"
-      >
+      <form onSubmit={onPasswordLogin} className="rounded-2xl border bg-white p-5 shadow-soft space-y-4">
         <div>
           <label className="block text-sm font-medium">Email</label>
           <input
@@ -108,28 +101,17 @@ export default function LoginForm() {
           />
         </div>
 
-        <button
-          type="submit"
-          disabled={busy}
-          className="w-full rounded-xl bg-brand-brown px-4 py-2 text-white disabled:opacity-70"
-        >
+        <button type="submit" disabled={busy} className="w-full rounded-xl bg-brand-brown px-4 py-2 text-white disabled:opacity-70">
           {busy ? "Signing in…" : "Sign in with password"}
         </button>
 
-        <button
-          type="button"
-          onClick={onForgotPassword}
-          disabled={busy || !email}
-          className="w-full rounded-xl border px-4 py-2 disabled:opacity-60"
-        >
+        <button type="button" onClick={onForgotPassword} disabled={busy || !email} className="w-full rounded-xl border px-4 py-2 disabled:opacity-60">
           Forgot password?
         </button>
       </form>
 
       <p className="mt-6 text-center text-sm text-zinc-500">
-        <Link className="underline" href="/">
-          ← Back to site
-        </Link>
+        <Link className="underline" href="/">← Back to site</Link>
       </p>
     </div>
   );
