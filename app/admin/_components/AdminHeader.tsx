@@ -9,8 +9,8 @@ export default function AdminHeader() {
 
   async function handleSignOut() {
     await supabase.auth.signOut();
-    router.push("/admin/login"); // take them to login
-    router.refresh();            // clear cached session
+    router.push("/admin/login");
+    router.refresh();
   }
 
   return (
