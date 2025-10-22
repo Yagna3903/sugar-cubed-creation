@@ -6,7 +6,7 @@ export type Product = {
   image: string
   badges?: ("best-seller" | "new" | "seasonal" | "printed" | "corporate")[]
   description?: string
-  stock?: number | null;        // ✅ allow null
+  stock?: number | null;        // allow null
   maxPerOrder?: number | null;
 }
 export type BlogPost = { slug: string; title: string; excerpt: string; date: string }
