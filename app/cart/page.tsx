@@ -11,13 +11,13 @@ export default function CartPage() {
   function handleQtyChange(item: Item, newQty: number) {
     if (newQty < 1) return;
 
-    // ✅ enforce stock availability first
+    // enforce stock availability first
     if (item.stock !== undefined && newQty > item.stock) {
       alert(`Only ${item.stock} left in stock.`);
       return;
     }
 
-    // ✅ enforce per-order limit
+    // enforce per-order limit
     if (item.maxPerOrder !== undefined && newQty > item.maxPerOrder) {
       alert(`You can only order up to ${item.maxPerOrder} of this product.`);
       return;

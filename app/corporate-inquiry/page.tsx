@@ -21,14 +21,14 @@ export default function CorporateInquiryPage() {
     setSubmitting(true);
 
     const formData = new FormData();
-    formData.append("access_key", process.env.NEXT_PUBLIC_WEB3FORMS_KEY || ""); // ✅ your Web3Forms key
+    formData.append("access_key", process.env.NEXT_PUBLIC_WEB3FORMS_KEY || ""); // your Web3Forms key
     formData.append("name", form.name);
     formData.append("company", form.company);
     formData.append("email", form.email);
     formData.append("product", form.product);
 
     // Auto-responder setup
-    formData.append("replyto", form.email); // ✅ customer gets confirmation
+    formData.append("replyto", form.email); // customer gets confirmation
     formData.append("from_name", "Sugar Cubed Creations"); // your brand name
 
     try {
