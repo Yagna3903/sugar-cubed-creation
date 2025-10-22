@@ -22,7 +22,7 @@ export async function createFaq(formData: FormData): Promise<void> {
       question,
       answer,
       active: active ?? true,
-      sort: sort ?? null, // ✅ handle optional
+      sort: sort ?? null, // handle optional
     },
   });
 
@@ -47,7 +47,7 @@ export async function updateFaq(id: string, formData: FormData): Promise<void> {
       ...(question != null && { question }),
       ...(answer != null && { answer }),
       ...(active != null && { active }),
-      sort: sort ?? null, // ✅ safe optional
+      sort: sort ?? null, // safe optional
     },
   });
 
