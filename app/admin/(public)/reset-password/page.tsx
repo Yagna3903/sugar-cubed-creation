@@ -13,7 +13,7 @@ export default function ResetPasswordPage() {
   const [msg, setMsg] = useState<string | null>(null);
   const [strength, setStrength] = useState(0);
 
-  // 🔹 simple password strength meter
+  // simple password strength meter
   function checkStrength(pw: string) {
     let score = 0;
     if (pw.length >= 8) score++;
