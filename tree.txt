@@ -1,0 +1,112 @@
+sugar-cubed-creation
+├── README.md
+├── app
+│   ├── admin
+│   │   ├── (protected)
+│   │   │   ├── faq
+│   │   │   ├── layout.tsx
+│   │   │   ├── orders
+│   │   │   ├── page.tsx
+│   │   │   └── products
+│   │   ├── (public)
+│   │   │   ├── layout.tsx
+│   │   │   ├── login
+│   │   │   ├── reset-password
+│   │   │   └── update-password
+│   │   └── _components
+│   │       ├── AdminHeader.tsx
+│   │       ├── BackLink.tsx
+│   │       └── ProductForm.tsx
+│   ├── api
+│   │   ├── dev
+│   │   │   └── seed
+│   │   ├── orders
+│   │   │   └── route.ts
+│   │   ├── product
+│   │   │   └── [slug]
+│   │   ├── products
+│   │   │   └── route.ts
+│   │   └── square
+│   │       └── webhook
+│   ├── blog
+│   │   ├── [slug]
+│   │   │   └── page.tsx
+│   │   └── page.tsx
+│   ├── cart
+│   │   └── page.tsx
+│   ├── checkout
+│   │   ├── page.tsx
+│   │   └── success
+│   │       ├── page.tsx
+│   │       └── success-client.tsx
+│   ├── corporate-inquiry
+│   │   ├── README.md
+│   │   └── page.tsx
+│   ├── faq
+│   │   └── page.tsx
+│   ├── globals.css
+│   ├── layout.tsx
+│   ├── offers
+│   │   └── page.tsx
+│   ├── our-story
+│   │   └── page.tsx
+│   ├── page.tsx
+│   ├── product
+│   │   └── [slug]
+│   │       └── page.tsx
+│   ├── providers.tsx
+│   ├── shipping-returns
+│   │   └── page.tsx
+│   └── shop
+│       └── page.tsx
+├── components
+│   ├── add-to-cart.tsx
+│   ├── checkout-client.tsx
+│   ├── footer.tsx
+│   ├── header.tsx
+│   ├── hero.tsx
+│   ├── product-card.tsx
+│   ├── product-grid.tsx
+│   └── shop-client.tsx
+├── lib
+│   ├── cart-store.ts
+│   ├── data.ts
+│   ├── db.ts
+│   ├── server
+│   │   ├── admin.ts
+│   │   ├── products.ts
+│   │   └── validators.ts
+│   ├── storage.ts
+│   ├── supabase
+│   │   ├── client.ts
+│   │   └── server.ts
+│   └── types.ts
+├── middleware.ts
+├── next-env.d.ts
+├── next.config.mjs
+├── package-lock.json
+├── package.json
+├── postcss.config.mjs
+├── prisma
+│   ├── migrations
+│   │   ├── 20250914055048_init_schema
+│   │   │   └── migration.sql
+│   │   ├── 20250916060556_add_faq
+│   │   │   └── migration.sql
+│   │   ├── 20251006205922_add_order_archive
+│   │   │   └── migration.sql
+│   │   └── migration_lock.toml
+│   └── schema.prisma
+├── public
+│   ├── images
+│   │   ├── Main-Cookie.png
+│   │   ├── classic-vanilla-sugar.jpg
+│   │   ├── holiday-special-gingerbread.jpg
+│   │   ├── holiday-vanilla-sugar.jpg
+│   │   ├── printed-choc-chip.jpg
+│   │   └── printed-vanilla.jpg
+│   └── robots.txt
+├── tailwind.config.ts
+├── tree.txt
+├── tsconfig.json
+└── types

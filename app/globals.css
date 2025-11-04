@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+:root {
+  --bg: #fff8f2;
+}
+html,
+body {
+  background: var(--bg);
+  color: #18181b;
+}
+.card-pop {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-pop:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 40px rgba(92, 58, 33, 0.12);
+}
+.logo-shadow {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+}
