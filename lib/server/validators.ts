@@ -65,16 +65,25 @@ const ProductBaseStringPrice = z.object({
   slug: z.string().min(1, "Slug required"),
   name: z.string().min(1, "Name required"),
   description: z.string().trim().optional(),
-  price: z.preprocess((v) => (typeof v === "string" ? v.trim() : v), z.string().min(1)),
+  price: z.preprocess(
+    (v) => (typeof v === "string" ? v.trim() : v),
+    z.string().min(1)
+  ),
   imageUrl: imageUrlFromInput,
   badges: badgesFromCommaList,
   active: boolFromForm.optional().default(true),
   stock: z
-    .preprocess((v) => (v === "" || v == null ? undefined : v), z.coerce.number().int().min(0))
+    .preprocess(
+      (v) => (v === "" || v == null ? undefined : v),
+      z.coerce.number().int().min(0)
+    )
     .optional()
     .default(0),
   maxPerOrder: z
-    .preprocess((v) => (v === "" || v == null ? undefined : v), z.coerce.number().int().min(1).max(50))
+    .preprocess(
+      (v) => (v === "" || v == null ? undefined : v),
+      z.coerce.number().int().min(1).max(50)
+    )
     .optional()
     .default(12),
 });
@@ -105,7 +114,14 @@ export type UpsertProduct = z.infer<typeof UpsertProductInput>;
 
 export const UpdateOrderStatusInput = z.object({
   id: z.string().min(1),
-  status: z.enum(["pending", "paid", "fulfilled", "cancelled"]),
+  status: z.enum([
+    "pending",
+    "approved",
+    "paid",
+    "fulfilled",
+    "cancelled",
+    "refunded",
+  ]),
 });
 export type UpdateOrderStatus = z.infer<typeof UpdateOrderStatusInput>;
 
@@ -116,13 +132,10 @@ export const FaqBase = z.object({
   answer: z.string().min(1, "Answer required"),
   active: boolFromForm.optional().default(true),
   sort: z
-    .preprocess(
-      (v) => {
-        if (v === "" || v == null) return undefined; // blank = undefined
-        return Number(v);
-      },
-      z.number().int().optional()
-    )
+    .preprocess((v) => {
+      if (v === "" || v == null) return undefined; // blank = undefined
+      return Number(v);
+    }, z.number().int().optional())
     .optional(),
 });
 

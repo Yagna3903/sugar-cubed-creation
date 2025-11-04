@@ -1,6 +1,5 @@
 // app/admin/(protected)/faq/actions.ts
 "use server";
-export const dynamic = "force-dynamic";
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -14,7 +13,9 @@ export async function createFaq(formData: FormData): Promise<void> {
   const raw = Object.fromEntries(formData.entries());
   const parsed = FaqCreateInput.safeParse(raw);
   if (!parsed.success) {
-    throw new Error(parsed.error.flatten().formErrors.join(", ") || "Invalid input");
+    throw new Error(
+      parsed.error.flatten().formErrors.join(", ") || "Invalid input"
+    );
   }
   const { question, answer, active, sort } = parsed.data;
 
@@ -38,7 +39,9 @@ export async function updateFaq(id: string, formData: FormData): Promise<void> {
   const raw = { ...Object.fromEntries(formData.entries()), id };
   const parsed = FaqUpdateInput.safeParse(raw);
   if (!parsed.success) {
-    throw new Error(parsed.error.flatten().formErrors.join(", ") || "Invalid input");
+    throw new Error(
+      parsed.error.flatten().formErrors.join(", ") || "Invalid input"
+    );
   }
   const { question, answer, active, sort } = parsed.data;
 

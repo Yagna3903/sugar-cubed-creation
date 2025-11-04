@@ -13,12 +13,13 @@ export default async function AdminHome() {
   const email = user.email ?? "";
 
   // Stats for dashboard cards
-  const [activeCount, archivedCount, pendingOrders, totalOrders] = await Promise.all([
-    prisma.product.count({ where: { active: true } }),
-    prisma.product.count({ where: { active: false } }),
-    prisma.order.count({ where: { status: "pending" } }),
-    prisma.order.count(),
-  ]);
+  const [activeCount, archivedCount, pendingOrders, totalOrders] =
+    await Promise.all([
+      prisma.product.count({ where: { active: true } }),
+      prisma.product.count({ where: { active: false } }),
+      prisma.order.count({ where: { status: "pending" } }),
+      prisma.order.count(),
+    ]);
 
   const cards = [
     {
@@ -32,7 +33,8 @@ export default async function AdminHome() {
       href: "/admin/orders",
       title: "Orders",
       desc: "Review, update status, and see recent activity.",
-      stat: pendingOrders > 0 ? `${pendingOrders} pending` : `${totalOrders} total`,
+      stat:
+        pendingOrders > 0 ? `${pendingOrders} pending` : `${totalOrders} total`,
       emoji: "🧾",
     },
     {
@@ -41,6 +43,13 @@ export default async function AdminHome() {
       desc: "Keep store FAQs up to date for customers.",
       stat: "Manage entries",
       emoji: "❓",
+    },
+    {
+      href: "/admin/payments",
+      title: "Payments",
+      desc: "View recent payments and their statuses.",
+      stat: "View records",
+      emoji: "💰",
     },
   ] as const;
 
@@ -77,7 +86,9 @@ export default async function AdminHome() {
                     {c.stat}
                   </span>
                 </div>
-                <p className="mt-1 line-clamp-2 text-sm text-zinc-600">{c.desc}</p>
+                <p className="mt-1 line-clamp-2 text-sm text-zinc-600">
+                  {c.desc}
+                </p>
               </div>
             </div>
             <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-amber-200 via-amber-300 to-amber-200 opacity-0 transition-opacity group-hover:opacity-100" />
