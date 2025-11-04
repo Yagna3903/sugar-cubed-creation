@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { CreateOrderInput } from "@/lib/server/validators";
 import { prisma } from "@/lib/db";
+import { OrderStatus } from "@prisma/client";
 
 export async function POST(req: Request) {
   let body: unknown;
@@ -12,7 +13,10 @@ export async function POST(req: Request) {
 
   const parsed = CreateOrderInput.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+    return NextResponse.json(
+      { error: parsed.error.flatten() },
+      { status: 400 }
+    );
   }
   const { customer, items } = parsed.data;
 
@@ -40,10 +44,13 @@ export async function POST(req: Request) {
       let totalCents = 0;
       const orderItemsData = items.map((it) => {
         const product = dbProducts.find((p) => p.id === it.id)!;
-        if (!product.inventory) throw new Error(`Product ${it.id} has no inventory record`);
+        if (!product.inventory)
+          throw new Error(`Product ${it.id} has no inventory record`);
 
         if (product.inventory.stock < it.qty) {
-          throw new Error(`Not enough stock for ${it.id}. Only ${product.inventory.stock} left.`);
+          throw new Error(
+            `Not enough stock for ${it.id}. Only ${product.inventory.stock} left.`
+          );
         }
 
         totalCents += product.priceCents * it.qty;
@@ -59,7 +66,7 @@ export async function POST(req: Request) {
         data: {
           email: customer.email,
           customerName: customer.name,
-          status: "pending",
+          status: OrderStatus.pending, // if status is enum
           totalCents,
           items: { create: orderItemsData },
         },
@@ -77,12 +84,10 @@ export async function POST(req: Request) {
     });
 
     const origin = new URL(req.url).origin;
-    const checkoutUrl =
-      `${origin}/checkout/success` +
-      `?orderId=${encodeURIComponent(order.id)}` +
-      `&name=${encodeURIComponent(customer.name)}` +
-      `&email=${encodeURIComponent(customer.email)}` +
-      `&total=${encodeURIComponent((order.totalCents / 100).toFixed(2))}`;
+    // Only expose an opaque order reference in the URL (no PII)
+    const checkoutUrl = `${origin}/checkout/success?o=${encodeURIComponent(
+      order.id
+    )}`;
 
     return NextResponse.json({ orderId: order.id, checkoutUrl });
   } catch (err: any) {

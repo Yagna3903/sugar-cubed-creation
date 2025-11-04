@@ -5,7 +5,14 @@ import { prisma } from "@/lib/db";
 import { cancelOrder, markFulfilled, markPaid } from "./actions";
 
 type PageProps = { searchParams?: { status?: string } };
-type AdminStatus = "all" | "pending" | "paid" | "fulfilled" | "cancelled" | "archived";
+type AdminStatus =
+  | "all"
+  | "pending"
+  | "paid"
+  | "fulfilled"
+  | "cancelled"
+  | "archived"
+  | "refunded";
 
 const STATUS_LABEL: Record<Exclude<AdminStatus, "all">, string> = {
   pending: "Pending",
@@ -13,6 +20,7 @@ const STATUS_LABEL: Record<Exclude<AdminStatus, "all">, string> = {
   fulfilled: "Fulfilled",
   cancelled: "Cancelled",
   archived: "Archived",
+  refunded: "Refunded",
 };
 
 function statusBadgeClass(s: Exclude<AdminStatus, "all">) {
@@ -27,6 +35,8 @@ function statusBadgeClass(s: Exclude<AdminStatus, "all">) {
       return "bg-red-100 text-red-700";
     case "archived":
       return "bg-zinc-200 text-zinc-700";
+    case "refunded":
+      return "bg-purple-100 text-purple-800";
     default:
       return "bg-zinc-100 text-zinc-700";
   }
@@ -35,7 +45,12 @@ function statusBadgeClass(s: Exclude<AdminStatus, "all">) {
 export default async function AdminOrdersPage({ searchParams }: PageProps) {
   const raw = (searchParams?.status || "pending").toLowerCase();
   const status: AdminStatus =
-    raw === "all" || raw === "paid" || raw === "fulfilled" || raw === "cancelled" || raw === "archived"
+    raw === "all" ||
+    raw === "paid" ||
+    raw === "fulfilled" ||
+    raw === "cancelled" ||
+    raw === "refunded" ||
+    raw === "archived"
       ? (raw as AdminStatus)
       : "pending";
 
@@ -57,15 +72,37 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
     },
   });
 
+  async function sendInvoice(orderId: string) {
+    const r = await fetch("/api/invoices/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ orderId }),
+    });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error || "Failed");
+    // Optionally open the hosted invoice link
+    if (j.publicUrl) window.open(j.publicUrl, "_blank");
+  }
+
   type OrderRow = (typeof orders)[number];
   type ItemRow = OrderRow["items"][number];
 
-  const FilterPill = ({ label, href, active }: { label: string; href: string; active: boolean }) => (
+  const FilterPill = ({
+    label,
+    href,
+    active,
+  }: {
+    label: string;
+    href: string;
+    active: boolean;
+  }) => (
     <Link
       href={href}
       className={[
         "rounded-full border px-3 py-1.5 text-sm transition",
-        active ? "bg-zinc-900 text-white border-zinc-900" : "bg-white hover:bg-zinc-50",
+        active
+          ? "bg-zinc-900 text-white border-zinc-900"
+          : "bg-white hover:bg-zinc-50",
       ].join(" ")}
       aria-current={active ? "page" : undefined}
     >
@@ -81,12 +118,41 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
         <h1 className="text-2xl font-semibold">Orders</h1>
 
         <nav className="flex items-center gap-2" aria-label="Filter orders">
-          <FilterPill href="/admin/orders?status=all" label="All" active={status === "all"} />
-          <FilterPill href="/admin/orders?status=pending" label="Pending" active={status === "pending"} />
-          <FilterPill href="/admin/orders?status=paid" label="Paid" active={status === "paid"} />
-          <FilterPill href="/admin/orders?status=fulfilled" label="Fulfilled" active={status === "fulfilled"} />
-          <FilterPill href="/admin/orders?status=cancelled" label="Cancelled" active={status === "cancelled"} />
-          <FilterPill href="/admin/orders?status=archived" label="Archived" active={status === "archived"} />
+          <FilterPill
+            href="/admin/orders?status=all"
+            label="All"
+            active={status === "all"}
+          />
+          <FilterPill
+            href="/admin/orders?status=pending"
+            label="Pending"
+            active={status === "pending"}
+          />
+          <FilterPill
+            href="/admin/orders?status=paid"
+            label="Paid"
+            active={status === "paid"}
+          />
+          <FilterPill
+            href="/admin/orders?status=fulfilled"
+            label="Fulfilled"
+            active={status === "fulfilled"}
+          />
+          <FilterPill
+            href="/admin/orders?status=cancelled"
+            label="Cancelled"
+            active={status === "cancelled"}
+          />
+          <FilterPill
+            href="/admin/orders?status=archived"
+            label="Archived"
+            active={status === "archived"}
+          />
+          <FilterPill
+            href="/admin/orders?status=refunded"
+            label="Refunded"
+            active={status === "refunded"}
+          />
         </nav>
       </div>
 
@@ -95,31 +161,53 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
       ) : (
         <div className="divide-y rounded-2xl border bg-white">
           {orders.map((o: OrderRow) => (
-            <div key={o.id} className="grid grid-cols-12 items-center gap-4 p-4">
+            <div
+              key={o.id}
+              className="grid grid-cols-12 items-center gap-4 p-4"
+            >
               <div className="col-span-6">
                 <div className="flex items-center gap-2">
-                  <Link href={`/admin/orders/${o.id}`} className="font-medium hover:underline">
+                  <Link
+                    href={`/admin/orders/${o.id}`}
+                    className="font-medium hover:underline"
+                  >
                     {o.customerName || o.email}
                   </Link>
-                  <span className={`rounded-full px-2 py-0.5 text-xs ${statusBadgeClass(o.status as any)}`}>
-                    {o.archived ? "Archived" : STATUS_LABEL[o.status as Exclude<AdminStatus, "all">]}
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-xs ${statusBadgeClass(
+                      o.status as any
+                    )}`}
+                  >
+                    {o.archived
+                      ? "Archived"
+                      : STATUS_LABEL[o.status as Exclude<AdminStatus, "all">]}
                   </span>
                 </div>
                 <div className="text-xs text-zinc-500">
-                  #{o.id.slice(0, 8)} • {new Date(o.createdAt).toLocaleString()} •{" "}
-                  {o.items.length} item{o.items.length === 1 ? "" : "s"}
+                  #{o.id.slice(0, 8)} • {new Date(o.createdAt).toLocaleString()}{" "}
+                  • {o.items.length} item{o.items.length === 1 ? "" : "s"}
                 </div>
                 {o.items.length > 0 && (
                   <div className="mt-1 line-clamp-1 text-xs text-zinc-600">
-                    {o.items.map((it: ItemRow) => `${it.qty}× ${it.product?.name ?? "Item"}`).join(" · ")}
+                    {o.items
+                      .map(
+                        (it: ItemRow) =>
+                          `${it.qty}× ${it.product?.name ?? "Item"}`
+                      )
+                      .join(" · ")}
                   </div>
                 )}
               </div>
 
-              <div className="col-span-2 text-sm">${(o.totalCents / 100).toFixed(2)}</div>
+              <div className="col-span-2 text-sm">
+                ${(o.totalCents / 100).toFixed(2)}
+              </div>
 
               <div className="col-span-4 flex justify-end gap-2">
-                <Link href={`/admin/orders/${o.id}`} className="rounded-xl border px-3 py-1.5 text-sm">
+                <Link
+                  href={`/admin/orders/${o.id}`}
+                  className="rounded-xl border px-3 py-1.5 text-sm"
+                >
                   View
                 </Link>
               </div>

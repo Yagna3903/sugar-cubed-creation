@@ -1,0 +1,37 @@
+# Placeholder for Square's Apple Pay domain verification file
+
+# Replace the contents of this file with the exact text Square provides
+
+# when you enable Apple Pay for your application and register a domain.
+
+#
+
+# Square will provide a file named
+
+# apple-developer-merchantid-domain-association
+
+# with a specific payload. Place that payload (exact bytes) in this file.
+
+#
+
+# Example steps:
+
+# 1. In Square Developer Dashboard → Apple Pay (or Web Payments) enable Apple Pay.
+
+# 2. Square gives you the exact file content. Copy it and overwrite this file.
+
+# 3. Visit https://<your-domain>/.well-known/apple-developer-merchantid-domain-association
+
+# to confirm it's served.
+
+# 4. Tell Square to verify the domain (there's an option in the dashboard).
+
+#
+
+# Note: For local testing, expose your dev server via ngrok and add the ngrok URL
+
+# to Square's verified domains. The file must be accessible at:
+
+# https://<ngrok-id>.ngrok.io/.well-known/apple-developer-merchantid-domain-association
+
+PLACEHOLDER_REMOVE_AND_PASTE_SQUARE_CONTENT_HERE

@@ -1,11 +1,13 @@
 "use server";
-export const dynamic = "force-dynamic";
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/server/admin";
-import { ProductCreateInput, ProductUpdateInput } from "@/lib/server/validators";
+import {
+  ProductCreateInput,
+  ProductUpdateInput,
+} from "@/lib/server/validators";
 import { uploadProductImage } from "@/lib/storage";
 
 function toCents(priceStr: string) {
@@ -154,9 +156,7 @@ export async function forceDeleteProduct(id: string): Promise<void> {
   await requireAdmin();
   const refs = await prisma.orderItem.count({ where: { productId: id } });
   if (refs > 0)
-    throw new Error(
-      "Cannot delete referenced product. Keep it archived."
-    );
+    throw new Error("Cannot delete referenced product. Keep it archived.");
 
   const product = await prisma.product.delete({ where: { id } });
 

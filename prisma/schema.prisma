@@ -3,7 +3,7 @@
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL") // pooled (6543) for runtime
-  directUrl = env("DIRECT_URL")   // direct (5432) for migrate/studio
+  directUrl = env("DIRECT_URL") // direct (5432) for migrate/studio
 }
 
 generator client {
@@ -15,12 +15,13 @@ generator client {
  * Enums
  * =========================
  */
-
 enum OrderStatus {
   pending
+  approved
   paid
   fulfilled
   cancelled
+  refunded
 }
 
 /**
@@ -28,7 +29,6 @@ enum OrderStatus {
  * Core Store Models
  * =========================
  */
-
 model Product {
   id          String   @id // e.g. "h1","h2" from your seed data
   slug        String   @unique // used by /shop and product pages
@@ -52,17 +52,35 @@ model Inventory {
   product     Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
+model Payment {
+  id                String   @id @default(cuid())
+  order             Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId           String
+  provider          String
+  providerPaymentId String?  @unique
+  status            String
+  amountCents       Int
+  currency          String   @default("CAD")
+  cardBrand         String?
+  cardLast4         String?
+  receiptUrl        String?
+  idempotencyKey    String   @unique
+  metadata          Json
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
 model Order {
   id           String      @id @default(cuid())
-  email        String
-  customerName String
   status       OrderStatus @default(pending)
   totalCents   Int
+  email        String?
+  customerName String?
+  items        OrderItem[]
+  payments     Payment[]
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
   archived     Boolean     @default(false)
-
-  items OrderItem[]
 }
 
 model OrderItem {
@@ -84,7 +102,6 @@ model OrderItem {
  * FAQ Model
  * =========================
  */
-
 model Faq {
   id        String   @id @default(cuid())
   question  String
