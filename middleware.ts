@@ -11,7 +11,7 @@ export async function middleware(req: NextRequest) {
   // Allow public admin routes
   const publicRoutes = [
     "/admin/login",
-    "/admin/update-password", // ✅ allow reset page
+    "/admin/update-password", // allow reset page
   ];
 
   if (publicRoutes.some((path) => url.pathname.startsWith(path))) {
