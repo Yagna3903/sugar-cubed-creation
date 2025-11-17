@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import BackLink from "../../_components/BackLink";
 import PaymentActions from "../../_components/PaymentActions";
 
-export const metadata = { title: "Admin — Payments" };
+export const metadata = { title: "Admin - Payments" };
 
 export default async function PaymentsPage() {
   // Cast prisma to any to avoid type issues if client generation is stale.
@@ -17,7 +17,7 @@ export default async function PaymentsPage() {
       },
     },
   });
-
+  
   return (
     <div className="max-w-6xl mx-auto p-6">
       <BackLink href="/admin">Back to Admin</BackLink>
