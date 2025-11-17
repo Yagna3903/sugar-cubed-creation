@@ -6,8 +6,8 @@ import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 
 type Props = {
-  href?: string;                 // when provided we go to this route
-  children?: ReactNode;          // button label
+  href?: string;
+  children?: ReactNode;
   className?: string;
 };
 
