@@ -1,7 +1,7 @@
 // app/page.tsx
 import { Hero } from "@/components/hero";
 import { ProductGrid } from "@/components/product-grid";
-import { listProducts } from "@/lib/server/products"; // ✅ use live DB
+import { listProducts } from "@/lib/server/products";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
