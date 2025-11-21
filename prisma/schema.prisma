@@ -43,6 +43,7 @@ model Product {
 
   inventory Inventory?
   items     OrderItem[]
+  imageUrl   String?
 }
 
 model Inventory {

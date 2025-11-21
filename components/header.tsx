@@ -43,7 +43,7 @@ export function Header() {
 
         <nav className="hidden md:flex gap-4">
           <NavLink href="/shop">Shop</NavLink>
-          <NavLink href="/offers">Offers</NavLink>
+
           <NavLink href="/our-story">Our Story</NavLink>
           <NavLink href="/blog">Blog</NavLink>
         </nav>

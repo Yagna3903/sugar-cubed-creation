@@ -66,84 +66,133 @@ export default function ShippingReturnsPage() {
       </p>
 
       <div className="mt-8 grid gap-4">
-        <Info title="Processing times">
+        <Info title="Payment Policy">
           <ul className="list-disc pl-5 space-y-1">
+            <li>Payment is required upfront to secure your order.</li>
             <li>
-              Retail orders: <strong>5–7 days</strong> to prepare.
+              This allows us to source any custom cutters, sprinkles, and
+              packaging necessary for your cookies.
             </li>
             <li>
-              Corporate / large orders: <strong>10–14 days</strong>.
-            </li>
-            <li>Holiday releases may sell out and timelines can vary.</li>
-          </ul>
-        </Info>
-
-        <Info title="Pickup">
-          <ul className="list-disc pl-5 space-y-1">
-            <li>
-              Pickup is required, delivery unavaible. The pickup address is
-              provided after your order is approved.
+              Your payment also confirms your pick-up date, ensuring a smooth
+              process for both parties.
             </li>
           </ul>
         </Info>
 
-        <Info title="Order confirmation & status">
-          <p>
-            After checkout, an <strong>email is sent to the owner</strong>. The
-            owner will <strong>approve or deny</strong> the order. You’ll be
-            notified of the status by email.
-          </p>
-        </Info>
-
-        <Info title="Cancellations">
-          <p>
-            Cancellations are accepted within{" "}
-            <strong>24 hours of approval</strong> or before production begins.
-            Once baking/printing starts, the order cannot be cancelled.
-          </p>
-        </Info>
-
-        <Info title="Returns & refunds">
+        <Info title="Order Forfeiture">
           <ul className="list-disc pl-5 space-y-1">
             <li>
-              <strong>No returns</strong> on perishable items.
+              Please note that orders not picked up at the scheduled time will
+              be forfeited, as our cookies are best enjoyed fresh.
             </li>
             <li>
-              For damaged or incorrect items, email photos within{" "}
-              <strong>24 hours</strong> of delivery/pickup and we will arrange a
-              replacement or refund.
+              In the event of a no-show, we will donate your order to a family
+              in need. If you need to reschedule, kindly contact us at least 2
+              days before your scheduled pickup.{" "}
             </li>
           </ul>
         </Info>
 
-        <Info title="Flavours & allergens">
+        <Info title="Refund Policy">
           <ul className="list-disc pl-5 space-y-1">
             <li>
-              Standard flavour: <strong>vanilla</strong>. Holiday drops may
-              include one seasonal flavour for a specific cookie.
+              With such a tight turn around,refund cannot be offered once the
+              payment is made. On the bright side, you’ll still receive your
+              cookies!
+            </li>
+          </ul>
+        </Info>
+
+        <Info title="Delivery Options">
+          <ul className="list-disc pl-5 space-y-1">
+            {" "}
+            <li>
+              While orders are typically for pick-up, delivery may be available
+              for an additional fee. If you're in the area, we’d be happy to
+              discuss arrangements.
+            </li>
+          </ul>
+        </Info>
+
+        <Info title="Pickup Dates & Times">
+          <ul className="list-disc pl-5 space-y-1">
+            <li>
+              Pickup and delivery times are agreed upon at the time of ordering
+              to ensure smooth scheduling for all customers.
             </li>
             <li>
-              Corporate logo cookies: <strong>vanilla</strong> and{" "}
-              <strong>chocolate chip</strong>.
+              {" "}
+              We offer bulk pickup dates for added convenience—don't forget to
+              mark your calendar!
+            </li>
+          </ul>
+        </Info>
+
+        <Info title="Order Changes">
+          <ul className="list-disc pl-5 space-y-1">
+            <li>
+              We understand that plans change! You can modify your order until 1
+              week before your order.
             </li>
             <li>
-              <strong>No vegan</strong> options at this time.
+              {" "}
+              After that, changes may be considered with an additional fee.
+            </li>
+          </ul>
+        </Info>
+
+        <Info title=" Rush Orders">
+          <ul className="list-disc pl-5 space-y-1">
+            <li>
+              We will do our best to accommodate last-minute orders, though a
+              rush fee of $20 applies for orders requested with fewer than 5
+              business days’ notice.
+            </li>
+          </ul>
+        </Info>
+
+        <Info title="Price Adjustments">
+          <ul className="list-disc pl-5 space-y-1">
+            <li>
+              Prices are subject to change based on fluctuating ingredient
+              costs.
             </li>
             <li>
-              Contains <strong>wheat, dairy, eggs</strong>; produced in a
-              kitchen that may handle <strong>nuts</strong>.
+              {" "}
+              While we strive to provide high-quality cookies at competitive
+              prices, we cannot guarantee past pricing.
             </li>
+          </ul>
+        </Info>
+
+        <Info title="Photography">
+          <ul className="list-disc pl-5 space-y-1">
+            <li>
+              We occasionally photograph our creations for promotional purposes.
+            </li>
+            <li>
+              {" "}
+              If you prefer that your cookies not be photographed, please notify
+              us when placing your order.
+            </li>
+          </ul>
+        </Info>
+        <Info title="Photo Accuracy">
+          <ul className="list-disc pl-5 space-y-1">
+            <li>Colours and lighting in photos may differ slightly.</li>
           </ul>
         </Info>
 
         <Info title="Questions">
-          <p>
-            Email{" "}
-            <a className="underline" href="mailto:hello@cookie.co">
-              hello@cookie.co
-            </a>{" "}
-            or call (+1) 123-456-7890.
-          </p>
+          <ul className="list-disc pl-5 space-y-1">
+            <li>
+              Email{" "}
+              <a className="underline" href="mailto:hello@cookie.co">
+                hello@cookie.co
+              </a>{" "}
+            </li>
+          </ul>
         </Info>
       </div>
 
