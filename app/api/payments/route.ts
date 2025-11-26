@@ -1,8 +1,16 @@
-// app/api/orders/route.ts
+// app/api/payments/route.ts
 import { NextResponse } from "next/server";
-import { CreateOrderInput } from "@/lib/server/validators";
 import { prisma } from "@/lib/db";
+import { CreateOrderInput } from "@/lib/server/validators";
 import { OrderStatus } from "@prisma/client";
+import { z } from "zod";
+
+// Extend your existing CreateOrderInput with Square token + card info
+const PaymentsInput = CreateOrderInput.extend({
+  token: z.string().min(1, "Missing payment token"),
+  cardBrand: z.string().optional(),
+  cardLast4: z.string().optional(),
+});
 
 export async function POST(req: Request) {
   let body: unknown;
@@ -12,7 +20,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const parsed = CreateOrderInput.safeParse(body);
+  const parsed = PaymentsInput.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
       { error: parsed.error.flatten() },
@@ -20,10 +28,10 @@ export async function POST(req: Request) {
     );
   }
 
-  const { customer, items } = parsed.data;
+  const { customer, items, token, cardBrand, cardLast4 } = parsed.data;
 
   try {
-    const order = await prisma.$transaction(async (tx) => {
+    const { order, payment } = await prisma.$transaction(async (tx) => {
       const ids = items.map((i) => i.id);
 
       const dbProducts = await tx.product.findMany({
@@ -62,6 +70,7 @@ export async function POST(req: Request) {
         };
       });
 
+      // Create order as pending (client can accept/cancel later)
       const order = await tx.order.create({
         data: {
           email: customer.email,
@@ -72,6 +81,24 @@ export async function POST(req: Request) {
         },
       });
 
+      // Create a pending Payment record with token + card info
+      const payment = await tx.payment.create({
+        data: {
+          orderId: order.id,
+          provider: "square",
+          providerPaymentId: token, // use token as provider ID for admin view
+          status: "pending",        // NOT auto-completed
+          amountCents: totalCents,
+          currency: "CAD",
+          cardBrand: cardBrand ?? null,
+          cardLast4: cardLast4 ?? null,
+          receiptUrl: null,
+          idempotencyKey: `${order.id}:${token}`, // unique
+          metadata: {},
+        },
+      });
+
+      // Optionally hold or decrement stock. Keeping same behaviour as /api/orders:
       for (const it of items) {
         await tx.inventory.update({
           where: { productId: it.id },
@@ -79,7 +106,7 @@ export async function POST(req: Request) {
         });
       }
 
-      return order;
+      return { order, payment };
     });
 
     const origin = new URL(req.url).origin;
@@ -87,10 +114,14 @@ export async function POST(req: Request) {
       order.id
     )}`;
 
-    return NextResponse.json({ orderId: order.id, checkoutUrl });
+    return NextResponse.json({
+      orderId: order.id,
+      paymentId: payment.id,
+      checkoutUrl,
+    });
   } catch (err: any) {
     return NextResponse.json(
-      { error: err?.message ?? "Order failed" },
+      { error: err?.message ?? "Payment failed" },
       { status: 400 }
     );
   }

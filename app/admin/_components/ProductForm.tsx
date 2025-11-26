@@ -11,7 +11,7 @@ type ProductFormProps = {
     price: number;
     description?: string;
     stock: number;
-    orderLimit?: number;
+    maxPerOrder?: number;
     imageUrl?: string;
   };
   onSubmit: (data: FormData) => Promise<void>;
@@ -29,8 +29,11 @@ export default function ProductForm({
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     setBusy(true);
-    await onSubmit(formData);
-    setBusy(false);
+    try {
+      await onSubmit(formData);
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -81,14 +84,13 @@ export default function ProductForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium">Order limit</label>
+          <label className="block text-sm font-medium">Max per order</label>
           <input
             type="number"
-            name="orderLimit"
-            defaultValue={initialData?.orderLimit ?? 0}
+            name="maxPerOrder"
+            defaultValue={initialData?.maxPerOrder ?? 12}
             className="mt-1 w-full rounded-xl border px-3 py-2"
           />
-          <p className="text-xs text-zinc-500">0 = no limit</p>
         </div>
       </div>
 

@@ -1,4 +1,3 @@
-// app/product/[slug]/page.tsx
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import AddToCart from "@/components/add-to-cart";
@@ -28,12 +27,15 @@ export default async function ProductPage({ params }: { params: { slug: string }
         <h1 className="text-3xl font-bold">{p.name}</h1>
         <div className="mt-2 text-lg">${(p.priceCents / 100).toFixed(2)}</div>
 
-        {p.description && (
-          <p className="mt-4 opacity-80">{p.description}</p>
-        )}
+        {p.description && <p className="mt-4 opacity-80">{p.description}</p>}
 
         <div className="mt-8 text-sm opacity-70">
           {p.inventory?.stock ?? 0} in stock
+          {p.inventory?.maxPerOrder && (
+            <span className="ml-2 text-zinc-500">
+              | Limit per order: {p.inventory.maxPerOrder}
+            </span>
+          )}
         </div>
 
         <AddToCart
@@ -44,6 +46,8 @@ export default async function ProductPage({ params }: { params: { slug: string }
             price: p.priceCents / 100,
             image: p.imageUrl || "/images/Main-Cookie.png",
           }}
+          stock={p.inventory?.stock ?? 0}
+          maxPerOrder={p.inventory?.maxPerOrder ?? undefined}
         />
       </div>
     </section>

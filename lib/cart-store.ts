@@ -4,7 +4,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
-// ✅ Extended Item type
 export type Item = {
   id: string;
   slug: string;
@@ -28,24 +27,63 @@ export const useCart = create<State>()(
   persist(
     (set) => ({
       items: [],
+
       add: (i, qty = 1) =>
         set((s) => {
-          const idx = s.items.findIndex((x) => x.id === i.id);
-          if (idx > -1) {
-            const copy = [...s.items];
-            copy[idx].qty += qty;
-            return { items: copy };
+          const existing = s.items.find((x) => x.id === i.id);
+
+          const baseQty = existing?.qty ?? 0;
+          let newQty = baseQty + qty;
+
+          // Prefer the latest stock / maxPerOrder info
+          const stock = i.stock ?? existing?.stock;
+          const maxPerOrder = i.maxPerOrder ?? existing?.maxPerOrder;
+
+          if (stock !== undefined) {
+            newQty = Math.min(newQty, stock);
           }
-          return { items: [...s.items, { ...i, qty }] };
+          if (maxPerOrder !== undefined) {
+            newQty = Math.min(newQty, maxPerOrder);
+          }
+
+          // Ensure at least 1 if we're adding at all
+          if (newQty < 1) newQty = 1;
+
+          if (existing) {
+            return {
+              items: s.items.map((x) =>
+                x.id === i.id ? { ...x, ...i, qty: newQty } : x
+              ),
+            };
+          }
+
+          return { items: [...s.items, { ...i, qty: newQty }] };
         }),
+
       setQty: (id, qty) =>
         set((s) => ({
-          items: s.items.map((x) => (x.id === id ? { ...x, qty } : x)),
+          items: s.items.map((x) => {
+            if (x.id !== id) return x;
+
+            let newQty = qty;
+
+            if (x.stock !== undefined) {
+              newQty = Math.min(newQty, x.stock);
+            }
+            if (x.maxPerOrder !== undefined) {
+              newQty = Math.min(newQty, x.maxPerOrder);
+            }
+            if (newQty < 1) newQty = 1;
+
+            return { ...x, qty: newQty };
+          }),
         })),
+
       remove: (id) =>
         set((s) => ({
           items: s.items.filter((x) => x.id !== id),
         })),
+
       clear: () => set({ items: [] }),
     }),
     {
