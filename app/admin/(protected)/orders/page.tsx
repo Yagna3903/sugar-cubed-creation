@@ -1,8 +1,8 @@
 export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import BackLink from "@/app/admin/_components/BackLink";
 import { prisma } from "@/lib/db";
-import { cancelOrder, markFulfilled, markPaid } from "./actions";
 
 type PageProps = { searchParams?: { status?: string } };
 type AdminStatus =
@@ -54,7 +54,6 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
       ? (raw as AdminStatus)
       : "pending";
 
-  // 👇 Build query depending on status
   const where =
     status === "all"
       ? {}
@@ -71,18 +70,6 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
       },
     },
   });
-
-  async function sendInvoice(orderId: string) {
-    const r = await fetch("/api/invoices/send", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ orderId }),
-    });
-    const j = await r.json();
-    if (!r.ok) throw new Error(j.error || "Failed");
-    // Optionally open the hosted invoice link
-    if (j.publicUrl) window.open(j.publicUrl, "_blank");
-  }
 
   type OrderRow = (typeof orders)[number];
   type ItemRow = OrderRow["items"][number];

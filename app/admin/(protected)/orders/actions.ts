@@ -190,7 +190,7 @@ export async function cancelOrder(id: string) {
   }
 }
 
-/** SOFT DELETE → archive cancelled order */
+/** SOFT DELETE -> archive cancelled order */
 export async function archiveOrder(id: string) {
   await requireAdmin();
   await prisma.order.update({
@@ -201,7 +201,7 @@ export async function archiveOrder(id: string) {
   redirect("/admin/orders"); // go back to list
 }
 
-/** HARD DELETE → permanently remove */
+/** HARD DELETE -> permanently remove */
 export async function deleteOrder(id: string) {
   await requireAdmin();
   await prisma.order.delete({ where: { id } });

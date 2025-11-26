@@ -1,29 +1,13 @@
+// app/api/products/route.ts
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { listProducts } from "@/lib/server/products";
 
+/**
+ * Public API – list active products for the storefront.
+ * Uses the shared server-side mapping so UI and API stay in sync.
+ */
 export async function GET() {
-  const list = await prisma.product.findMany({
-    where: { active: true },
-    orderBy: { createdAt: "asc" },
-  }) as Array<{
-    id: string;
-    slug: string;
-    name: string;
-    priceCents: number;
-    imageUrl: string;
-    badges: string[];
-    description: string | null;
-  }>;
-
-  const out = list.map((p) => ({
-    id: p.id,
-    slug: p.slug,
-    name: p.name,
-    price: p.priceCents / 100,
-    image: p.imageUrl,
-    badges: p.badges,
-    description: p.description ?? undefined,
-  }));
-
-  return NextResponse.json(out);
+  // listProducts returns the `Product` type from lib/types.ts
+  const products = await listProducts();
+  return NextResponse.json(products);
 }

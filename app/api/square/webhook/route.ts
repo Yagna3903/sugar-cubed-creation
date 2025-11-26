@@ -14,17 +14,15 @@ export const dynamic = "force-dynamic";
  * Header: x-square-hmacsha256-signature
  */
 export async function POST(req: Request) {
-  // raw body for signature verification
   const raw = await req.text();
 
   const sigHeader =
     req.headers.get("x-square-hmacsha256-signature") ??
-    req.headers.get("x-square-signature") ?? // legacy fallback
+    req.headers.get("x-square-signature") ??
     "";
 
   const key = process.env.SQUARE_WEBHOOK_SIGNATURE_KEY || "";
-  const baseUrl = process.env.WEBHOOK_PUBLIC_URL || ""; // e.g. https://yourdomain.com
-  // Must match the subscription URL exactly
+  const baseUrl = process.env.WEBHOOK_PUBLIC_URL || "";
   const fullUrl = `${baseUrl}/api/square/webhook`;
 
   if (!key || !baseUrl) {
@@ -34,14 +32,13 @@ export async function POST(req: Request) {
     );
   }
 
-  // Verify HMAC-SHA256 first (current Square behavior)
   const hmac256 = crypto.createHmac("sha256", key);
   hmac256.update(fullUrl + raw);
   const expected256 = hmac256.digest("base64");
 
   let verified = timingSafeEq(expected256, sigHeader);
 
-  // Optional legacy fallback: some old subscriptions used HMAC-SHA1 on body only
+  // Optional legacy fallback
   if (!verified && sigHeader) {
     try {
       const hmac1 = crypto.createHmac("sha1", key);
@@ -55,7 +52,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
-  // Parse event
   let evt: any;
   try {
     evt = JSON.parse(raw);
@@ -75,13 +71,11 @@ export async function POST(req: Request) {
       const amount = Number(pay?.amount_money?.amount ?? 0);
       const currency = String(pay?.amount_money?.currency || "").toUpperCase();
 
-      // Only accept CAD
       if (currency && currency !== "CAD") {
         return NextResponse.json({ ok: true, note: "ignored-non-CAD" });
       }
 
       try {
-        // Update existing Payment if we have it (created by /api/square/pay)
         const existing = await prisma.payment.findUnique({
           where: { providerPaymentId },
         });
@@ -96,7 +90,6 @@ export async function POST(req: Request) {
             },
           });
 
-          // Mark order paid only on COMPLETED
           if (status === "COMPLETED") {
             await prisma.order.update({
               where: { id: existing.orderId },
@@ -104,7 +97,6 @@ export async function POST(req: Request) {
             });
           }
 
-          // On CANCELED/FAILED mark order cancelled (business choice)
           if (status === "CANCELED" || status === "FAILED") {
             await prisma.order.update({
               where: { id: existing.orderId },
@@ -112,17 +104,16 @@ export async function POST(req: Request) {
             });
           }
         } else {
-          // No local Payment row. For invoice payments you may not have one.
-          // Optionally insert a reconciliation record if desired:
-          // await prisma.payment.create({ ... });
+          // No local Payment row (for example, invoice-only payments).
+          // Optionally insert a reconciliation record here.
         }
-      } catch (e) {
-        // Swallow; never 5xx Square
+      } catch {
+        // Never 5xx to Square
       }
     }
   }
 
-  // ---- invoice events -------------------------------------------------------
+  // ---- invoice events (ignored for now) ------------------------------------
   if (
     type === "invoice.created" ||
     type === "invoice.updated" ||
@@ -130,33 +121,8 @@ export async function POST(req: Request) {
     type === "invoice.canceled" ||
     type === "invoice.payment_made"
   ) {
-    const inv = evt?.data?.object?.invoice;
-    const invId: string | undefined = inv?.id;
-    const state: string | undefined = inv?.status; // DRAFT | UNPAID | PAID | CANCELED | REFUNDED
-
-    if (invId) {
-      // If your Order has invoiceId/invoiceState fields, keep them in sync
-      try {
-        await prisma.order.updateMany({
-          where: { invoiceId: invId } as any,
-          data: { invoiceState: state } as any,
-        });
-
-        if (state === "PAID") {
-          await prisma.order.updateMany({
-            where: { invoiceId: invId } as any,
-            data: { status: "paid" },
-          });
-        }
-
-        if (state === "CANCELED") {
-          await prisma.order.updateMany({
-            where: { invoiceId: invId } as any,
-            data: { status: "cancelled" },
-          });
-        }
-      } catch {}
-    }
+    // You can extend this block later if you add invoiceId/invoiceState fields.
+    return NextResponse.json({ ok: true, note: "invoice-event-ignored" });
   }
 
   return NextResponse.json({ ok: true });
