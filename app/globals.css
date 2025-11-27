@@ -12,27 +12,48 @@
   --brand-brown-hover: #5a3720;
   --brand-pink: #fce7ef;
   --brand-pink-dark: #f9d5e3;
-  
+
   /* Gradients */
   --gradient-warm: linear-gradient(135deg, #fce7ef 0%, #fff8f2 100%);
   --gradient-brand: linear-gradient(135deg, #6b4226 0%, #8b5a3c 100%);
-  
+
   /* Shadows */
   --shadow-soft: 0 4px 20px rgba(107, 66, 38, 0.08);
   --shadow-medium: 0 8px 30px rgba(107, 66, 38, 0.12);
   --shadow-strong: 0 12px 40px rgba(107, 66, 38, 0.16);
-  
+
   /* Transitions */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Admin-Specific Colors */
+  --admin-bg: linear-gradient(135deg, #fef9f3 0%, #fdf5eb 100%);
+  --admin-card-bg: rgba(255, 255, 255, 0.95);
+  --admin-border: rgba(139, 69, 19, 0.1);
+  --admin-shadow: 0 4px 20px rgba(139, 69, 19, 0.08);
+  --admin-shadow-hover: 0 8px 30px rgba(139, 69, 19, 0.12);
+
+  /* Status Colors */
+  --status-pending: #f59e0b;
+  --status-pending-bg: #fef3c7;
+  --status-paid: #3b82f6;
+  --status-paid-bg: #dbeafe;
+  --status-fulfilled: #10b981;
+  --status-fulfilled-bg: #d1fae5;
+  --status-cancelled: #ef4444;
+  --status-cancelled-bg: #fee2e2;
+  --status-refunded: #a855f7;
+  --status-refunded-bg: #f3e8ff;
+  --status-archived: #71717a;
+  --status-archived-bg: #e4e4e7;
 }
 
 @layer base {
   html {
     scroll-behavior: smooth;
   }
-  
+
   html,
   body {
     background: var(--bg-base);
@@ -43,38 +64,44 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: 'Outfit', sans-serif;
     font-weight: 700;
     line-height: 1.2;
     letter-spacing: -0.02em;
   }
-  
+
   h1 {
     font-size: clamp(2rem, 5vw, 3.5rem);
   }
-  
+
   h2 {
     font-size: clamp(1.75rem, 4vw, 2.5rem);
   }
-  
+
   h3 {
     font-size: clamp(1.5rem, 3vw, 2rem);
   }
 }
 
 @layer components {
+
   /* Card Animations */
   .card-pop {
     transition: transform var(--transition-base), box-shadow var(--transition-base);
   }
-  
+
   .card-pop:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-medium);
   }
-  
+
   /* Button Styles */
   .btn-primary {
     @apply bg-brand-brown text-white px-6 py-3 rounded-xl font-medium;
@@ -82,49 +109,73 @@
     @apply hover:bg-brand-brown/90 hover:shadow-md hover:scale-[1.02];
     @apply active:scale-[0.98];
   }
-  
+
   .btn-secondary {
     @apply bg-white text-brand-brown px-6 py-3 rounded-xl font-medium border-2 border-brand-brown;
     @apply transition-all duration-200;
     @apply hover:bg-brand-brown hover:text-white;
   }
-  
+
   /* Input Styles */
   .input-base {
     @apply w-full rounded-xl border-2 border-zinc-200 px-4 py-3;
     @apply transition-all duration-200;
     @apply focus:border-brand-brown focus:ring-4 focus:ring-brand-brown/10 focus:outline-none;
   }
-  
+
   /* Animation Classes */
   .animate-fade-in {
     animation: fadeIn var(--transition-slow) ease-out;
   }
-  
+
   .animate-slide-up {
     animation: slideUp var(--transition-slow) ease-out;
   }
-  
+
   .animate-scale-in {
     animation: scaleIn var(--transition-base) ease-out;
   }
-  
-  .stagger-children > * {
+
+  .stagger-children>* {
     opacity: 0;
     animation: fadeInUp 0.5s ease-out forwards;
   }
-  
-  .stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
-  .stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
-  .stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
-  .stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
-  .stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
-  .stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
-  .stagger-children > *:nth-child(7) { animation-delay: 0.35s; }
-  .stagger-children > *:nth-child(8) { animation-delay: 0.4s; }
+
+  .stagger-children>*:nth-child(1) {
+    animation-delay: 0.05s;
+  }
+
+  .stagger-children>*:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+
+  .stagger-children>*:nth-child(3) {
+    animation-delay: 0.15s;
+  }
+
+  .stagger-children>*:nth-child(4) {
+    animation-delay: 0.2s;
+  }
+
+  .stagger-children>*:nth-child(5) {
+    animation-delay: 0.25s;
+  }
+
+  .stagger-children>*:nth-child(6) {
+    animation-delay: 0.3s;
+  }
+
+  .stagger-children>*:nth-child(7) {
+    animation-delay: 0.35s;
+  }
+
+  .stagger-children>*:nth-child(8) {
+    animation-delay: 0.4s;
+  }
 }
 
 @layer utilities {
+
   /* Gradient Text */
   .text-gradient {
     background: var(--gradient-brand);
@@ -132,7 +183,7 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-  
+
   /* Glass Effect */
   .glass {
     background: rgba(255, 255, 255, 0.7);
@@ -146,6 +197,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -156,6 +208,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -167,6 +220,7 @@
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -178,14 +232,71 @@
     opacity: 0;
     transform: translateY(15px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
+/* Admin-Specific Animations */
+@keyframes pulseGlow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(107, 66, 38, 0.4);
+  }
+
+  50% {
+    box-shadow: 0 0 0 10px rgba(107, 66, 38, 0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+
+  70% {
+    transform: scale(0.9);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 /* Accessibility: Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {

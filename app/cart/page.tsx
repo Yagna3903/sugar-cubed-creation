@@ -8,6 +8,8 @@ import { useCart, type Item } from "@/lib/cart-store";
 export default function CartPage() {
   const { items, setQty, remove } = useCart();
   const subtotal = items.reduce((a, i) => a + i.price * i.qty, 0);
+  const tax = subtotal * 0.13; // 13% HST (Ontario)
+  const total = subtotal + tax;
 
   function handleQtyChange(item: Item, newQty: number) {
     if (newQty < 1) return;
@@ -28,84 +30,155 @@ export default function CartPage() {
   }
 
   return (
-    <section className="mx-auto max-w-5xl px-6 py-10">
-      <h1 className="text-3xl font-bold mb-6">Your Cart</h1>
-      {items.length === 0 ? (
-        <div>
-          Cart is empty.{" "}
-          <Link href="/shop" className="underline">
-            Shop now
-          </Link>
+    <div className="min-h-screen bg-gradient-to-b from-brand-cream/20 to-white py-12">
+      <div className="mx-auto max-w-6xl px-6">
+        {/* Header */}
+        <div className="mb-8 animate-slide-up">
+          <h1 className="font-display text-4xl font-bold mb-2">Shopping Cart</h1>
+          <p className="text-zinc-600">
+            {items.length === 0 ? "Your cart is waiting to be filled" : `${items.length} ${items.length === 1 ? 'item' : 'items'} in your cart`}
+          </p>
         </div>
-      ) : (
-        <div className="space-y-4">
-          {items.map((i) => {
-            const isOutOfStock = (i.stock ?? 0) <= 0;
 
-            return (
-              <div
-                key={i.id}
-                className="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-soft"
-              >
-                <div className="relative w-20 h-20 rounded-xl overflow-hidden">
-                  <Image
-                    src={i.image}
-                    alt={i.name}
-                    width={80}
-                    height={80}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="flex-1">
-                  <div className="font-medium">{i.name}</div>
-                  <div className="text-sm opacity-70">
-                    ${i.price.toFixed(2)}
-                  </div>
-                  <div className="text-xs text-zinc-500">
-                    {isOutOfStock
-                      ? "Out of stock"
-                      : `In stock: ${i.stock} | Limit per order: ${i.maxPerOrder ?? "∞"}`}
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => handleQtyChange(i, i.qty - 1)}
-                    disabled={i.qty <= 1}
-                    className="px-3 py-1 border rounded disabled:opacity-50"
-                  >
-                    -
-                  </button>
-                  <span>{i.qty}</span>
-                  <button
-                    onClick={() => handleQtyChange(i, i.qty + 1)}
-                    disabled={isOutOfStock || (i.stock !== undefined && i.qty >= i.stock)}
-                    className="px-3 py-1 border rounded disabled:opacity-50"
-                  >
-                    +
-                  </button>
-                </div>
-                <button
-                  onClick={() => remove(i.id)}
-                  className="ml-2 text-sm underline"
-                >
-                  Remove
-                </button>
+        {items.length === 0 ? (
+          /* Empty State */
+          <div className="bg-white rounded-3xl p-16 text-center shadow-soft animate-scale-in">
+            <div className="max-w-md mx-auto">
+              <div className="w-32 h-32 mx-auto mb-6 rounded-full bg-brand-pink/20 flex items-center justify-center">
+                <span className="text-6xl">🍪</span>
               </div>
-            );
-          })}
-          <div className="text-right mt-4">
-            <div className="text-lg">
-              Subtotal: <strong>${subtotal.toFixed(2)}</strong>
+              <h2 className="font-display text-2xl font-bold mb-3">Your cart is empty</h2>
+              <p className="text-zinc-600 mb-8">
+                Time to fill it with delicious cookies!
+              </p>
+              <Link
+                href="/shop"
+                className="btn-primary inline-block"
+              >
+                Start Shopping
+              </Link>
             </div>
-            <Link
-              href="/checkout"
-              className="inline-block mt-3 rounded-xl bg-brand-brown text-white px-6 py-3"
-            >
-              Checkout
-            </Link>
           </div>
-        </div>
-      )}
-    </section>
+        ) : (
+          /* Cart with Items */
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* Cart Items */}
+            <div className="lg:col-span-2 space-y-4">
+              {items.map((i) => {
+                const isOutOfStock = (i.stock ?? 0) <= 0;
+                const itemTotal = i.price * i.qty;
+
+                return (
+                  <div
+                    key={i.id}
+                    className="bg-white rounded-2xl p-6 shadow-soft hover:shadow-medium transition-all duration-200 animate-fade-in"
+                  >
+                    <div className="flex gap-6">
+                      {/* Image */}
+                      <div className="relative w-28 h-28 rounded-xl overflow-hidden bg-gradient-to-br from-brand-cream to-white flex-shrink-0">
+                        <Image
+                          src={i.image}
+                          alt={i.name}
+                          fill
+                          className="object-cover p-2"
+                        />
+                      </div>
+
+                      {/* Details */}
+                      <div className="flex-1 min-w-0">
+                        <Link
+                          href={`/product/${i.slug}`}
+                          className="font-display text-lg font-semibold text-zinc-900 hover:text-brand-brown transition-colors block mb-1"
+                        >
+                          {i.name}
+                        </Link>
+                        <p className="text-2xl font-bold text-brand-brown mb-2">
+                          ${i.price.toFixed(2)}{" "}
+                          <span className="text-sm font-normal text-zinc-500">each</span>
+                        </p>
+                        <p className="text-xs text-zinc-500">
+                          {isOutOfStock
+                            ? <span className="text-red-600 font-medium">Out of stock</span>
+                            : `${i.stock} in stock | Max ${i.maxPerOrder ?? "∞"} per order`}
+                        </p>
+                      </div>
+
+                      {/* Quantity & Remove */}
+                      <div className="flex flex-col items-end gap-3">
+                        <div className="flex items-center gap-2 bg-zinc-50 rounded-xl p-1">
+                          <button
+                            onClick={() => handleQtyChange(i, i.qty - 1)}
+                            disabled={i.qty <= 1}
+                            className="w-8 h-8 rounded-lg hover:bg-white active:bg-zinc-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors font-semibold"
+                          >
+                            −
+                          </button>
+                          <span className="w-8 text-center font-semibold">{i.qty}</span>
+                          <button
+                            onClick={() => handleQtyChange(i, i.qty + 1)}
+                            disabled={isOutOfStock || (i.stock !== undefined && i.qty >= i.stock)}
+                            className="w-8 h-8 rounded-lg hover:bg-white active:bg-zinc-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors font-semibold"
+                          >
+                            +
+                          </button>
+                        </div>
+
+                        <p className="text-sm text-zinc-500">
+                          Total: <span className="font-bold text-zinc-900">${itemTotal.toFixed(2)}</span>
+                        </p>
+
+                        <button
+                          onClick={() => remove(i.id)}
+                          className="text-sm text-red-600 hover:text-red-700 font-medium"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Order Summary - Sticky */}
+            <div className="lg:col-span-1">
+              <div className="bg-white rounded-2xl p-6 shadow-soft sticky top-6 animate-slide-up">
+                <h2 className="font-display text-xl font-bold mb-6">Order Summary</h2>
+
+                <div className="space-y-3 mb-6 pb-6 border-b border-zinc-200">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-zinc-600">Subtotal</span>
+                    <span className="font-semibold">${subtotal.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-zinc-600">HST (13%)</span>
+                    <span className="font-semibold">${tax.toFixed(2)}</span>
+                  </div>
+                </div>
+
+                <div className="flex justify-between text-lg font-bold mb-6">
+                  <span>Total</span>
+                  <span className="text-brand-brown">${total.toFixed(2)}</span>
+                </div>
+
+                <Link
+                  href="/checkout"
+                  className="btn-primary w-full text-center block mb-3"
+                >
+                  Proceed to Checkout
+                </Link>
+
+                <Link
+                  href="/shop"
+                  className="btn-secondary w-full text-center block text-sm"
+                >
+                  Continue Shopping
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
