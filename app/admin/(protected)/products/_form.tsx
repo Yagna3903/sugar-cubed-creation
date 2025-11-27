@@ -15,6 +15,7 @@ type ProductFormProps = {
     description: string;
     badges: string[];
     active: boolean;
+    availableForCorporate?: boolean;
     stock: number;
     maxPerOrder: number;
     imageUrl: string;
@@ -134,6 +135,16 @@ export default function ProductForm({ initial, action, mode }: ProductFormProps)
           className="rounded"
         />
         <label className="text-sm">Active (visible in store)</label>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          name="availableForCorporate"
+          defaultChecked={initial?.availableForCorporate ?? false}
+          className="rounded"
+        />
+        <label className="text-sm">Available for Corporate Inquiries</label>
       </div>
 
       <div>
