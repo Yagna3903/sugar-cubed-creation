@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
                 fullName: body.fullName,
                 companyName: body.companyName,
                 email: body.email,
-                selectedProducts: body.selectedProducts,
+                selectedProducts: body.selectedProducts as any,
                 message: body.message,
                 status: "new",
             },
