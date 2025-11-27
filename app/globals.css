@@ -190,6 +190,62 @@
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
   }
+
+  /* Background Patterns */
+  .bg-pattern-sprinkles {
+    background-image: radial-gradient(#6b4226 1px, transparent 1px), radial-gradient(#6b4226 1px, transparent 1px);
+    background-position: 0 0, 25px 25px;
+    background-size: 50px 50px;
+    opacity: 0.03;
+  }
+
+  /* Hover Shine Effect */
+  .hover-shine {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hover-shine::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transform: skewX(-25deg);
+    transition: 0.5s;
+    pointer-events: none;
+  }
+
+  .hover-shine:hover::after {
+    left: 200%;
+    transition: 0.7s ease-in-out;
+  }
+
+  /* Wavy Divider Utility */
+  .wavy-divider-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+    transform: rotate(180deg);
+  }
+
+  .wavy-divider-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+  }
+
+  .wavy-divider-fill {
+    fill: var(--bg-base);
+  }
 }
 
 /* Keyframe Animations */
@@ -431,4 +487,62 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Wave Animations */
+@keyframes wave {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-wave {
+  animation: wave 25s cubic-bezier(0.36, 0.45, 0.63, 0.53) infinite;
+}
+
+.animate-wave-slow {
+  animation: wave 30s cubic-bezier(0.36, 0.45, 0.63, 0.53) infinite;
+}
+
+.animate-wave-fast {
+  animation: wave 20s cubic-bezier(0.36, 0.45, 0.63, 0.53) infinite;
+}
+
+@keyframes bob {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-bob {
+  animation: bob 5s ease-in-out infinite;
+}
+
+.animate-bob-slow {
+  animation: bob 7s ease-in-out infinite;
+}
+
+@keyframes scroll-wave {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll-wave {
+  animation: scroll-wave 30s linear infinite;
+  will-change: transform;
 }
