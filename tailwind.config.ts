@@ -40,6 +40,9 @@ export default {
         "spin-very-slow": "spinVerySlow 20s linear infinite",
         "wiggle": "wiggle 2s ease-in-out infinite",
         "twinkle": "twinkle 2s ease-in-out infinite",
+        "drift": "drift 20s ease-in-out infinite",
+        "drift-reverse": "driftReverse 25s ease-in-out infinite",
+        "drift-slow": "driftSlow 30s ease-in-out infinite",
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
