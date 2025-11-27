@@ -24,7 +24,7 @@ export async function sendOrderConfirmation(
 
     try {
         const { data, error } = await resend.emails.send({
-            from: "Sugar Cubed Creation <orders@sugarcubedcreation.com>", // You'll need to verify a domain or use 'onboarding@resend.dev' for testing
+            from: "onboarding@resend.dev", // Using Resend test email - change to custom domain after DNS verification
             to: [customerEmail],
             subject: `Order Confirmation #${order.id.slice(-6).toUpperCase()}`,
             react: OrderConfirmationEmail({
