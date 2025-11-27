@@ -176,8 +176,7 @@ export default function CorporateInquiryPage() {
             Corporate Inquiry
           </h1>
           <p className="text-sm sm:text-base text-zinc-600 max-w-2xl mx-auto">
-            Custom printed logo cookies for events and corporate gifting. Select your preferred cookies below and we'll get back to you soon!
-          </p>
+            Custom printed logo cookies                  Let&apos;s create something sweet together! Fill out the form below and we&apos;ll get back to you within 24 hours.         </p>
         </div>
 
         <form onSubmit={onSubmit} className="bg-white rounded-2xl shadow-xl border border-zinc-200/50 p-6 sm:p-8 space-y-6 sm:space-y-8">
