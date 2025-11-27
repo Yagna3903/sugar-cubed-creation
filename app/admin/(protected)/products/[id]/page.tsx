@@ -29,6 +29,7 @@ export default async function ProductEditPage({ params }: { params: { id: string
           description: p.description ?? "",
           badges: p.badges ?? [],
           active: p.active,
+          availableForCorporate: (p as any).availableForCorporate ?? false,
           stock: p.inventory?.stock ?? 0,
           maxPerOrder: p.inventory?.maxPerOrder ?? 12,
           imageUrl: p.imageUrl ?? "",

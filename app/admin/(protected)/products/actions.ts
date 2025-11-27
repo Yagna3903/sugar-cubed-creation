@@ -16,7 +16,7 @@ function toCents(priceStr: string) {
   return Math.round(n * 100);
 }
 
-// ✅ Create Product
+// Create Product
 export async function createProduct(formData: FormData): Promise<void> {
   await requireAdmin();
 
@@ -28,7 +28,7 @@ export async function createProduct(formData: FormData): Promise<void> {
     );
   }
 
-  const { name, slug, price, description, badges, active, stock, maxPerOrder } =
+  const { name, slug, price, description, badges, active, availableForCorporate, stock, maxPerOrder } =
     parsed.data;
 
   const product = await prisma.product.create({
@@ -40,10 +40,11 @@ export async function createProduct(formData: FormData): Promise<void> {
       priceCents: toCents(price),
       badges,
       active: active ?? true,
+      availableForCorporate: availableForCorporate ?? false,
       inventory: {
         create: { stock: stock ?? 0, maxPerOrder: maxPerOrder ?? 12 },
       },
-    },
+    } as any, // Type assertion to bypass TS cache issue
   });
 
   const file = formData.get("image") as File | null;
@@ -64,7 +65,7 @@ export async function createProduct(formData: FormData): Promise<void> {
   redirect("/admin/products");
 }
 
-// ✅ Update Product
+// Update Product
 export async function updateProduct(
   id: string,
   formData: FormData
@@ -75,7 +76,7 @@ export async function updateProduct(
   const parsed = ProductUpdateInput.safeParse(raw);
   if (!parsed.success) throw new Error("Invalid input");
 
-  const { name, slug, price, description, badges, active, stock, maxPerOrder } =
+  const { name, slug, price, description, badges, active, availableForCorporate, stock, maxPerOrder } =
     parsed.data;
 
   const data: any = {
@@ -84,22 +85,23 @@ export async function updateProduct(
     ...(description !== undefined && { description: description || null }),
     ...(badges != null && { badges }),
     ...(active != null && { active }),
+    ...(availableForCorporate != null && { availableForCorporate }),
     ...(price != null && { priceCents: toCents(price) }),
     ...(stock != null || maxPerOrder != null
       ? {
-          inventory: {
-            upsert: {
-              create: {
-                stock: stock ?? 0,
-                maxPerOrder: maxPerOrder ?? 12,
-              },
-              update: {
-                ...(stock != null && { stock }),
-                ...(maxPerOrder != null && { maxPerOrder }),
-              },
+        inventory: {
+          upsert: {
+            create: {
+              stock: stock ?? 0,
+              maxPerOrder: maxPerOrder ?? 12,
+            },
+            update: {
+              ...(stock != null && { stock }),
+              ...(maxPerOrder != null && { maxPerOrder }),
             },
           },
-        }
+        },
+      }
       : {}),
   };
 
@@ -123,7 +125,7 @@ export async function updateProduct(
   redirect("/admin/products");
 }
 
-// ✅ Archive Product
+// Archive Product
 export async function archiveProduct(id: string): Promise<void> {
   await requireAdmin();
   const product = await prisma.product.update({
@@ -137,7 +139,7 @@ export async function archiveProduct(id: string): Promise<void> {
   revalidatePath("/");
 }
 
-// ✅ Restore Product
+// Restore Product
 export async function restoreProduct(id: string): Promise<void> {
   await requireAdmin();
   const product = await prisma.product.update({
@@ -151,7 +153,7 @@ export async function restoreProduct(id: string): Promise<void> {
   revalidatePath("/");
 }
 
-// ✅ Permanently Delete Product
+// Permanently Delete Product
 export async function forceDeleteProduct(id: string): Promise<void> {
   await requireAdmin();
   const refs = await prisma.orderItem.count({ where: { productId: id } });

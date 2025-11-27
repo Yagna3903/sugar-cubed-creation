@@ -35,7 +35,7 @@ export default function AdminHeader() {
     .slice(0, 2);
 
   return (
-    <header className="relative bg-gradient-to-r from-brand-cream via-white to-brand-pink/30 border-b border-zinc-200/50 backdrop-blur-sm sticky top-0 z-50">
+    <header className="bg-gradient-to-r from-brand-cream via-white to-brand-pink/30 border-b border-zinc-200/50 backdrop-blur-sm sticky top-0 z-50">
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-brand-brown/5 via-transparent to-brand-pink/5 pointer-events-none" />
 

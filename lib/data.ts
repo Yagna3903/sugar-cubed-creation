@@ -50,6 +50,15 @@ export const products: Product[] = [
     badges: ["best-seller"],
     description: "Our standard flavour is vanilla—simple and delicious.",
   },
+  {
+    id: "classic-chocolate-cookie",
+    slug: "chocolate-chunk-cookie",
+    name: "Chocolate Chunk Cookie",
+    price: 4.5,
+    image: "/images/printed-choc-chip.jpg", // Using chocolate chip image as placeholder
+    badges: ["best-seller"],
+    description: "Rich chocolate chunks in every bite.",
+  },
 ];
 
 export const promos: Promo[] = [
