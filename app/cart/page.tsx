@@ -65,7 +65,6 @@ export default function CartPage() {
             {/* Cart Items */}
             <div className="lg:col-span-2 space-y-4">
               {items.map((i) => {
-                const isOutOfStock = (i.stock ?? 0) <= 0;
                 const itemTotal = i.price * i.qty;
 
                 return (
@@ -97,9 +96,7 @@ export default function CartPage() {
                           <span className="text-sm font-normal text-zinc-500">each</span>
                         </p>
                         <p className="text-xs text-zinc-500">
-                          {isOutOfStock
-                            ? <span className="text-red-600 font-medium">Out of stock</span>
-                            : `${i.stock} in stock | Max ${i.maxPerOrder ?? "∞"} per order`}
+                          {i.maxPerOrder ? `Max ${i.maxPerOrder} per order` : ''}
                         </p>
                       </div>
 
@@ -116,7 +113,7 @@ export default function CartPage() {
                           <span className="w-8 text-center font-semibold">{i.qty}</span>
                           <button
                             onClick={() => handleQtyChange(i, i.qty + 1)}
-                            disabled={isOutOfStock || (i.stock !== undefined && i.qty >= i.stock)}
+                            disabled={i.stock !== undefined && i.qty >= i.stock}
                             className="w-8 h-8 rounded-lg hover:bg-white active:bg-zinc-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors font-semibold"
                           >
                             +
