@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 export function Hero() {
   return (
-    <section className="relative bg-gradient-to-br from-brand-pink via-brand-cream to-white overflow-hidden">
+    <section className="relative bg-gradient-to-br from-brand-pink via-brand-cream to-brand-cream overflow-hidden">
       {/* Animated floating decorations - Custom SVGs */}
       <div className="absolute top-20 left-10 text-brand-brown/20 animate-float-slow">
         <IconCookie className="w-12 h-12" />
