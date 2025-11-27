@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/cart-store";
+import { z } from "zod";
 
 export default function CheckoutClient() {
   const router = useRouter();
@@ -24,8 +25,18 @@ export default function CheckoutClient() {
       setError("Your cart is empty.");
       return;
     }
-    if (!name.trim() || !email.trim()) {
-      setError("Please enter your name and email.");
+
+    // Validate inputs
+    if (!name.trim()) {
+      setError("Please enter your full name.");
+      return;
+    }
+
+    const emailSchema = z.string().email("Please enter a valid email address.");
+    const emailResult = emailSchema.safeParse(email.trim());
+
+    if (!emailResult.success) {
+      setError(emailResult.error.issues[0].message);
       return;
     }
 
