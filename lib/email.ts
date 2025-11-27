@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { render } from "@react-email/render";
 import OrderConfirmationEmail from "@/components/emails/OrderConfirmation";
 import { Order, OrderItem, Product } from "@prisma/client";
 
@@ -23,11 +24,8 @@ export async function sendOrderConfirmation(
     }
 
     try {
-        const { data, error } = await resend.emails.send({
-            from: "onboarding@resend.dev", // Using Resend test email - change to custom domain after DNS verification
-            to: [customerEmail],
-            subject: `Order Confirmation #${order.id.slice(-6).toUpperCase()}`,
-            react: OrderConfirmationEmail({
+        const emailHtml = await render(
+            OrderConfirmationEmail({
                 orderId: order.id,
                 customerName: order.customerName || "Valued Customer",
                 items: order.items.map((item) => ({
@@ -42,7 +40,14 @@ export async function sendOrderConfirmation(
                     state: "SC",
                     postalCode: "12345",
                 },
-            }),
+            })
+        );
+
+        const { data, error } = await resend.emails.send({
+            from: "onboarding@resend.dev", // Using Resend test email - change to custom domain after DNS verification
+            to: [customerEmail],
+            subject: `Order Confirmation #${order.id.slice(-6).toUpperCase()}`,
+            html: emailHtml,
         });
 
         if (error) {
