@@ -66,7 +66,11 @@ export default function StatusBadge({
     showIcon = true,
     pulse = false,
 }: StatusBadgeProps) {
-    const config = statusConfig[status];
+    const config = statusConfig[status] || {
+        bg: "bg-zinc-100",
+        text: "text-zinc-700",
+        icon: "•",
+    };
 
     return (
         <span
