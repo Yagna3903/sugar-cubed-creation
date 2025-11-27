@@ -61,3 +61,40 @@ export async function sendOrderConfirmation(
         return { success: false, error };
     }
 }
+
+/**
+ * Send a custom email with HTML content
+ */
+export async function sendEmail({
+    to,
+    subject,
+    html,
+}: {
+    to: string;
+    subject: string;
+    html: string;
+}) {
+    if (!process.env.RESEND_API_KEY) {
+        console.warn("RESEND_API_KEY is not set. Skipping email.");
+        return { success: false, error: "Missing API key" };
+    }
+
+    try {
+        const { data, error } = await resend.emails.send({
+            from: "onboarding@resend.dev",
+            to: [to],
+            subject,
+            html,
+        });
+
+        if (error) {
+            console.error("Error sending email:", error);
+            return { success: false, error };
+        }
+
+        return { success: true, data };
+    } catch (error) {
+        console.error("Exception sending email:", error);
+        return { success: false, error };
+    }
+}

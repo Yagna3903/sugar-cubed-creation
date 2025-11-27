@@ -1,19 +1,37 @@
 import Link from "next/link";
 import Image from "next/image";
+import { IconCookie, IconSparkle, IconWheat, IconWhisk } from "@/components/ui/bakery-icons";
 
 export const dynamic = "force-dynamic";
 
 export function Hero() {
   return (
     <section className="relative bg-gradient-to-br from-brand-pink via-brand-cream to-white overflow-hidden">
-      {/* Decorative elements */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-brand-pink/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-      <div className="absolute bottom-0 left-0 w-64 h-64 bg-brand-brown/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+      {/* Animated floating decorations - Custom SVGs */}
+      <div className="absolute top-20 left-10 text-brand-brown/20 animate-float-slow">
+        <IconCookie className="w-12 h-12" />
+      </div>
+      <div className="absolute top-32 right-20 text-brand-brown/15 animate-float-slower">
+        <IconSparkle className="w-8 h-8" />
+      </div>
+      <div className="absolute bottom-32 left-1/4 text-brand-brown/10 animate-bounce-gentle">
+        <IconWhisk className="w-16 h-16" />
+      </div>
+      <div className="absolute top-1/2 right-12 text-brand-brown/15 animate-twinkle">
+        <IconWheat className="w-10 h-10" />
+      </div>
+      <div className="absolute bottom-20 right-1/3 text-brand-brown/10 animate-float-reverse">
+        <IconSparkle className="w-6 h-6" />
+      </div>
+
+      {/* Pulsing background blobs */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-brand-pink/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 animate-pulse-slow" />
+      <div className="absolute bottom-0 left-0 w-64 h-64 bg-brand-brown/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 animate-pulse-slower" />
 
       <div className="relative mx-auto max-w-7xl px-6 py-20 md:py-28 grid md:grid-cols-2 gap-12 items-center">
         <div className="animate-slide-up">
           <div className="inline-block mb-4">
-            <span className="bg-brand-brown/10 text-brand-brown px-4 py-2 rounded-full text-sm font-medium">
+            <span className="bg-brand-brown/10 text-brand-brown px-4 py-2 rounded-full text-sm font-medium animate-fade-in">
               ✨ Freshly baked daily
             </span>
           </div>
@@ -62,14 +80,14 @@ export function Hero() {
             />
 
             {/* Floating badge */}
-            <div className="absolute bottom-6 left-6 bg-white/90 backdrop-blur-md px-6 py-3 rounded-2xl shadow-medium z-20 animate-fade-in">
+            <div className="absolute bottom-6 left-6 bg-white/90 backdrop-blur-md px-6 py-3 rounded-2xl shadow-medium z-20 animate-fade-in hover:scale-105 transition-transform">
               <p className="text-sm font-medium text-brand-brown">⭐ Rated 5.0/5.0</p>
               <p className="text-xs text-zinc-600">by 200+ customers</p>
             </div>
           </div>
 
-          {/* Decorative dots */}
-          <div className="absolute -top-4 -right-4 w-24 h-24 grid grid-cols-4 gap-2 opacity-30">
+          {/* Animated decorative dots */}
+          <div className="absolute -top-4 -right-4 w-24 h-24 grid grid-cols-4 gap-2 opacity-30 animate-pulse-gentle">
             {Array.from({ length: 16 }).map((_, i) => (
               <div key={i} className="w-2 h-2 rounded-full bg-brand-brown" />
             ))}

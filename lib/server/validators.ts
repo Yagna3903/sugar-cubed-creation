@@ -72,6 +72,7 @@ const ProductBaseStringPrice = z.object({
   imageUrl: imageUrlFromInput,
   badges: badgesFromCommaList,
   active: boolFromForm.optional().default(true),
+  availableForCorporate: boolFromForm.optional().default(false),
   stock: z
     .preprocess(
       (v) => (v === "" || v == null ? undefined : v),
