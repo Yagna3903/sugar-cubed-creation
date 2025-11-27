@@ -21,7 +21,7 @@ export default async function HomePage() {
       <Hero />
 
       {/* Cookie Wave Divider - flows naturally between sections */}
-      <CookieWave className="-mt-32 z-20 relative" />
+      <CookieWave className="-mt-32 z-20 relative pointer-events-none" />
 
       <section className="relative mx-auto max-w-7xl px-6 py-12">
         {/* Background Pattern */}
