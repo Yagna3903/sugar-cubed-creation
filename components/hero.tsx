@@ -31,8 +31,9 @@ export function Hero() {
       <div className="relative mx-auto max-w-7xl px-6 py-20 md:py-28 grid md:grid-cols-2 gap-12 items-center">
         <div className="animate-slide-up">
           <div className="inline-block mb-4">
-            <span className="bg-brand-brown/10 text-brand-brown px-4 py-2 rounded-full text-sm font-medium animate-fade-in">
-              ✨ Freshly baked daily
+            <span className="inline-flex items-center gap-2 bg-brand-brown/10 text-brand-brown px-4 py-2 rounded-full text-sm font-medium animate-fade-in">
+              <IconSparkle className="w-4 h-4" />
+              Freshly Baked
             </span>
           </div>
 
