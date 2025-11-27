@@ -76,24 +76,30 @@ export default async function AdminHome() {
           Overview
         </h2>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          <StatsCard
-            title="Products"
-            value={activeCount}
-            icon="🍪"
-            subtitle={`${archivedCount} archived`}
-          />
-          <StatsCard
-            title="Pending Orders"
-            value={pendingOrders}
-            icon="⏳"
-            subtitle={pendingOrders > 0 ? "Needs attention" : "All caught up!"}
-          />
-          <StatsCard
-            title="Total Orders"
-            value={totalOrders}
-            icon="🧾"
-            subtitle="All time"
-          />
+          <Link href="/admin/products" className="block">
+            <StatsCard
+              title="Products"
+              value={activeCount}
+              icon="🍪"
+              subtitle={`${archivedCount} archived`}
+            />
+          </Link>
+          <Link href="/admin/orders?status=pending" className="block">
+            <StatsCard
+              title="Pending Orders"
+              value={pendingOrders}
+              icon="⏳"
+              subtitle={pendingOrders > 0 ? "Needs attention" : "All caught up!"}
+            />
+          </Link>
+          <Link href="/admin/orders" className="block">
+            <StatsCard
+              title="Total Orders"
+              value={totalOrders}
+              icon="🧾"
+              subtitle="All time"
+            />
+          </Link>
           <Link href="/admin/payments" className="block">
             <StatsCard
               title="Payments"
@@ -169,7 +175,25 @@ export default async function AdminHome() {
         <h2 className="font-display text-xl font-semibold mb-4 text-zinc-900">
           Manage
         </h2>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <Link
+            href="/admin/inquiries"
+            className="group relative overflow-hidden rounded-2xl border bg-white p-6 shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-1"
+          >
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-100 to-purple-200 text-2xl">
+                💼
+              </div>
+              <div>
+                <h3 className="font-display text-lg font-semibold mb-1">Inquiries</h3>
+                <p className="text-sm text-zinc-600">
+                  Manage corporate cookie requests
+                </p>
+              </div>
+            </div>
+            <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-purple-200 via-purple-300 to-purple-200 opacity-0 group-hover:opacity-100 transition-opacity" />
+          </Link>
+
           <Link
             href="/admin/faq"
             className="group relative overflow-hidden rounded-2xl border bg-white p-6 shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-1"
