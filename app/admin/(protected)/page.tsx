@@ -186,9 +186,7 @@ export default async function AdminHome() {
               </div>
               <div>
                 <h3 className="font-display text-lg font-semibold mb-1">Inquiries</h3>
-                <p className="text-sm text-zinc-600">
-                  Manage corporate cookie requests
-                </p>
+                <p className="text-zinc-600">Here&apos;s what&apos;s happening with your store today.</p>
               </div>
             </div>
             <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-purple-200 via-purple-300 to-purple-200 opacity-0 group-hover:opacity-100 transition-opacity" />
