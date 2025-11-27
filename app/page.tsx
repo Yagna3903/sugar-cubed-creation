@@ -3,7 +3,8 @@ import { Hero } from "@/components/hero";
 import { ProductGrid } from "@/components/product-grid";
 import { listProducts } from "@/lib/server/products";
 import Link from "next/link";
-import { IconBriefcase, IconChefHat, IconCookie, IconRollingPin, IconSparkle, IconWheat, IconWhisk } from "@/components/ui/bakery-icons";
+import { IconBriefcase, IconChefHat, IconCookie, IconGift, IconRollingPin, IconSparkle, IconWheat, IconWhisk } from "@/components/ui/bakery-icons";
+import { CookieWave } from "@/components/ui/cookie-wave";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +19,14 @@ export default async function HomePage() {
   return (
     <>
       <Hero />
+
+      {/* Cookie Wave Divider - flows naturally between sections */}
+      <CookieWave className="-mt-32 z-20 relative" />
+
       <section className="relative mx-auto max-w-7xl px-6 py-12">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-pattern-sprinkles opacity-40 pointer-events-none" />
+
         {/* Floating decorations */}
         <div className="absolute top-12 right-8 text-brand-brown/10 animate-float-gentle">
           <IconCookie className="w-12 h-12" />
@@ -26,30 +34,52 @@ export default async function HomePage() {
         <div className="absolute bottom-20 left-12 text-brand-brown/10 animate-twinkle">
           <IconSparkle className="w-8 h-8" />
         </div>
+        <div className="absolute top-1/3 left-10 text-brand-brown/5 animate-float-slower">
+          <IconRollingPin className="w-10 h-10 rotate-45" />
+        </div>
 
-        <div className="flex items-end justify-between mb-6">
-          <h2 className="text-2xl font-bold animate-slide-up">Our cookies</h2>
-          <Link href="/shop" className="text-sm underline hover:text-brand-brown transition-colors">
+        <div className="flex items-end justify-between mb-8 relative z-10">
+          <h2 className="text-3xl font-bold animate-slide-up text-zinc-900 drop-shadow-sm">
+            Our cookies
+          </h2>
+          <Link href="/shop" className="text-sm font-semibold underline decoration-brand-brown/30 hover:decoration-brand-brown transition-all hover:text-brand-brown">
             See all
           </Link>
         </div>
-        <div className="mt-6">
-          <div className="flex items-center gap-2 mb-3">
-            <h3 className="font-semibold">Best-sellers</h3>
+        <div className="mt-6 relative z-10">
+          <div className="flex items-center gap-2 mb-4">
+            <h3 className="font-semibold text-xl text-brand-brown">Best-sellers</h3>
             <span className="text-brand-brown animate-wiggle">
               <IconWheat className="w-6 h-6" />
             </span>
           </div>
           <ProductGrid items={best} />
+
+          {/* Extra floating icons for Best Sellers */}
+          <div className="absolute top-1/2 right-0 text-brand-brown/5 animate-spin-very-slow pointer-events-none">
+            <IconCookie className="w-32 h-32" />
+          </div>
+          <div className="absolute bottom-10 left-1/4 text-brand-brown/10 animate-float-reverse pointer-events-none">
+            <IconWhisk className="w-12 h-12 -rotate-12" />
+          </div>
         </div>
-        <div className="mt-10">
-          <div className="flex items-center gap-2 mb-3">
-            <h3 className="font-semibold">New products</h3>
+
+        <div className="mt-16 relative z-10">
+          <div className="flex items-center gap-2 mb-4">
+            <h3 className="font-semibold text-xl text-brand-brown">New products</h3>
             <span className="text-brand-brown animate-pulse-gentle">
               <IconSparkle className="w-6 h-6" />
             </span>
           </div>
           <ProductGrid items={newest} />
+
+          {/* Extra floating icons for New Products */}
+          <div className="absolute -bottom-10 right-10 text-brand-brown/10 animate-bounce-gentle pointer-events-none">
+            <IconGift className="w-16 h-16 rotate-12" />
+          </div>
+          <div className="absolute top-10 left-10 text-brand-brown/5 animate-float-slow pointer-events-none">
+            <IconChefHat className="w-20 h-20 -rotate-6" />
+          </div>
         </div>
       </section>
 
