@@ -2,14 +2,14 @@
 export const dynamic = "force-dynamic";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { PaymentForm, CreditCard } from "react-square-web-payments-sdk";
 import type { TokenResult } from "@square/web-payments-sdk-types";
 import { useCart } from "@/lib/cart-store";
 
 type PaymentResponse = { orderId: string; paymentId: string; checkoutUrl: string };
 
-export default function PaymentPage() {
+function PaymentContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { items, clear } = useCart();
@@ -73,8 +73,8 @@ export default function PaymentPage() {
         typeof data?.error === "string"
           ? data.error
           : data?.error?.message ||
-            data?.error ||
-            "Payment could not be created.";
+          data?.error ||
+          "Payment could not be created.";
       throw new Error(message);
     }
 
@@ -125,7 +125,7 @@ export default function PaymentPage() {
               } catch (err: any) {
                 setError(
                   err?.message ||
-                    "Something went wrong while processing your payment."
+                  "Something went wrong while processing your payment."
                 );
               } finally {
                 setSubmitting(false);
@@ -141,5 +141,13 @@ export default function PaymentPage() {
         Card details are securely handled by Square&apos;s Web Payments SDK.
       </p>
     </section>
+  );
+}
+
+export default function PaymentPage() {
+  return (
+    <Suspense fallback={<div className="p-10 text-center">Loading payment...</div>}>
+      <PaymentContent />
+    </Suspense>
   );
 }
