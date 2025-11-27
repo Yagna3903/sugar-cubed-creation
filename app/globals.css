@@ -399,6 +399,68 @@
   }
 }
 
+@keyframes drift {
+  0% {
+    transform: translate(0vw, 0vh);
+  }
+
+  25% {
+    transform: translate(80vw, -20vh);
+  }
+
+  50% {
+    transform: translate(-30vw, 40vh);
+  }
+
+  75% {
+    transform: translate(60vw, -30vh);
+  }
+
+  100% {
+    transform: translate(0vw, 0vh);
+  }
+}
+
+@keyframes driftReverse {
+  0% {
+    transform: translate(0vw, 0vh);
+  }
+
+  25% {
+    transform: translate(-70vw, 30vh);
+  }
+
+  50% {
+    transform: translate(50vw, -40vh);
+  }
+
+  75% {
+    transform: translate(-40vw, 20vh);
+  }
+
+  100% {
+    transform: translate(0vw, 0vh);
+  }
+}
+
+@keyframes driftSlow {
+  0% {
+    transform: translate(0vw, 0vh) rotate(0deg);
+  }
+
+  33% {
+    transform: translate(90vw, -50vh) rotate(180deg);
+  }
+
+  66% {
+    transform: translate(-60vw, 60vh) rotate(-180deg);
+  }
+
+  100% {
+    transform: translate(0vw, 0vh) rotate(0deg);
+  }
+}
+
 @keyframes pulseGentleAnim {
 
   0%,
