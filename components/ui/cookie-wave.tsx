@@ -42,8 +42,11 @@ export function CookieWave({ className }: CookieWaveProps) {
 
     return (
         <div className={cn("relative w-full h-48 overflow-hidden flex items-center", className)}>
+            {/* Gradient Overlay for seamless blending */}
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-brand-cream/50 to-brand-cream pointer-events-none z-0" />
+
             {/* Scrolling container */}
-            <div className="flex items-center animate-scroll-wave absolute left-0">
+            <div className="flex items-center animate-scroll-wave absolute left-0 z-10">
                 {/* First set */}
                 {bakeryElements.map((item, i) => {
                     const { Icon, size } = item;
