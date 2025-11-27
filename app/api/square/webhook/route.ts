@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { sendOrderConfirmation } from "@/lib/email";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -45,7 +46,7 @@ export async function POST(req: Request) {
       hmac1.update(raw);
       const expected1 = hmac1.digest("base64");
       verified = timingSafeEq(expected1, sigHeader);
-    } catch {}
+    } catch { }
   }
 
   if (!verified) {
@@ -91,10 +92,20 @@ export async function POST(req: Request) {
           });
 
           if (status === "COMPLETED") {
-            await prisma.order.update({
+            const updatedOrder = await prisma.order.update({
               where: { id: existing.orderId },
               data: { status: "paid" },
+              include: {
+                items: {
+                  include: {
+                    product: true,
+                  },
+                },
+              },
             });
+
+            // Send confirmation email
+            await sendOrderConfirmation(updatedOrder, updatedOrder.email);
           }
 
           if (status === "CANCELED" || status === "FAILED") {
