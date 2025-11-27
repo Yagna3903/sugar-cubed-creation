@@ -49,7 +49,7 @@ export default async function AdminHome() {
           </h1>
           <p className="text-brand-cream/90 mb-6">
             {email && <>Signed in as {email}. </>}
-            Here's your store overview for today.
+            Here&apos;s your store overview for today.
           </p>
 
           {/* Quick Actions */}
