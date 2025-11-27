@@ -56,7 +56,7 @@ export const OrderConfirmationEmail = ({
                     Hi {customerName},
                 </Text>
                 <Text style={text}>
-                    Thank you for your order! We're getting your cookies ready.
+                    Thank you for your order! We&apos;re getting your cookies ready! You&apos;ll receive another email when they ship.
                 </Text>
 
                 <Section style={orderSection}>
