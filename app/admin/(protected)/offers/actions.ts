@@ -15,6 +15,7 @@ export async function createOffer(formData: FormData) {
     const ctaLink = formData.get("ctaLink") as string;
     const validFrom = new Date(formData.get("validFrom") as string);
     const validUntil = new Date(formData.get("validUntil") as string);
+    const discountValue = parseInt(formData.get("discountValue") as string) || 0;
     const active = formData.get("active") === "on";
 
     await prisma.offer.create({
@@ -22,6 +23,7 @@ export async function createOffer(formData: FormData) {
             title,
             description,
             discountText,
+            discountValue,
             badge,
             colorScheme,
             ctaText,
@@ -47,6 +49,7 @@ export async function updateOffer(id: string, formData: FormData) {
     const ctaLink = formData.get("ctaLink") as string;
     const validFrom = new Date(formData.get("validFrom") as string);
     const validUntil = new Date(formData.get("validUntil") as string);
+    const discountValue = parseInt(formData.get("discountValue") as string) || 0;
     const active = formData.get("active") === "on";
 
     await prisma.offer.update({
@@ -55,6 +58,7 @@ export async function updateOffer(id: string, formData: FormData) {
             title,
             description,
             discountText,
+            discountValue,
             badge,
             colorScheme,
             ctaText,
