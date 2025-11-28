@@ -19,12 +19,12 @@ export async function createFaq(formData: FormData): Promise<void> {
   }
   const { question, answer, active, sort } = parsed.data;
 
-  await prisma.faq.create({
+  await prisma.fAQ.create({
     data: {
       question,
       answer,
       active: active ?? true,
-      sort: sort ?? null, // handle optional
+      sort: sort ?? undefined, // handle optional
     },
   });
 
@@ -45,13 +45,13 @@ export async function updateFaq(id: string, formData: FormData): Promise<void> {
   }
   const { question, answer, active, sort } = parsed.data;
 
-  await prisma.faq.update({
+  await prisma.fAQ.update({
     where: { id },
     data: {
       ...(question != null && { question }),
       ...(answer != null && { answer }),
       ...(active != null && { active }),
-      sort: sort ?? null, // safe optional
+      sort: sort ?? undefined, // safe optional
     },
   });
 
@@ -62,7 +62,7 @@ export async function updateFaq(id: string, formData: FormData): Promise<void> {
 /** SOFT DELETE (archive) */
 export async function archiveFaq(id: string): Promise<void> {
   await requireAdmin();
-  await prisma.faq.update({ where: { id }, data: { active: false } });
+  await prisma.fAQ.update({ where: { id }, data: { active: false } });
   revalidatePath("/admin/faq");
   revalidatePath("/faq");
 }
@@ -70,7 +70,7 @@ export async function archiveFaq(id: string): Promise<void> {
 /** RESTORE */
 export async function restoreFaq(id: string): Promise<void> {
   await requireAdmin();
-  await prisma.faq.update({ where: { id }, data: { active: true } });
+  await prisma.fAQ.update({ where: { id }, data: { active: true } });
   revalidatePath("/admin/faq");
   revalidatePath("/faq");
 }
@@ -78,7 +78,7 @@ export async function restoreFaq(id: string): Promise<void> {
 /** HARD DELETE */
 export async function deleteFaq(id: string): Promise<void> {
   await requireAdmin();
-  await prisma.faq.delete({ where: { id } });
+  await prisma.fAQ.delete({ where: { id } });
   revalidatePath("/admin/faq");
   revalidatePath("/faq");
 }
