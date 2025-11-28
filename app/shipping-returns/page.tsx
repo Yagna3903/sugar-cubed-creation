@@ -62,7 +62,7 @@ export default function ShippingReturnsPage() {
     <section className="mx-auto max-w-3xl px-6 py-12">
       <h1 className="text-3xl font-bold">Pickup & Returns Policy</h1>
       <p className="mt-2 text-sm opacity-70">
-        Here's how we prepare your cookie orders and our pickup process.
+        Here&apos;s how we prepare your cookie orders and our pickup process.
       </p>
 
       <div className="mt-8 grid gap-4">
