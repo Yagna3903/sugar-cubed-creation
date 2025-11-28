@@ -35,7 +35,7 @@ export default async function AdminFaqPage({ searchParams }: PageProps) {
 
   return (
     <div>
-      <BackLink href="/admin">Back to Admin</BackLink>
+      <BackLink href="/admin" />
 
       <div className="mb-4 mt-3 flex items-center justify-between gap-3">
         <h1 className="text-2xl font-semibold">FAQ</h1>
