@@ -9,5 +9,5 @@ export type Product = {
   stock?: number | null;        // ✅ allow null
   maxPerOrder?: number | null;
 }
-export type BlogPost = { slug: string; title: string; excerpt: string; date: string }
+export type BlogPost = { slug: string; title: string; excerpt: string; date: string; image: string; content: string }
 export type Promo = { title: string; blurb: string; cta: string; href: string; image: string }
