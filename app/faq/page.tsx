@@ -8,7 +8,7 @@ export const metadata = {
 };
 
 export default async function FaqPublicPage() {
-  const faqs = await prisma.faq.findMany({
+  const faqs = await prisma.fAQ.findMany({
     where: { active: true },
     orderBy: [{ sort: "asc" }, { createdAt: "desc" }],
     select: { id: true, question: true, answer: true },
