@@ -17,6 +17,7 @@ async function main() {
             description:
                 "Order 2 dozen or more on weekends and save 15%! Perfect for parties, gatherings, or just treating yourself to extra sweetness.",
             discountText: "15% OFF",
+            discountValue: 15,
             badge: "Weekends Only",
             colorScheme: "brand-brown",
             ctaText: "Shop Now",
@@ -30,6 +31,7 @@ async function main() {
             description:
                 "Schedule your pickup for before 10 AM and enjoy 10% off your entire order. Fresh cookies, early morning convenience!",
             discountText: "10% OFF",
+            discountValue: 10,
             badge: "Morning Special",
             colorScheme: "brand-pink",
             ctaText: "Order Early",
@@ -43,6 +45,7 @@ async function main() {
             description:
                 "Planning an event? Order 5+ dozen cookies and unlock wholesale pricing. Great for corporate events, weddings, and celebrations!",
             discountText: "Up to 20% OFF",
+            discountValue: 20,
             badge: "Bulk Pricing",
             colorScheme: "green",
             ctaText: "Get Quote",
