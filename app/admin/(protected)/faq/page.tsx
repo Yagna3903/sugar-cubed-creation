@@ -14,7 +14,7 @@ export default async function AdminFaqPage({ searchParams }: PageProps) {
 
   const where = status === "all" ? {} : { active: status === "active" };
 
-  const faqs = await prisma.faq.findMany({
+  const faqs = await prisma.fAQ.findMany({
     where,
     orderBy: [{ sort: "asc" }, { createdAt: "desc" }],
   });
