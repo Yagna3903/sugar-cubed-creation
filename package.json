@@ -12,7 +12,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@prisma/client": "^6.16.1",
+    "@prisma/client": "^6.19.0",
     "@react-email/components": "^0.0.25",
     "@react-email/render": "^1.0.1",
     "@supabase/auth-helpers-nextjs": "^0.10.0",
