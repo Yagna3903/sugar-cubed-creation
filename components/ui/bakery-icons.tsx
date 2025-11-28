@@ -115,3 +115,48 @@ export function IconChart(props: SVGProps<SVGSVGElement>) {
         </svg>
     );
 }
+
+export function IconMixing(props: SVGProps<SVGSVGElement>) {
+    return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <path d="M2 12h20" />
+            <path d="M20 12v3a8 8 0 0 1-16 0v-3" />
+            <path d="M12 16v-8" />
+            <path d="M12 8c-1.5-2-2-4-2-4" />
+            <path d="M12 8c1.5-2 2-4 2-4" />
+        </svg>
+    );
+}
+
+export function IconDough(props: SVGProps<SVGSVGElement>) {
+    return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <path d="M12 21a9 9 0 1 0-9-9c0 1.5.5 3 1 4" />
+            <path d="M18.3 17.7a9 9 0 0 0-11-13" />
+            <path d="M12 12c-2 0-3 1-4 3" />
+            <path d="M15 10c-1 0-2 .5-2 2" />
+        </svg>
+    );
+}
+
+export function IconOven(props: SVGProps<SVGSVGElement>) {
+    return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <rect x="3" y="4" width="18" height="16" rx="2" />
+            <path d="M3 14h18" />
+            <path d="M12 14v6" />
+            <circle cx="7" cy="9" r="1" />
+            <circle cx="17" cy="9" r="1" />
+        </svg>
+    );
+}
+
+export function IconCookieStack(props: SVGProps<SVGSVGElement>) {
+    return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <path d="M12 5c4.5 0 8 1.5 8 3s-3.5 3-8 3-8-1.5-8-3 3.5-3 8-3z" />
+            <path d="M4 8v3c0 1.5 3.5 3 8 3s8-1.5 8-3V8" />
+            <path d="M4 14v3c0 1.5 3.5 3 8 3s8-1.5 8-3v-3" />
+        </svg>
+    );
+}

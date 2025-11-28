@@ -1,6 +1,6 @@
 "use client";
 
-import { IconCookie, IconWhisk, IconRollingPin, IconSparkle, IconWheat } from "./bakery-icons";
+import { IconCookie, IconWhisk, IconRollingPin, IconSparkle, IconWheat, IconChefHat } from "./bakery-icons";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
@@ -8,21 +8,18 @@ interface CookieWaveProps {
     className?: string;
 }
 
-// Different icons and sizes for variety
-const bakeryElements = [
-    { Icon: IconCookie, size: "w-6 h-6" },
-    { Icon: IconCookie, size: "w-10 h-10" },
-    { Icon: IconWhisk, size: "w-7 h-7" },
-    { Icon: IconCookie, size: "w-8 h-8" },
-    { Icon: IconSparkle, size: "w-5 h-5" },
-    { Icon: IconCookie, size: "w-9 h-9" },
-    { Icon: IconRollingPin, size: "w-8 h-8" },
-    { Icon: IconCookie, size: "w-7 h-7" },
-    { Icon: IconWheat, size: "w-6 h-6" },
-    { Icon: IconCookie, size: "w-11 h-11" },
-    { Icon: IconSparkle, size: "w-4 h-4" },
-    { Icon: IconCookie, size: "w-8 h-8" },
+// Ordered sequence: Ingredients -> Mixing -> Rolling -> Baking -> Magic -> Cookie
+const prepSequence = [
+    { Icon: IconWheat, size: "w-6 h-6", label: "Ingredients" },
+    { Icon: IconWhisk, size: "w-7 h-7", label: "Mixing" },
+    { Icon: IconRollingPin, size: "w-8 h-8", label: "Rolling" },
+    { Icon: IconChefHat, size: "w-9 h-9", label: "Baking" },
+    { Icon: IconSparkle, size: "w-5 h-5", label: "Magic" },
+    { Icon: IconCookie, size: "w-10 h-10", label: "Enjoy!" },
 ];
+
+// Repeat the sequence to ensure enough width for the animation loop
+const bakeryElements = [...prepSequence, ...prepSequence];
 
 export function CookieWave({ className }: CookieWaveProps) {
     const [mouseX, setMouseX] = useState(0);
@@ -57,11 +54,11 @@ export function CookieWave({ className }: CookieWaveProps) {
                     return (
                         <div
                             key={i}
-                            className="shrink-0 px-6 md:px-10" // Use padding instead of gap for perfect loop
+                            className="shrink-0 px-8 md:px-12" // Increased spacing for distinct steps
                         >
                             <div
                                 className={cn(
-                                    "text-brand-brown/20 transition-all duration-300 ease-out hover:text-brand-brown/50 hover:scale-125 cursor-pointer will-change-transform",
+                                    "text-brand-brown/30 transition-all duration-300 ease-out hover:text-brand-brown hover:scale-125 cursor-pointer will-change-transform flex flex-col items-center gap-2 group",
                                     size
                                 )}
                                 style={{
@@ -80,6 +77,11 @@ export function CookieWave({ className }: CookieWaveProps) {
                                 }}
                             >
                                 <Icon className={cn("w-full h-full animate-float-gentle")} />
+
+                                {/* Optional: Tooltip/Label on hover to reinforce the "process" idea */}
+                                <span className="absolute -bottom-6 text-[10px] font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap bg-white/80 px-2 py-0.5 rounded-full text-brand-brown pointer-events-none">
+                                    {item.label}
+                                </span>
                             </div>
                         </div>
                     );
@@ -93,11 +95,11 @@ export function CookieWave({ className }: CookieWaveProps) {
                     return (
                         <div
                             key={`dup-${i}`}
-                            className="shrink-0 px-6 md:px-10" // Use padding instead of gap for perfect loop
+                            className="shrink-0 px-8 md:px-12" // Increased spacing for distinct steps
                         >
                             <div
                                 className={cn(
-                                    "text-brand-brown/20 transition-all duration-300 ease-out hover:text-brand-brown/50 hover:scale-125 cursor-pointer will-change-transform",
+                                    "text-brand-brown/30 transition-all duration-300 ease-out hover:text-brand-brown hover:scale-125 cursor-pointer will-change-transform flex flex-col items-center gap-2 group",
                                     size
                                 )}
                                 style={{
@@ -116,6 +118,9 @@ export function CookieWave({ className }: CookieWaveProps) {
                                 }}
                             >
                                 <Icon className={cn("w-full h-full animate-float-gentle")} />
+                                <span className="absolute -bottom-6 text-[10px] font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap bg-white/80 px-2 py-0.5 rounded-full text-brand-brown pointer-events-none">
+                                    {item.label}
+                                </span>
                             </div>
                         </div>
                     );
