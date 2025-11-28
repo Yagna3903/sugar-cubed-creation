@@ -1,8 +1,8 @@
 // app/shipping-returns/page.tsx
 export const metadata = {
-  title: "Store Policy — Sugar Cubed Creation",
+  title: "Pickup & Returns — Sugar Cubed Creation",
   description:
-    "Processing times, pickup & shipping details, tracking, and our returns policy for perishable cookies.",
+    "Processing times, pickup details, and our returns policy for perishable cookies.",
 };
 
 const Info = ({
@@ -36,7 +36,7 @@ export default function ShippingReturnsPage() {
             "@type": "PropertyValue",
             name: "Exceptions",
             value:
-              "Replacement or refund provided for damaged or incorrect items if reported with photos within 24 hours of delivery or pickup.",
+              "Replacement or refund provided for damaged or incorrect items if reported with photos within 24 hours of pickup.",
           },
         ],
       },
@@ -60,9 +60,9 @@ export default function ShippingReturnsPage() {
 
   return (
     <section className="mx-auto max-w-3xl px-6 py-12">
-      <h1 className="text-3xl font-bold">Shipping &amp; Returns</h1>
+      <h1 className="text-3xl font-bold">Pickup & Returns Policy</h1>
       <p className="mt-2 text-sm opacity-70">
-        Here’s how we prepare, ship, and support your cookie orders.
+        Here's how we prepare your cookie orders and our pickup process.
       </p>
 
       <div className="mt-8 grid gap-4">
@@ -81,7 +81,7 @@ export default function ShippingReturnsPage() {
         <Info title="Pickup">
           <ul className="list-disc pl-5 space-y-1">
             <li>
-              Pickup is required, delivery unavaible. The pickup address is
+              All orders are pickup only. The pickup address will be
               provided after your order is approved.
             </li>
           </ul>
@@ -110,7 +110,7 @@ export default function ShippingReturnsPage() {
             </li>
             <li>
               For damaged or incorrect items, email photos within{" "}
-              <strong>24 hours</strong> of delivery/pickup and we will arrange a
+              <strong>24 hours</strong> of pickup and we will arrange a
               replacement or refund.
             </li>
           </ul>

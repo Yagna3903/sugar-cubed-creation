@@ -177,6 +177,24 @@ export default async function AdminHome() {
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Link
+            href="/admin/offers"
+            className="group relative overflow-hidden rounded-2xl border bg-white p-6 shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-1"
+          >
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-pink/20 to-brand-pink/40 text-2xl">
+                🎁
+              </div>
+              <div>
+                <h3 className="font-display text-lg font-semibold mb-1">Offers</h3>
+                <p className="text-sm text-zinc-600">
+                  Manage promotional deals & discounts
+                </p>
+              </div>
+            </div>
+            <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-brand-pink/50 via-brand-pink to-brand-pink/50 opacity-0 group-hover:opacity-100 transition-opacity" />
+          </Link>
+
+          <Link
             href="/admin/inquiries"
             className="group relative overflow-hidden rounded-2xl border bg-white p-6 shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-1"
           >

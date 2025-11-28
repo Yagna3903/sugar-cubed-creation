@@ -20,13 +20,13 @@ export default async function ProductPage({ params }: { params: { slug: string }
   return (
     <div className="min-h-screen bg-gradient-to-b from-brand-cream/30 to-white relative overflow-hidden">
       {/* Floating Background Decorations */}
-      <div className="absolute top-20 right-10 text-brand-brown/5 animate-drift pointer-events-none">
+      <div className="absolute top-20 right-10 text-brand-brown/[0.10] animate-drift pointer-events-none">
         <IconCookie className="w-32 h-32" />
       </div>
-      <div className="absolute bottom-40 left-10 text-brand-brown/5 animate-drift-reverse pointer-events-none">
+      <div className="absolute bottom-40 left-10 text-brand-brown/[0.09] animate-drift-reverse pointer-events-none">
         <IconWhisk className="w-24 h-24" />
       </div>
-      <div className="absolute top-1/2 right-1/4 text-brand-pink-dark/10 animate-drift-slow pointer-events-none">
+      <div className="absolute top-1/2 right-1/4 text-brand-pink-dark/[0.10] animate-drift-slow pointer-events-none">
         <IconSparkle className="w-16 h-16" />
       </div>
 
@@ -45,7 +45,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
       <section className="mx-auto max-w-7xl px-6 pb-20 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
           {/* Image Gallery */}
-          <div className="animate-scale-in sticky top-6 relative">
+          <div className="animate-scale-in sticky top-6">
             {/* Floating decoration around image */}
             <div className="absolute -top-8 -left-8 text-brand-brown/10 animate-float-slow pointer-events-none">
               <IconRollingPin className="w-16 h-16 rotate-45" />

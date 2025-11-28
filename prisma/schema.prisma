@@ -103,14 +103,55 @@ model OrderItem {
  * FAQ Model
  * =========================
  */
-model Faq {
+model FAQ {
   id        String   @id @default(cuid())
   question  String
   answer    String
-  active    Boolean  @default(true)
-  sort      Int?
+  order     Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+/**
+ * =========================
+ * Promotions / Offers
+ * =========================
+ */
+model Offer {
+  id            String   @id @default(cuid())
+  title         String
+  description   String
+  discountText  String   // Display text like "15% OFF"
+  
+  // Promo code system
+  promoCode     String?  @unique // Optional promo code (e.g., "WEEKEND15")
+  discountType  String   @default("percentage") // "percentage" or "fixed"
+  discountValue Int      // 15 for 15%, or 500 for $5.00 off
+  
+  // Requirements
+  minPurchase   Int?     // Minimum purchase in cents (e.g., 5000 for $50)
+  minQuantity   Int?     // Minimum number of items
+  
+  // Display
+  badge         String?
+  colorScheme   String   @default("brand-brown")
+  ctaText       String   @default("Shop Now")
+  ctaLink       String   @default("/shop")
+  
+  // Validity
+  validFrom     DateTime
+  validUntil    DateTime
+  active        Boolean  @default(true)
+  
+  // Usage tracking
+  usageCount    Int      @default(0)
+  maxUsage      Int?     // Optional usage limit
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([promoCode])
+  @@index([active])
 }
 
 /**

@@ -22,16 +22,16 @@ export default async function ShopPage() {
         />
 
         {/* Floating Elements - Screensaver Style Movement */}
-        <div className="absolute top-10 left-10 text-brand-brown/[0.04] animate-drift pointer-events-none">
+        <div className="absolute top-10 left-10 text-brand-brown/[0.08] animate-drift pointer-events-none">
           <IconCookie className="w-24 h-24 rotate-12" />
         </div>
-        <div className="absolute top-20 right-20 text-brand-brown/[0.045] animate-drift-reverse pointer-events-none">
+        <div className="absolute top-20 right-20 text-brand-brown/[0.09] animate-drift-reverse pointer-events-none">
           <IconWhisk className="w-32 h-32 -rotate-12" />
         </div>
-        <div className="absolute bottom-10 left-1/4 text-brand-pink-dark/[0.05] animate-drift-slow pointer-events-none">
+        <div className="absolute bottom-10 left-1/4 text-brand-pink-dark/[0.10] animate-drift-slow pointer-events-none">
           <IconSparkle className="w-16 h-16" />
         </div>
-        <div className="absolute top-1/3 right-10 text-brand-brown/[0.035] animate-drift pointer-events-none">
+        <div className="absolute top-1/3 right-10 text-brand-brown/[0.08] animate-drift pointer-events-none">
           <IconRollingPin className="w-40 h-40" />
         </div>
         <div className="absolute bottom-20 right-1/3 text-brand-brown/[0.04] animate-drift-reverse pointer-events-none">
