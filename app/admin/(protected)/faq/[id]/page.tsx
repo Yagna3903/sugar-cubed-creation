@@ -7,7 +7,7 @@ import FaqForm from "../_form";
 import { updateFaq } from "../actions";
 
 export default async function EditFaqPage({ params }: { params: { id: string } }) {
-  const f = await prisma.faq.findUnique({ where: { id: params.id } });
+  const f = await prisma.fAQ.findUnique({ where: { id: params.id } });
   if (!f) return notFound();
 
   return (
