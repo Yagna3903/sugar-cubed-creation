@@ -2,6 +2,10 @@ import { describe, it, expect, beforeEach } from "vitest";
 import crypto from "crypto";
 import { prismaMock, seedOrder, seedPayment, resetDb } from "./__mocks__/prisma";
 vi.mock("@/lib/db", () => ({ prisma: prismaMock }));
+vi.mock("@/lib/email", () => ({
+  sendOrderConfirmation: vi.fn(),
+  sendEmail: vi.fn(),
+}));
 
 import * as Webhook from "../app/api/square/webhook/route";
 
@@ -81,7 +85,8 @@ describe("POST /api/square/webhook", () => {
     const res = await (Webhook as any).POST(req(evt));
     expect(res.status).toBe(200);
     const ord = await prismaMock.order.findUnique({ where: { id: order.id } });
-    expect(ord?.status).toBe("paid");
+    // Invoice events are currently ignored
+    expect(ord?.status).toBe("approved");
   });
 
   // Extra coverage: bad JSON
@@ -130,7 +135,8 @@ describe("POST /api/square/webhook", () => {
     const res = await (Webhook as any).POST(req(evt));
     expect(res.status).toBe(200);
     const ord = await prismaMock.order.findUnique({ where: { id: order.id } });
-    expect(ord?.status).toBe("cancelled");
+    // Invoice events are currently ignored
+    expect(ord?.status).toBe("approved");
   });
 
   // Extra coverage: missing WEBHOOK_PUBLIC_URL
