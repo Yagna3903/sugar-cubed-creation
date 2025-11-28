@@ -57,7 +57,7 @@ export default async function ProductsListPage({ searchParams }: PageProps) {
 
   return (
     <div className="space-y-6 animate-fadeIn">
-      <BackLink href="/admin">Back to Admin</BackLink>
+      <BackLink href="/admin" />
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
