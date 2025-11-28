@@ -127,7 +127,7 @@ model Offer {
   // Promo code system
   promoCode     String?  @unique // Optional promo code (e.g., "WEEKEND15")
   discountType  String   @default("percentage") // "percentage" or "fixed"
-  discountValue Int      // 15 for 15%, or 500 for $5.00 off
+  discountValue Int      @default(0) // 15 for 15%, or 500 for $5.00 off
   
   // Requirements
   minPurchase   Int?     // Minimum purchase in cents (e.g., 5000 for $50)
