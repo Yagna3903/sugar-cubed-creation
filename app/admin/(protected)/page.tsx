@@ -92,7 +92,7 @@ export default async function AdminHome() {
               subtitle={pendingOrders > 0 ? "Needs attention" : "All caught up!"}
             />
           </Link>
-          <Link href="/admin/orders" className="block">
+          <Link href="/admin/orders?status=all" className="block">
             <StatsCard
               title="Total Orders"
               value={totalOrders}

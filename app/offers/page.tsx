@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { IconSparkle, IconCookie, IconGift, IconWhisk } from "@/components/ui/bakery-icons";
+import { BackButton } from "@/components/ui/back-button";
 import { getActiveOffers } from "@/lib/server/offers";
 
 export const dynamic = "force-dynamic";
@@ -69,6 +70,10 @@ export default async function OffersPage() {
       </div>
       <div className="absolute top-1/2 left-1/4 text-brand-pink-dark/[0.10] animate-drift-slow pointer-events-none">
         <IconWhisk className="w-24 h-24" />
+      </div>
+
+      <div className="relative mx-auto max-w-7xl px-6 pt-6">
+        <BackButton href="/">Home</BackButton>
       </div>
 
       {/* Hero Section */}

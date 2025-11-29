@@ -32,6 +32,9 @@ const NavLink = ({
 export function Header() {
   const count = useCart((s) => s.items.reduce((a, i) => a + i.qty, 0));
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  if (pathname?.startsWith("/admin")) return null;
 
   return (
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b">
