@@ -4,6 +4,7 @@ import Image from "next/image";
 import AddToCart from "@/components/add-to-cart";
 import { prisma } from "@/lib/db";
 import { IconSparkle, IconGift, IconCookie, IconWhisk, IconRollingPin } from "@/components/ui/bakery-icons";
+import { BackButton } from "@/components/ui/back-button";
 
 export const dynamic = "force-dynamic";
 
@@ -30,15 +31,9 @@ export default async function ProductPage({ params }: { params: { slug: string }
         <IconSparkle className="w-16 h-16" />
       </div>
 
-      {/* Breadcrumb */}
-      <div className="mx-auto max-w-7xl px-6 py-6 relative z-10">
-        <div className="flex items-center gap-2 text-sm text-zinc-600 animate-fade-in">
-          <Link href="/" className="hover:text-brand-brown transition-colors">Home</Link>
-          <span>/</span>
-          <Link href="/shop" className="hover:text-brand-brown transition-colors">Shop</Link>
-          <span>/</span>
-          <span className="text-brand-brown font-medium">{p.name}</span>
-        </div>
+      {/* Back Button */}
+      <div className="mx-auto max-w-7xl px-6 py-6 relative z-10 animate-fade-in">
+        <BackButton href="/shop">Back to Shop</BackButton>
       </div>
 
       {/* Product Content */}
