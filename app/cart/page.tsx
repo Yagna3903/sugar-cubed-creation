@@ -5,6 +5,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { useCart, type Item } from "@/lib/cart-store";
 
+import { BackButton } from "@/components/ui/back-button";
+
 export default function CartPage() {
   const { items, setQty, remove } = useCart();
   const subtotal = items.reduce((a, i) => a + i.price * i.qty, 0);
@@ -34,6 +36,9 @@ export default function CartPage() {
       <div className="mx-auto max-w-6xl px-6">
         {/* Header */}
         <div className="mb-8 animate-slide-up">
+          <div className="mb-6">
+            <BackButton href="/shop">Back to Shop</BackButton>
+          </div>
           <h1 className="font-display text-4xl font-bold mb-2">Shopping Cart</h1>
           <p className="text-zinc-600">
             {items.length === 0 ? "Your cart is waiting to be filled" : `${items.length} ${items.length === 1 ? 'item' : 'items'} in your cart`}
