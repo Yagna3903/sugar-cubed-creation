@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getAllOffers, isOfferValid } from "@/lib/server/offers";
+import { getAllOffers, isOfferValid, deactivateExpiredOffers } from "@/lib/server/offers";
 import { deleteOffer, toggleOfferActive } from "./actions";
 import { format } from "date-fns";
 import DeleteButton from "./DeleteButton";
@@ -8,6 +8,9 @@ import { IconGift } from "@/components/ui/bakery-icons";
 export const dynamic = "force-dynamic";
 
 export default async function OffersAdminPage() {
+    // Auto-deactivate expired offers before loading
+    await deactivateExpiredOffers();
+
     const offers = await getAllOffers();
 
     return (
