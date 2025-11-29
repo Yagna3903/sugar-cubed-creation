@@ -70,6 +70,10 @@ export async function POST(req: Request) {
         };
       });
 
+      // Calculate HST (13%)
+      const taxCents = Math.round(totalCents * 0.13);
+      totalCents += taxCents;
+
       // Create order as pending (client can accept/cancel later)
       const order = await tx.order.create({
         data: {
