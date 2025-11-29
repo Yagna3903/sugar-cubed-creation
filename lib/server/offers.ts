@@ -51,3 +51,19 @@ export function isOfferValid(offer: Offer): boolean {
         offer.validUntil >= now
     );
 }
+
+/**
+ * Automatically deactivate expired offers
+ */
+export async function deactivateExpiredOffers(): Promise<void> {
+    const now = new Date();
+    await prisma.offer.updateMany({
+        where: {
+            active: true,
+            validUntil: { lt: now },
+        },
+        data: {
+            active: false,
+        },
+    });
+}
