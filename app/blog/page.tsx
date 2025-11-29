@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { posts } from "@/lib/data";
 import { IconSparkle } from "@/components/ui/bakery-icons";
+import { BackButton } from "@/components/ui/back-button";
 
 export const metadata = {
   title: "Blog — Sugar Cubed Creation",
@@ -14,20 +15,7 @@ export default function BlogPage() {
       {/* Navigation */}
       <nav className="px-6 py-6">
         <div className="mx-auto max-w-7xl">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-sm font-medium text-zinc-600 hover:text-brand-brown transition-colors group"
-          >
-            <svg
-              className="h-4 w-4 transition-transform group-hover:-translate-x-1"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Back to Home
-          </Link>
+          <BackButton href="/">Home</BackButton>
         </div>
       </nav>
 
