@@ -245,6 +245,42 @@ export default async function AdminHome() {
             </div>
             <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-blue-200 via-blue-300 to-blue-200 opacity-0 group-hover:opacity-100 transition-opacity" />
           </Link>
+
+          <Link
+            href="/admin/story"
+            className="group relative overflow-hidden rounded-2xl border bg-white p-6 shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-1"
+          >
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-100 to-rose-200 text-2xl">
+                📖
+              </div>
+              <div>
+                <h3 className="font-display text-lg font-semibold mb-1">Our Story</h3>
+                <p className="text-sm text-zinc-600">
+                  Update your brand story
+                </p>
+              </div>
+            </div>
+            <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-rose-200 via-rose-300 to-rose-200 opacity-0 group-hover:opacity-100 transition-opacity" />
+          </Link>
+
+          <Link
+            href="/admin/blog"
+            className="group relative overflow-hidden rounded-2xl border bg-white p-6 shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-1"
+          >
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-200 text-2xl">
+                ✍️
+              </div>
+              <div>
+                <h3 className="font-display text-lg font-semibold mb-1">Blog</h3>
+                <p className="text-sm text-zinc-600">
+                  Manage articles and posts
+                </p>
+              </div>
+            </div>
+            <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-emerald-200 via-emerald-300 to-emerald-200 opacity-0 group-hover:opacity-100 transition-opacity" />
+          </Link>
         </div>
       </div>
     </div>
