@@ -17,7 +17,7 @@ generator client {
  */
 enum OrderStatus {
   pending
-  approved
+  approvedl
   paid
   fulfilled
   cancelled
