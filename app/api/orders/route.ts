@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { CreateOrderInput } from "@/lib/server/validators";
 import { prisma } from "@/lib/db";
 import { OrderStatus } from "@prisma/client";
+import { sendOrderEmail, sendAdminNewOrderEmail } from "@/lib/email";
 
 export async function POST(req: Request) {
   let body: unknown;
@@ -81,6 +82,17 @@ export async function POST(req: Request) {
 
       return order;
     });
+
+    // Send emails (fire and forget)
+    const orderWithItems = await prisma.order.findUnique({
+      where: { id: order.id },
+      include: { items: { include: { product: true } } }
+    });
+
+    if (orderWithItems) {
+      sendOrderEmail(orderWithItems, "pending");
+      sendAdminNewOrderEmail(orderWithItems);
+    }
 
     const origin = new URL(req.url).origin;
     const checkoutUrl = `${origin}/checkout/success?o=${encodeURIComponent(

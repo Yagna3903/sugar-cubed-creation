@@ -6,11 +6,32 @@ import crypto from "crypto";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/server/admin";
 import { UpdateOrderStatusInput } from "@/lib/server/validators";
+import { sendOrderConfirmation, sendOrderEmail } from "@/lib/email";
 
 function revalidateAll(id?: string) {
   revalidatePath("/admin");
   revalidatePath("/admin/orders");
   if (id) revalidatePath(`/admin/orders/${id}`);
+}
+
+export async function resendOrderEmail(orderId: string) {
+  await requireAdmin();
+
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: {
+      items: {
+        include: { product: true },
+      },
+    },
+  });
+
+  if (!order || !order.email) {
+    return { success: false, error: "Order or email not found" };
+  }
+
+  const result = await sendOrderConfirmation(order, order.email);
+  return result;
 }
 
 export async function setOrderStatus(
@@ -24,10 +45,24 @@ export async function setOrderStatus(
 
   // Validator may include values not present in the Prisma OrderStatus enum (e.g. "approved"),
   // cast here to satisfy the Prisma typings.
+  const newStatus = parsed.data.status as any;
   await prisma.order.update({
     where: { id },
-    data: { status: parsed.data.status as any },
+    data: { status: newStatus },
   });
+
+  // Send email update
+  const order = await prisma.order.findUnique({
+    where: { id },
+    include: { items: { include: { product: true } } }
+  });
+
+  if (order) {
+    if (newStatus === "paid") await sendOrderEmail(order, "paid");
+    else if (newStatus === "fulfilled") await sendOrderEmail(order, "shipped");
+    else if (newStatus === "cancelled") await sendOrderEmail(order, "cancelled");
+    // Add other statuses if needed
+  }
 
   revalidateAll(id);
 }
@@ -35,12 +70,26 @@ export async function setOrderStatus(
 export async function markPaid(id: string) {
   await requireAdmin();
   await prisma.order.update({ where: { id }, data: { status: "paid" } });
+
+  const order = await prisma.order.findUnique({
+    where: { id },
+    include: { items: { include: { product: true } } }
+  });
+  if (order) await sendOrderEmail(order, "paid");
+
   revalidateAll(id);
 }
 
 export async function markFulfilled(id: string) {
   await requireAdmin();
   await prisma.order.update({ where: { id }, data: { status: "fulfilled" } });
+
+  const order = await prisma.order.findUnique({
+    where: { id },
+    include: { items: { include: { product: true } } }
+  });
+  if (order) await sendOrderEmail(order, "shipped");
+
   revalidateAll(id);
 }
 
@@ -186,6 +235,13 @@ export async function cancelOrder(id: string) {
     console.error("[admin.cancelOrder] unexpected error:", err?.message ?? err);
     // Fallback: mark cancelled locally to avoid charging customer later
     await prisma.order.update({ where: { id }, data: { status: "cancelled" } });
+
+    const order = await prisma.order.findUnique({
+      where: { id },
+      include: { items: { include: { product: true } } }
+    });
+    if (order) await sendOrderEmail(order, "cancelled");
+
     revalidateAll(id);
   }
 }

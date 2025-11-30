@@ -1,5 +1,6 @@
 // app/faq/page.tsx
 import { prisma } from "@/lib/db";
+import { BackButton } from "@/components/ui/back-button";
 
 export const metadata = {
   title: "FAQs — Sugar Cubed Creation",
@@ -28,6 +29,9 @@ export default async function FaqPublicPage() {
 
   return (
     <section className="mx-auto max-w-3xl px-6 py-12">
+      <div className="mb-8">
+        <BackButton href="/">Back to Home</BackButton>
+      </div>
       <h1 className="text-3xl font-bold">Frequently Asked Questions</h1>
       <p className="mt-2 text-sm opacity-70">
         Quick answers about flavours, printed cookies, orders, and more.

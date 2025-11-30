@@ -20,6 +20,8 @@ const Info = ({
   </section>
 );
 
+import { BackButton } from "@/components/ui/back-button";
+
 export default function ShippingReturnsPage() {
   // JSON-LD for return policy (no returns on perishables) + shipping times
   const jsonLd = {
@@ -60,6 +62,9 @@ export default function ShippingReturnsPage() {
 
   return (
     <section className="mx-auto max-w-3xl px-6 py-12">
+      <div className="mb-8">
+        <BackButton href="/">Back to Home</BackButton>
+      </div>
       <h1 className="text-3xl font-bold">Pickup & Returns Policy</h1>
       <p className="mt-2 text-sm opacity-70">
         Here&apos;s how we prepare your cookie orders and our pickup process.
