@@ -2,13 +2,27 @@ import Link from "next/link";
 import Image from "next/image";
 import { IconCookie, IconWhisk, IconSparkle, IconGift } from "@/components/ui/bakery-icons";
 import { BackButton } from "@/components/ui/back-button";
+import { prisma } from "@/lib/db";
 
 export const metadata = {
   title: "Our Story — Sugar Cubed Creation",
   description: "From a tiny kitchen to your doorstep. The story behind our handcrafted cookies.",
 };
 
-export default function OurStoryPage() {
+export const dynamic = "force-dynamic";
+
+export default async function OurStoryPage() {
+  const dbContent = await prisma.siteContent.findUnique({
+    where: { key: "our-story" },
+  });
+
+  const data = (dbContent?.content as any) || {
+    title: "Baked with Heart",
+    subtitle: "Since 2024",
+    body: `It started with a simple craving for the perfect chocolate chip cookie—crispy on the edges, chewy in the center, and loaded with premium chocolate. Disappointed by store-bought options, we took to the kitchen.\n\nHundreds of batches later (and many happy taste-testers), Sugar Cubed Creation was born. We realized that the secret ingredient wasn't just butter or sugar—it was the patience to get it right.\n\nWe believe in quality over quantity. That's why every batch is made to order, ensuring that what you receive is as fresh as if you pulled it from your own oven. No preservatives, no shortcuts, just pure cookie joy.`,
+    imageUrl: "/images/story-placeholder.png",
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-brand-cream/30 via-white to-brand-pink/10 relative overflow-hidden">
       {/* Floating Background Decorations */}
@@ -34,11 +48,11 @@ export default function OurStoryPage() {
         <div className="mx-auto max-w-4xl text-center">
           <div className="inline-flex items-center gap-2 bg-brand-brown/10 text-brand-brown px-5 py-2 rounded-full text-sm font-medium mb-6 animate-fade-in">
             <IconWhisk className="w-4 h-4" />
-            Since 2024
+            {data.subtitle}
           </div>
 
-          <h1 className="font-display text-5xl md:text-7xl font-bold mb-6 animate-slide-up">
-            Baked with <span className="text-gradient">Heart</span>
+          <h1 className="font-display text-5xl md:text-7xl font-bold mb-6 animate-slide-up text-brand-brown">
+            {data.title}
           </h1>
 
           <p className="text-xl text-zinc-600 max-w-2xl mx-auto leading-relaxed animate-fade-in delay-100">
@@ -56,7 +70,7 @@ export default function OurStoryPage() {
               <div className="absolute -inset-4 bg-gradient-to-br from-brand-pink/20 to-brand-brown/20 rounded-[2rem] -z-10 rotate-2" />
               <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl">
                 <Image
-                  src="/images/story-placeholder.png"
+                  src={data.imageUrl || "/images/story-placeholder.png"}
                   alt="Our bakery kitchen"
                   fill
                   className="object-cover hover:scale-105 transition-transform duration-700"
@@ -73,19 +87,8 @@ export default function OurStoryPage() {
 
             {/* Text Side */}
             <div className="space-y-8 animate-fade-in delay-300">
-              <div className="prose prose-lg prose-brown">
-                <h2 className="font-display text-3xl font-bold text-brand-brown">The Beginning</h2>
-                <p className="text-zinc-600 leading-relaxed">
-                  It started with a simple craving for the perfect chocolate chip cookie—crispy on the edges, chewy in the center, and loaded with premium chocolate. Disappointed by store-bought options, we took to the kitchen.
-                </p>
-                <p className="text-zinc-600 leading-relaxed">
-                  Hundreds of batches later (and many happy taste-testers), Sugar Cubed Creation was born. We realized that the secret ingredient wasn&apos;t just butter or sugar—it was the patience to get it right.
-                </p>
-
-                <h3 className="font-display text-2xl font-bold text-brand-brown pt-4">Our Promise</h3>
-                <p className="text-zinc-600 leading-relaxed">
-                  We believe in quality over quantity. That&apos;s why every batch is made to order, ensuring that what you receive is as fresh as if you pulled it from your own oven. No preservatives, no shortcuts, just pure cookie joy.
-                </p>
+              <div className="prose prose-lg prose-brown whitespace-pre-line">
+                {data.body}
               </div>
 
               {/* Values Grid */}
