@@ -122,7 +122,7 @@ export async function updateProduct(
   revalidatePath(`/product/${product.slug}`);
   revalidatePath("/");
 
-  redirect("/admin/products");
+  return; // No redirect for update to allow toast
 }
 
 // Archive Product
