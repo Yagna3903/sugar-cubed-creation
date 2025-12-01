@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { Confetti } from "@/components/confetti";
+import SendReceiptClient from "./send-receipt-client";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +19,9 @@ export default async function SuccessPage({
       <div className="min-h-screen bg-gradient-to-b from-brand-cream/20 to-white py-20 px-4">
         <div className="mx-auto max-w-md text-center">
           <div className="bg-white rounded-3xl shadow-soft p-8 animate-fade-in">
-            <h1 className="font-display text-2xl font-bold text-zinc-900">No order reference</h1>
+            <h1 className="font-display text-2xl font-bold text-zinc-900">
+              No order reference
+            </h1>
             <p className="mt-2 text-zinc-600">
               We couldn’t find your order reference.
             </p>
@@ -50,7 +53,9 @@ export default async function SuccessPage({
       <div className="min-h-screen bg-gradient-to-b from-brand-cream/20 to-white py-20 px-4">
         <div className="mx-auto max-w-md text-center">
           <div className="bg-white rounded-3xl shadow-soft p-8 animate-fade-in">
-            <h1 className="font-display text-2xl font-bold text-zinc-900">Order not found</h1>
+            <h1 className="font-display text-2xl font-bold text-zinc-900">
+              Order not found
+            </h1>
             <p className="mt-2 text-zinc-600">
               Your order may have expired or the link is invalid.
             </p>
@@ -73,6 +78,8 @@ export default async function SuccessPage({
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-brand-cream/20 to-white py-20 px-4">
+      {/* Trigger email send (mark paid) on client-side */}
+      <SendReceiptClient orderId={order.id} />
       <Confetti />
 
       <div className="mx-auto max-w-2xl text-center animate-slide-up">
@@ -88,26 +95,41 @@ export default async function SuccessPage({
           </svg>
         </div>
 
-        <h1 className="font-display text-4xl font-bold text-zinc-900 mb-4">Order Confirmed!</h1>
+        <h1 className="font-display text-4xl font-bold text-zinc-900 mb-4">
+          Order Confirmed!
+        </h1>
         <p className="text-lg text-zinc-600 mb-8">
           Thanks{order.customerName ? `, ${order.customerName}` : ""}! We’ve
-          emailed your receipt to <span className="font-medium text-zinc-900">{order.email ?? "your email"}</span>.
+          emailed your receipt to{" "}
+          <span className="font-medium text-zinc-900">
+            {order.email ?? "your email"}
+          </span>
+          .
         </p>
 
         <div className="bg-white rounded-3xl shadow-soft p-8 text-left border border-zinc-100 relative overflow-hidden mb-8">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-brown/20 via-brand-brown to-brand-brown/20"></div>
 
           <div className="space-y-1 mb-6">
-            <div className="text-xs font-bold uppercase tracking-wider text-zinc-400">Order Reference</div>
-            <div className="font-mono text-lg text-zinc-900 break-all">{order.id}</div>
+            <div className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+              Order Reference
+            </div>
+            <div className="font-mono text-lg text-zinc-900 break-all">
+              {order.id}
+            </div>
           </div>
 
           {/* Purchased Items Grid */}
           <div className="mb-6">
-            <div className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3">Purchased Items</div>
+            <div className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3">
+              Purchased Items
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {order.items.map((item) => (
-                <div key={item.id} className="flex items-center gap-3 p-3 rounded-xl bg-zinc-50 border border-zinc-100">
+                <div
+                  key={item.id}
+                  className="flex items-center gap-3 p-3 rounded-xl bg-zinc-50 border border-zinc-100"
+                >
                   <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-white border border-zinc-200">
                     {item.product.imageUrl ? (
                       <Image
@@ -121,7 +143,9 @@ export default async function SuccessPage({
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-zinc-900">{item.product.name}</p>
+                    <p className="truncate text-sm font-medium text-zinc-900">
+                      {item.product.name}
+                    </p>
                     <p className="text-xs text-zinc-500">Qty: {item.qty}</p>
                   </div>
                   <div className="text-sm font-medium text-zinc-900">
