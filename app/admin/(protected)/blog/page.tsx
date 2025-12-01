@@ -28,63 +28,103 @@ export default async function BlogAdminPage() {
                 </Link>
             </div>
 
-            <div className="mt-8 overflow-hidden rounded-3xl border border-brand-brown/5 bg-white shadow-soft">
-                <table className="w-full text-left text-sm">
-                    <thead className="bg-zinc-50 text-zinc-500">
-                        <tr>
-                            <th className="px-6 py-4 font-medium">Title</th>
-                            <th className="px-6 py-4 font-medium">Status</th>
-                            <th className="px-6 py-4 font-medium">Date</th>
-                            <th className="px-6 py-4 font-medium text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-zinc-100">
-                        {posts.length === 0 ? (
-                            <tr>
-                                <td colSpan={4} className="px-6 py-12 text-center text-zinc-500">
-                                    No posts yet. Create your first one!
-                                </td>
-                            </tr>
-                        ) : (
-                            posts.map((post) => (
-                                <tr key={post.id} className="group hover:bg-zinc-50/50">
-                                    <td className="px-6 py-4 font-medium text-brand-brown">
-                                        {post.title}
-                                        <div className="text-xs text-zinc-400 font-normal">/{post.slug}</div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        {post.published ? (
-                                            <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                                                Published
-                                            </span>
-                                        ) : (
-                                            <span className="inline-flex items-center rounded-full bg-zinc-100 px-2 py-1 text-xs font-medium text-zinc-600 ring-1 ring-inset ring-zinc-500/10">
-                                                Draft
-                                            </span>
-                                        )}
-                                    </td>
-                                    <td className="px-6 py-4 text-zinc-500">
-                                        {new Date(post.createdAt).toLocaleDateString()}
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <div className="flex justify-end gap-3">
-                                            <Link
-                                                href={`/admin/blog/${post.id}`}
-                                                className="text-brand-brown hover:underline"
-                                            >
-                                                Edit
-                                            </Link>
-                                            <form action={deleteBlogPost.bind(null, post.id)}>
-                                                <button className="text-red-600 hover:underline">Delete</button>
-                                            </form>
-                                        </div>
-                                    </td>
+            {posts.length === 0 ? (
+                <div className="mt-8 rounded-3xl border border-brand-brown/5 bg-white p-12 text-center shadow-soft">
+                    <p className="text-zinc-500">No posts yet. Create your first one!</p>
+                </div>
+            ) : (
+                <>
+                    {/* Mobile Card View */}
+                    <div className="md:hidden mt-8 space-y-4">
+                        {posts.map((post) => (
+                            <div key={post.id} className="rounded-2xl border border-brand-brown/10 bg-white p-5 shadow-sm">
+                                <div className="mb-4 flex items-start justify-between">
+                                    <div>
+                                        <h3 className="font-medium text-brand-brown">{post.title}</h3>
+                                        <p className="text-xs text-zinc-400">/{post.slug}</p>
+                                    </div>
+                                    {post.published ? (
+                                        <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                                            Published
+                                        </span>
+                                    ) : (
+                                        <span className="inline-flex items-center rounded-full bg-zinc-100 px-2 py-1 text-xs font-medium text-zinc-600 ring-1 ring-inset ring-zinc-500/10">
+                                            Draft
+                                        </span>
+                                    )}
+                                </div>
+
+                                <div className="mb-4 text-sm text-zinc-500">
+                                    {new Date(post.createdAt).toLocaleDateString()}
+                                </div>
+
+                                <div className="flex items-center justify-end gap-3 border-t border-zinc-100 pt-4">
+                                    <Link
+                                        href={`/admin/blog/${post.id}`}
+                                        className="text-sm font-medium text-brand-brown hover:underline"
+                                    >
+                                        Edit
+                                    </Link>
+                                    <form action={deleteBlogPost.bind(null, post.id)}>
+                                        <button className="text-sm font-medium text-red-600 hover:underline">Delete</button>
+                                    </form>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Desktop Table View */}
+                    <div className="hidden md:block mt-8 overflow-hidden rounded-3xl border border-brand-brown/5 bg-white shadow-soft">
+                        <table className="w-full text-left text-sm">
+                            <thead className="bg-zinc-50 text-zinc-500">
+                                <tr>
+                                    <th className="px-6 py-4 font-medium">Title</th>
+                                    <th className="px-6 py-4 font-medium">Status</th>
+                                    <th className="px-6 py-4 font-medium">Date</th>
+                                    <th className="px-6 py-4 font-medium text-right">Actions</th>
                                 </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
-            </div>
+                            </thead>
+                            <tbody className="divide-y divide-zinc-100">
+                                {posts.map((post) => (
+                                    <tr key={post.id} className="group hover:bg-zinc-50/50">
+                                        <td className="px-6 py-4 font-medium text-brand-brown">
+                                            {post.title}
+                                            <div className="text-xs text-zinc-400 font-normal">/{post.slug}</div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            {post.published ? (
+                                                <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                                                    Published
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center rounded-full bg-zinc-100 px-2 py-1 text-xs font-medium text-zinc-600 ring-1 ring-inset ring-zinc-500/10">
+                                                    Draft
+                                                </span>
+                                            )}
+                                        </td>
+                                        <td className="px-6 py-4 text-zinc-500">
+                                            {new Date(post.createdAt).toLocaleDateString()}
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <div className="flex justify-end gap-3">
+                                                <Link
+                                                    href={`/admin/blog/${post.id}`}
+                                                    className="text-brand-brown hover:underline"
+                                                >
+                                                    Edit
+                                                </Link>
+                                                <form action={deleteBlogPost.bind(null, post.id)}>
+                                                    <button className="text-red-600 hover:underline">Delete</button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </>
+            )}
         </div>
     );
 }
