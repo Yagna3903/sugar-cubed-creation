@@ -76,9 +76,9 @@ export default function CartPage() {
                     key={i.id}
                     className="bg-white rounded-2xl p-6 shadow-soft hover:shadow-medium transition-all duration-200 animate-fade-in"
                   >
-                    <div className="flex gap-6">
+                    <div className="flex flex-col sm:flex-row gap-6">
                       {/* Image */}
-                      <div className="relative w-28 h-28 rounded-xl overflow-hidden bg-gradient-to-br from-brand-cream to-white flex-shrink-0">
+                      <div className="relative w-full sm:w-28 h-48 sm:h-28 rounded-xl overflow-hidden bg-gradient-to-br from-brand-cream to-white flex-shrink-0">
                         <Image
                           src={i.image}
                           alt={i.name}
@@ -87,53 +87,58 @@ export default function CartPage() {
                         />
                       </div>
 
-                      {/* Details */}
-                      <div className="flex-1 min-w-0">
-                        <Link
-                          href={`/product/${i.slug}`}
-                          className="font-display text-lg font-semibold text-zinc-900 hover:text-brand-brown transition-colors block mb-1"
-                        >
-                          {i.name}
-                        </Link>
-                        <p className="text-2xl font-bold text-brand-brown mb-2">
-                          ${i.price.toFixed(2)}{" "}
-                          <span className="text-sm font-normal text-zinc-500">each</span>
-                        </p>
-                        <p className="text-xs text-zinc-500">
-                          {i.maxPerOrder ? `Max ${i.maxPerOrder} per order` : ''}
-                        </p>
-                      </div>
-
-                      {/* Quantity & Remove */}
-                      <div className="flex flex-col items-end gap-3">
-                        <div className="flex items-center gap-2 bg-zinc-50 rounded-xl p-1">
-                          <button
-                            onClick={() => handleQtyChange(i, i.qty - 1)}
-                            disabled={i.qty <= 1}
-                            className="w-8 h-8 rounded-lg hover:bg-white active:bg-zinc-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors font-semibold"
+                      {/* Details & Quantity Container */}
+                      <div className="flex-1 flex flex-col sm:flex-row justify-between gap-4">
+                        {/* Details */}
+                        <div className="min-w-0">
+                          <Link
+                            href={`/product/${i.slug}`}
+                            className="font-display text-lg font-semibold text-zinc-900 hover:text-brand-brown transition-colors block mb-1"
                           >
-                            −
-                          </button>
-                          <span className="w-8 text-center font-semibold">{i.qty}</span>
-                          <button
-                            onClick={() => handleQtyChange(i, i.qty + 1)}
-                            disabled={i.stock !== undefined && i.qty >= i.stock}
-                            className="w-8 h-8 rounded-lg hover:bg-white active:bg-zinc-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors font-semibold"
-                          >
-                            +
-                          </button>
+                            {i.name}
+                          </Link>
+                          <p className="text-2xl font-bold text-brand-brown mb-2">
+                            ${i.price.toFixed(2)}{" "}
+                            <span className="text-sm font-normal text-zinc-500">each</span>
+                          </p>
+                          <p className="text-xs text-zinc-500">
+                            {i.maxPerOrder ? `Max ${i.maxPerOrder} per order` : ''}
+                          </p>
                         </div>
 
-                        <p className="text-sm text-zinc-500">
-                          Total: <span className="font-bold text-zinc-900">${itemTotal.toFixed(2)}</span>
-                        </p>
+                        {/* Quantity & Remove */}
+                        <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-3 border-t sm:border-t-0 border-zinc-100 pt-4 sm:pt-0">
+                          <div className="flex items-center gap-2 bg-zinc-50 rounded-xl p-1">
+                            <button
+                              onClick={() => handleQtyChange(i, i.qty - 1)}
+                              disabled={i.qty <= 1}
+                              className="w-8 h-8 rounded-lg hover:bg-white active:bg-zinc-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors font-semibold"
+                            >
+                              −
+                            </button>
+                            <span className="w-8 text-center font-semibold">{i.qty}</span>
+                            <button
+                              onClick={() => handleQtyChange(i, i.qty + 1)}
+                              disabled={i.stock !== undefined && i.qty >= i.stock}
+                              className="w-8 h-8 rounded-lg hover:bg-white active:bg-zinc-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors font-semibold"
+                            >
+                              +
+                            </button>
+                          </div>
 
-                        <button
-                          onClick={() => remove(i.id)}
-                          className="text-sm text-red-600 hover:text-red-700 font-medium"
-                        >
-                          Remove
-                        </button>
+                          <div className="flex items-center gap-4 sm:block sm:text-right">
+                            <p className="text-sm text-zinc-500 mb-0 sm:mb-1">
+                              Total: <span className="font-bold text-zinc-900">${itemTotal.toFixed(2)}</span>
+                            </p>
+
+                            <button
+                              onClick={() => remove(i.id)}
+                              className="text-sm text-red-600 hover:text-red-700 font-medium"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
