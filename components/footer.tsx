@@ -52,7 +52,7 @@ export function Footer() {
   }
 
   return (
-    <footer className="mt-24 border-t border-brand-brown/10 bg-brand-cream/20">
+    <footer className="pt-24 border-t border-brand-brown/5 bg-gradient-to-b from-white to-brand-cream/20">
       <div className="mx-auto max-w-7xl px-6 py-16 grid md:grid-cols-4 gap-10">
         <div>
           <h3 className="font-display font-bold text-lg text-brand-brown mb-6">About</h3>
