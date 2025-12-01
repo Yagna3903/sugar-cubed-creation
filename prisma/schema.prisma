@@ -76,6 +76,9 @@ model Order {
   id           String      @id @default(cuid())
   status       OrderStatus @default(pending)
   totalCents   Int
+  subtotal     Int         @default(0)
+  discountTotal Int        @default(0)
+  promoCode    String?
   email        String?
   customerName String?
   items        OrderItem[]

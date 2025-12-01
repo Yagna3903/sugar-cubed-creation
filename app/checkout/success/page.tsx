@@ -132,9 +132,32 @@ export default async function SuccessPage({
             </div>
           </div>
 
-          <div className="pt-6 border-t border-zinc-100 flex justify-between items-end">
-            <div className="text-sm text-zinc-500">Total Amount</div>
-            <div className="text-2xl font-bold text-brand-brown">{total}</div>
+          <div className="pt-6 border-t border-zinc-100 space-y-2">
+            <div className="flex justify-between text-sm text-zinc-500">
+              <span>Subtotal</span>
+              <span>
+                {new Intl.NumberFormat("en-CA", {
+                  style: "currency",
+                  currency: "CAD",
+                }).format((order.subtotal || order.totalCents) / 100)}
+              </span>
+            </div>
+            {order.discountTotal > 0 && (
+              <div className="flex justify-between text-sm text-green-600 font-medium">
+                <span>Discount {order.promoCode ? `(${order.promoCode})` : ""}</span>
+                <span>
+                  -
+                  {new Intl.NumberFormat("en-CA", {
+                    style: "currency",
+                    currency: "CAD",
+                  }).format(order.discountTotal / 100)}
+                </span>
+              </div>
+            )}
+            <div className="flex justify-between items-end pt-2 border-t border-zinc-100">
+              <div className="text-sm text-zinc-500">Total Amount</div>
+              <div className="text-2xl font-bold text-brand-brown">{total}</div>
+            </div>
           </div>
         </div>
 

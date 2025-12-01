@@ -24,6 +24,7 @@ export const CustomerInput = z.object({
 export const CreateOrderInput = z.object({
   customer: CustomerInput,
   items: z.array(OrderItemInput).min(1, "At least one item"),
+  promoCode: z.string().optional(),
 });
 export type CreateOrder = z.infer<typeof CreateOrderInput>;
 

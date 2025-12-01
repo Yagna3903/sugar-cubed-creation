@@ -116,7 +116,10 @@ export async function POST(req: Request) {
           email: customer.email,
           customerName: customer.name,
           status: OrderStatus.pending,
-          totalCents,
+          subtotal: totalCents + discountAmount, // Original total before discount
+          discountTotal: discountAmount,
+          totalCents, // Final total after discount
+          promoCode: appliedOffer?.promoCode || null,
           items: { create: orderItemsData },
         },
       });

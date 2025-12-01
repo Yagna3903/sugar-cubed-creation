@@ -11,14 +11,14 @@ import Image from "next/image";
 
 export default function CheckoutClient() {
   const router = useRouter();
-  const { items } = useCart();
+  const { items, discountAmount, promoCode } = useCart();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
-  const total = subtotal;
+  const total = Math.max(0, subtotal - discountAmount);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -121,7 +121,17 @@ export default function CheckoutClient() {
               </div>
 
               <div className="border-t border-brand-brown/10 pt-4 space-y-2">
-                <div className="flex justify-between text-lg font-bold">
+                <div className="flex justify-between text-sm text-zinc-600">
+                  <span>Subtotal</span>
+                  <span>${subtotal.toFixed(2)}</span>
+                </div>
+                {discountAmount > 0 && (
+                  <div className="flex justify-between text-sm text-green-600 font-medium">
+                    <span>Discount {promoCode ? `(${promoCode})` : ""}</span>
+                    <span>-${discountAmount.toFixed(2)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-lg font-bold pt-2 border-t border-brand-brown/10">
                   <span className="text-brand-brown">Total</span>
                   <span className="text-brand-brown">${total.toFixed(2)}</span>
                 </div>

@@ -64,12 +64,47 @@ export async function POST(req: Request) {
         };
       });
 
+      // Calculate discount if promo code provided
+      let discountTotal = 0;
+      const { promoCode } = parsed.data;
+
+      if (promoCode) {
+        const offer = await tx.offer.findUnique({
+          where: { promoCode },
+        });
+
+        if (offer && offer.active) {
+          const now = new Date();
+          if (now >= offer.validFrom && now <= offer.validUntil) {
+            // Check min purchase
+            if (!offer.minPurchase || totalCents >= offer.minPurchase) {
+              if (offer.discountType === "percentage") {
+                discountTotal = Math.round(totalCents * (offer.discountValue / 100));
+              } else {
+                discountTotal = offer.discountValue; // Value is in cents
+              }
+
+              // Increment usage
+              await tx.offer.update({
+                where: { id: offer.id },
+                data: { usageCount: { increment: 1 } }
+              });
+            }
+          }
+        }
+      }
+
+      const finalTotal = Math.max(0, totalCents - discountTotal);
+
       const order = await tx.order.create({
         data: {
           email: customer.email,
           customerName: customer.name,
           status: OrderStatus.pending,
-          totalCents,
+          subtotal: totalCents,
+          discountTotal,
+          totalCents: finalTotal,
+          promoCode: promoCode || null,
           items: { create: orderItemsData },
         },
       });
