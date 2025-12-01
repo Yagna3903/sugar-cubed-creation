@@ -8,7 +8,7 @@ import {
   ProductCreateInput,
   ProductUpdateInput,
 } from "@/lib/server/validators";
-import { uploadProductImage } from "@/lib/storage";
+import { uploadProductImage, deleteImages } from "@/lib/storage";
 
 function toCents(priceStr: string) {
   const n = Number(priceStr);
@@ -20,7 +20,12 @@ function toCents(priceStr: string) {
 export async function createProduct(formData: FormData): Promise<void> {
   await requireAdmin();
 
-  const raw = Object.fromEntries(formData.entries());
+  const raw = {
+    ...Object.fromEntries(formData.entries()),
+    // Checkboxes are missing from FormData when unchecked, so we must check for null
+    active: formData.get("active") !== null,
+    availableForCorporate: formData.get("availableForCorporate") !== null,
+  };
   const images = formData.getAll("images") as string[];
   const parsed = ProductCreateInput.safeParse({ ...raw, images });
 
@@ -71,7 +76,19 @@ export async function updateProduct(
 ): Promise<void> {
   await requireAdmin();
 
-  const raw = { ...Object.fromEntries(formData.entries()), id };
+  // Fetch current product to compare images
+  const currentProduct = await prisma.product.findUnique({
+    where: { id },
+    select: { images: true },
+  });
+
+  const raw = {
+    ...Object.fromEntries(formData.entries()),
+    id,
+    // Checkboxes are missing from FormData when unchecked, so we must check for null
+    active: formData.get("active") !== null,
+    availableForCorporate: formData.get("availableForCorporate") !== null,
+  };
   const images = formData.getAll("images") as string[];
   const parsed = ProductUpdateInput.safeParse({ ...raw, images });
 
@@ -79,6 +96,19 @@ export async function updateProduct(
 
   const { name, slug, price, description, badges, active, availableForCorporate, stock, maxPerOrder, images: validatedImages } =
     parsed.data;
+
+  // Detect removed images
+  if (currentProduct?.images && validatedImages) {
+    const removedImages = currentProduct.images.filter(
+      (img) => !validatedImages.includes(img)
+    );
+    if (removedImages.length > 0) {
+      // Fire and forget deletion
+      deleteImages(removedImages).catch((err) =>
+        console.error("Background image deletion failed:", err)
+      );
+    }
+  }
 
   // Use the first image as the main imageUrl for backward compatibility
   const mainImageUrl = validatedImages && validatedImages.length > 0 ? validatedImages[0] : undefined;
@@ -159,6 +189,13 @@ export async function forceDeleteProduct(id: string): Promise<void> {
     throw new Error("Cannot delete referenced product. Keep it archived.");
 
   const product = await prisma.product.delete({ where: { id } });
+
+  // Clean up storage by deleting specific images
+  if (product.images && product.images.length > 0) {
+    deleteImages(product.images).catch((err) =>
+      console.error("Background storage cleanup failed:", err)
+    );
+  }
 
   revalidatePath("/admin/products");
   revalidatePath("/shop");

@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { posts } from "../lib/data";
+import { posts, products } from "../lib/data";
 
 const prisma = new PrismaClient();
 
@@ -27,6 +27,38 @@ async function main() {
         } else {
             console.log(`Skipped existing post: ${post.title}`);
         }
+    }
+
+    console.log("Seeding products...");
+    for (const p of products) {
+        await prisma.product.upsert({
+            where: { id: p.id },
+            update: {
+                slug: p.slug,
+                name: p.name,
+                description: p.description ?? null,
+                priceCents: Math.round(p.price * 100),
+                imageUrl: p.image,
+                images: p.images,
+                badges: p.badges ?? [],
+                active: true,
+            },
+            create: {
+                id: p.id,
+                slug: p.slug,
+                name: p.name,
+                description: p.description ?? null,
+                priceCents: Math.round(p.price * 100),
+                imageUrl: p.image,
+                images: p.images,
+                badges: p.badges ?? [],
+                active: true,
+                inventory: {
+                    create: { stock: 50, maxPerOrder: 12 },
+                },
+            },
+        });
+        console.log(`Seeded product: ${p.name}`);
     }
 
     console.log("Seeding complete.");

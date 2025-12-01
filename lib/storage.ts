@@ -26,3 +26,26 @@ export async function uploadProductImage(file: File, productId: string) {
   const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(data.path);
   return urlData.publicUrl;
 }
+
+/** Extract storage path from public URL */
+export function getPathFromUrl(publicUrl: string) {
+  const url = new URL(publicUrl);
+  // Path usually: /storage/v1/object/public/product-images/folder/file.ext
+  // We want: folder/file.ext
+  const pathParts = url.pathname.split(`/public/${bucket}/`);
+  if (pathParts.length < 2) return null;
+  return decodeURIComponent(pathParts[1]);
+}
+
+/** Delete a list of files by their public URLs */
+export async function deleteImages(urls: string[]) {
+  if (urls.length === 0) return;
+
+  const paths = urls.map(getPathFromUrl).filter((p): p is string => p !== null);
+  if (paths.length === 0) return;
+
+  const { error } = await supabase.storage.from(bucket).remove(paths);
+  if (error) console.error("Failed to delete images:", error);
+}
+
+
