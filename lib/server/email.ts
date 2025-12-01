@@ -26,6 +26,9 @@ export async function sendInvoiceEmail(orderId: string): Promise<EmailResult> {
   if (result?.success) {
     return { ok: true };
   } else {
-    return { ok: false, error: result?.error ? String(result.error) : "Unknown error" };
+    return {
+      ok: false,
+      error: result?.error ? String(result.error) : "Unknown error",
+    };
   }
 }
