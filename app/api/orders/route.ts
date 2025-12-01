@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { CreateOrderInput } from "@/lib/server/validators";
 import { prisma } from "@/lib/db";
-import { OrderStatus } from "@prisma/client";
+import { OrderStatus, Prisma } from "@prisma/client";
 import { sendOrderEmail, sendAdminNewOrderEmail } from "@/lib/email";
 
 export async function POST(req: Request) {
@@ -96,17 +96,20 @@ export async function POST(req: Request) {
 
       const finalTotal = Math.max(0, totalCents - discountTotal);
 
+      const orderData = {
+        email: customer.email,
+        customerName: customer.name,
+        status: OrderStatus.pending,
+        // subtotal is defined in schema and generated types
+        subtotal: totalCents,
+        discountTotal,
+        totalCents: finalTotal,
+        promoCode: promoCode || null,
+        items: { create: orderItemsData },
+      };
+
       const order = await tx.order.create({
-        data: {
-          email: customer.email,
-          customerName: customer.name,
-          status: OrderStatus.pending,
-          subtotal: totalCents,
-          discountTotal,
-          totalCents: finalTotal,
-          promoCode: promoCode || null,
-          items: { create: orderItemsData },
-        },
+        data: orderData,
       });
 
       for (const it of items) {
