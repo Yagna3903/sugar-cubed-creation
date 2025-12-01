@@ -46,7 +46,7 @@ export default async function AdminFaqPage({ searchParams }: PageProps) {
           <Filter href="/admin/faq?status=archived" label="Archived" active={status === "archived"} />
         </nav>
 
-        <Link href="/admin/faq/new" className="rounded-xl bg-brand-brown px-4 py-2 text-white">
+        <Link href="/admin/faq/new" className="rounded-xl bg-brand-brown px-3 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-base text-white whitespace-nowrap">
           New entry
         </Link>
       </div>
