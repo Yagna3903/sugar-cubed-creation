@@ -103,7 +103,7 @@ export default function AddToCart({
 
   // Default "Add" mode
   return (
-    <div className="mt-6 flex items-center gap-3">
+    <div className="mt-6 flex flex-wrap items-center gap-3">
       <div className="flex items-center border rounded-xl overflow-hidden">
         <button
           type="button"
