@@ -172,6 +172,18 @@ export default async function OffersPage() {
                       </span>
                     </div>
 
+                    {/* Conditions */}
+                    {offer.minPurchase && (
+                      <div className="flex items-center gap-2 text-xs font-medium text-zinc-500 mb-4 bg-white/50 rounded-lg px-3 py-1.5 border border-zinc-100 w-fit">
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>
+                          Min. purchase: <span className="text-zinc-900">${(offer.minPurchase / 100).toFixed(2)}</span>
+                        </span>
+                      </div>
+                    )}
+
                     {/* Promo Code Display */}
                     {offer.promoCode && (
                       <PromoCodeDisplay code={offer.promoCode} />
