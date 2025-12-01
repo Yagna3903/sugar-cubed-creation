@@ -80,10 +80,10 @@ export default async function AdminPaymentsPage() {
               <thead>
                 <tr className="border-b border-zinc-100 bg-zinc-50/50 text-xs uppercase tracking-wider text-zinc-500 font-medium">
                   <th className="px-6 py-4 text-left">Order</th>
-                  <th className="px-6 py-4 text-left">Provider ID</th>
+                  {/* <th className="px-6 py-4 text-left">Provider ID</th> */}
                   <th className="px-6 py-4 text-left">Status</th>
                   <th className="px-6 py-4 text-right">Amount</th>
-                  <th className="px-6 py-4 text-left">Card</th>
+                  {/* <th className="px-6 py-4 text-left">Card</th> */}
                   <th className="px-6 py-4 text-left">Created</th>
                   <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
@@ -133,7 +133,7 @@ export default async function AdminPaymentsPage() {
                       </td>
 
                       {/* Provider ID */}
-                      <td className="px-6 py-4 align-top font-mono text-xs text-zinc-500">
+                      {/* <td className="px-6 py-4 align-top font-mono text-xs text-zinc-500">
                         {providerDisplay ? (
                           <span title={p.providerPaymentId ?? undefined} className="bg-zinc-100 px-2 py-1 rounded-md">
                             {providerDisplay}
@@ -141,7 +141,7 @@ export default async function AdminPaymentsPage() {
                         ) : (
                           "—"
                         )}
-                      </td>
+                      </td> */}
 
                       {/* Status */}
                       <td className="px-6 py-4 align-top">
@@ -181,7 +181,7 @@ export default async function AdminPaymentsPage() {
                       </td>
 
                       {/* Card */}
-                      <td className="px-6 py-4 align-top">
+                      {/* <td className="px-6 py-4 align-top">
                         {p.cardBrand && p.cardLast4 ? (
                           <div className="flex items-center gap-2 text-sm text-zinc-600">
                             <span className="uppercase font-medium text-xs tracking-wider">{p.cardBrand}</span>
@@ -190,7 +190,7 @@ export default async function AdminPaymentsPage() {
                         ) : (
                           <span className="text-zinc-400">—</span>
                         )}
-                      </td>
+                      </td> */}
 
                       {/* Created */}
                       <td className="px-6 py-4 align-top text-xs text-zinc-500">
