@@ -1,5 +1,6 @@
 // app/api/orders/route.ts
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { CreateOrderInput } from "@/lib/server/validators";
 import { prisma } from "@/lib/db";
 import { OrderStatus } from "@prisma/client";
@@ -98,6 +99,9 @@ export async function POST(req: Request) {
     const checkoutUrl = `${origin}/checkout/success?o=${encodeURIComponent(
       order.id
     )}`;
+
+    // Revalidate paths to update stock display
+    revalidatePath("/", "layout");
 
     return NextResponse.json({ orderId: order.id, checkoutUrl });
   } catch (err: any) {
