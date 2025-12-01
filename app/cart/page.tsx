@@ -10,8 +10,7 @@ import { BackButton } from "@/components/ui/back-button";
 export default function CartPage() {
   const { items, setQty, remove } = useCart();
   const subtotal = items.reduce((a, i) => a + i.price * i.qty, 0);
-  const tax = subtotal * 0.13; // 13% HST (Ontario)
-  const total = subtotal + tax;
+  const total = subtotal;
 
   function handleQtyChange(item: Item, newQty: number) {
     if (newQty < 1) return;
@@ -148,20 +147,12 @@ export default function CartPage() {
                 <h2 className="font-display text-xl font-bold mb-6">Order Summary</h2>
 
                 <div className="space-y-3 mb-6 pb-6 border-b border-zinc-200">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-zinc-600">Subtotal</span>
-                    <span className="font-semibold">${subtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-zinc-600">HST (13%)</span>
-                    <span className="font-semibold">${tax.toFixed(2)}</span>
+                  <div className="flex justify-between text-lg font-bold">
+                    <span>Total</span>
+                    <span className="text-brand-brown">${total.toFixed(2)}</span>
                   </div>
                 </div>
 
-                <div className="flex justify-between text-lg font-bold mb-6">
-                  <span>Total</span>
-                  <span className="text-brand-brown">${total.toFixed(2)}</span>
-                </div>
 
                 <Link
                   href="/checkout"
