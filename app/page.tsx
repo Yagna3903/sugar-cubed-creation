@@ -38,6 +38,37 @@ export default async function HomePage() {
           <IconRollingPin className="w-10 h-10 rotate-45" />
         </div>
 
+        {/* Cookie Baking Animation - cycles through 3 stages */}
+        <div className="absolute top-1/4 right-1/4 animate-baking-float pointer-events-none">
+          {/* Stage 1: Raw dough (light cream color) */}
+          <div className="absolute inset-0 animate-baking-stage-1">
+            <div className="w-16 h-16 rounded-full bg-brand-cream border-2 border-brand-brown/20" />
+          </div>
+          
+          {/* Stage 2: Baking (golden color) */}
+          <div className="absolute inset-0 animate-baking-stage-2">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-200 to-amber-300 border-2 border-amber-400/30">
+              {/* Chocolate chips appearing */}
+              <div className="absolute top-2 left-3 w-2 h-2 rounded-full bg-brand-brown" />
+              <div className="absolute top-6 right-4 w-2 h-2 rounded-full bg-brand-brown" />
+              <div className="absolute bottom-3 left-5 w-2 h-2 rounded-full bg-brand-brown" />
+            </div>
+          </div>
+          
+          {/* Stage 3: Fully baked (brown cookie) */}
+          <div className="absolute inset-0 animate-baking-stage-3">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-600 to-amber-700 border-2 border-amber-800/40 shadow-lg">
+              {/* Chocolate chips */}
+              <div className="absolute top-2 left-3 w-2 h-2 rounded-full bg-zinc-800" />
+              <div className="absolute top-6 right-4 w-2 h-2 rounded-full bg-zinc-800" />
+              <div className="absolute bottom-3 left-5 w-2 h-2 rounded-full bg-zinc-800" />
+              <div className="absolute top-8 left-7 w-2 h-2 rounded-full bg-zinc-800" />
+              <div className="absolute bottom-6 right-3 w-2 h-2 rounded-full bg-zinc-800" />
+            </div>
+          </div>
+        </div>
+        
+
         <div className="flex items-end justify-between mb-8 relative z-10">
           <h2 className="text-3xl font-bold animate-slide-up text-zinc-900 drop-shadow-sm">
             Our cookies
