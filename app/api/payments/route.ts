@@ -10,6 +10,7 @@ const PaymentsInput = CreateOrderInput.extend({
   token: z.string().min(1, "Missing payment token"),
   cardBrand: z.string().optional(),
   cardLast4: z.string().optional(),
+  promoCode: z.string().optional(),
 });
 
 export async function POST(req: Request) {
@@ -28,10 +29,26 @@ export async function POST(req: Request) {
     );
   }
 
-  const { customer, items, token, cardBrand, cardLast4 } = parsed.data;
+  const { customer, items, token, cardBrand, cardLast4, promoCode } = parsed.data;
 
   try {
     const { order, payment } = await prisma.$transaction(async (tx) => {
+      // Validate promo code if provided
+      let discountAmount = 0;
+      let appliedOffer = null;
+
+      if (promoCode) {
+        const offer = await tx.offer.findUnique({
+          where: { promoCode: promoCode.toUpperCase() },
+        });
+
+        if (offer && offer.active) {
+          const now = new Date();
+          if (now >= offer.validFrom && now <= offer.validUntil) {
+            appliedOffer = offer;
+          }
+        }
+      }
       const ids = items.map((i) => i.id);
 
       const dbProducts = await tx.product.findMany({
@@ -70,6 +87,27 @@ export async function POST(req: Request) {
         };
       });
 
+      // Apply discount if offer is valid
+      if (appliedOffer) {
+        // Check min purchase
+        if (!appliedOffer.minPurchase || totalCents >= appliedOffer.minPurchase) {
+          if (appliedOffer.discountType === "percentage") {
+            discountAmount = Math.round((totalCents * appliedOffer.discountValue) / 100);
+          } else {
+            discountAmount = appliedOffer.discountValue;
+          }
+          // Ensure discount doesn't exceed total
+          discountAmount = Math.min(discountAmount, totalCents);
+          totalCents -= discountAmount;
+
+          // Increment usage count
+          await tx.offer.update({
+            where: { id: appliedOffer.id },
+            data: { usageCount: { increment: 1 } },
+          });
+        }
+      }
+
       // No HST
 
       // Create order as pending (client can accept/cancel later)
@@ -96,7 +134,10 @@ export async function POST(req: Request) {
           cardLast4: cardLast4 ?? null,
           receiptUrl: null,
           idempotencyKey: `${order.id}:${token}`, // unique
-          metadata: {},
+          metadata: {
+            promoCode: appliedOffer?.promoCode,
+            discountAmount: discountAmount,
+          },
         },
       });
 

@@ -1,6 +1,7 @@
 "use client";
 export const dynamic = "force-dynamic";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useCart, type Item } from "@/lib/cart-store";
@@ -8,9 +9,46 @@ import { useCart, type Item } from "@/lib/cart-store";
 import { BackButton } from "@/components/ui/back-button";
 
 export default function CartPage() {
-  const { items, setQty, remove } = useCart();
+  const { items, setQty, remove, promoCode, discountAmount, applyPromo, removePromo } = useCart();
   const subtotal = items.reduce((a, i) => a + i.price * i.qty, 0);
-  const total = subtotal;
+  const total = Math.max(0, subtotal - discountAmount);
+
+  const [promoInput, setPromoInput] = useState("");
+  const [promoError, setPromoError] = useState<string | null>(null);
+  const [validating, setValidating] = useState(false);
+
+  async function handleApplyPromo() {
+    if (!promoInput.trim()) return;
+
+    setValidating(true);
+    setPromoError(null);
+
+    try {
+      const res = await fetch("/api/offers/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code: promoInput,
+          cartTotal: subtotal * 100 // API expects cents
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Invalid promo code");
+      }
+
+      if (data.success) {
+        applyPromo(data.offer.code, data.offer.discountAmount / 100); // Store in dollars
+        setPromoInput("");
+      }
+    } catch (err: any) {
+      setPromoError(err.message);
+    } finally {
+      setValidating(false);
+    }
+  }
 
   function handleQtyChange(item: Item, newQty: number) {
     if (newQty < 1) return;
@@ -152,10 +190,68 @@ export default function CartPage() {
                 <h2 className="font-display text-xl font-bold mb-6">Order Summary</h2>
 
                 <div className="space-y-3 mb-6 pb-6 border-b border-zinc-200">
-                  <div className="flex justify-between text-lg font-bold">
+                  <div className="flex justify-between text-zinc-600">
+                    <span>Subtotal</span>
+                    <span>${subtotal.toFixed(2)}</span>
+                  </div>
+
+                  {promoCode ? (
+                    <div className="flex justify-between text-green-600 font-medium animate-fade-in">
+                      <span>Discount ({promoCode})</span>
+                      <span>-${discountAmount.toFixed(2)}</span>
+                    </div>
+                  ) : null}
+
+                  <div className="flex justify-between text-lg font-bold pt-2 border-t border-zinc-100">
                     <span>Total</span>
                     <span className="text-brand-brown">${total.toFixed(2)}</span>
                   </div>
+                </div>
+
+                {/* Promo Code Input */}
+                <div className="mb-6">
+                  {!promoCode ? (
+                    <div className="space-y-2">
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={promoInput}
+                          onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+                          placeholder="Promo Code"
+                          className="flex-1 rounded-xl border-2 border-zinc-100 px-4 py-2 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/10 outline-none bg-zinc-50 text-sm uppercase"
+                        />
+                        <button
+                          onClick={handleApplyPromo}
+                          disabled={validating || !promoInput}
+                          className="bg-zinc-900 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          {validating ? "..." : "Apply"}
+                        </button>
+                      </div>
+                      {promoError && (
+                        <p className="text-xs text-red-500 ml-1">{promoError}</p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between bg-green-50 border border-green-100 p-3 rounded-xl animate-fade-in">
+                      <div className="flex items-center gap-2">
+                        <div className="bg-green-100 p-1 rounded-full">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-green-700">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                        <span className="text-sm font-medium text-green-800">
+                          Code <span className="font-bold">{promoCode}</span> applied
+                        </span>
+                      </div>
+                      <button
+                        onClick={removePromo}
+                        className="text-xs text-red-500 hover:text-red-700 font-medium"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  )}
                 </div>
 
 

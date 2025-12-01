@@ -14,7 +14,7 @@ type PaymentResponse = { orderId: string; paymentId: string; checkoutUrl: string
 function PaymentContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { items, clear } = useCart();
+  const { items, clear, promoCode, discountAmount, applyPromo: setStorePromo, removePromo: removeStorePromo } = useCart();
 
   const name = searchParams.get("name") ?? "";
   const email = searchParams.get("email") ?? "";
@@ -22,8 +22,13 @@ function PaymentContent() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+  // Promo Code State
+  const [promoInput, setPromoInput] = useState("");
+  const [promoError, setPromoError] = useState<string | null>(null);
+  const [validatingPromo, setValidatingPromo] = useState(false);
+
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
-  const total = subtotal;
+  const total = Math.max(0, subtotal - discountAmount);
 
   const applicationId = process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID ?? "";
   const locationId = process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID ?? "";
@@ -60,6 +65,7 @@ function PaymentContent() {
       token: tokenResult.token,
       cardBrand: cardDetails?.brand,
       cardLast4: cardDetails?.last4,
+      promoCode: promoCode || undefined, // Pass promo code to backend
     };
 
     const res = await fetch("/api/payments", {
@@ -88,7 +94,45 @@ function PaymentContent() {
   }
 
 
+  async function handleApplyPromo() {
+    if (!promoInput.trim()) return;
 
+    setValidatingPromo(true);
+    setPromoError(null);
+
+    try {
+      const res = await fetch("/api/offers/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code: promoInput,
+          cartTotal: subtotal * 100 // API expects cents
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Invalid promo code");
+      }
+
+      if (data.success) {
+        setStorePromo(data.offer.code, data.offer.discountAmount / 100);
+        setPromoInput("");
+        setPromoError(null);
+      }
+    } catch (err: any) {
+      setPromoError(err.message);
+    } finally {
+      setValidatingPromo(false);
+    }
+  }
+
+  function handleRemovePromo() {
+    removeStorePromo();
+    setPromoInput("");
+    setPromoError(null);
+  }
   // ... existing imports ...
 
   // ... existing code ...
@@ -151,8 +195,63 @@ function PaymentContent() {
                 ))}
               </div>
 
+              {/* Promo Code Input */}
+              <div className="border-t border-brand-brown/10 pt-4 pb-4">
+                {!promoCode ? (
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={promoInput}
+                      onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+                      placeholder="Promo Code"
+                      className="flex-1 rounded-xl border-2 border-zinc-100 px-4 py-2 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/10 outline-none bg-white text-sm uppercase"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleApplyPromo}
+                      disabled={validatingPromo || !promoInput}
+                      className="bg-zinc-900 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {validatingPromo ? "..." : "Apply"}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between bg-green-50 border border-green-100 p-3 rounded-xl">
+                    <div className="flex items-center gap-2">
+                      <div className="bg-green-100 p-1 rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-green-700">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <span className="text-sm font-medium text-green-800">
+                        Code <span className="font-bold">{promoCode}</span> applied
+                      </span>
+                    </div>
+                    <button
+                      onClick={handleRemovePromo}
+                      className="text-xs text-red-500 hover:text-red-700 font-medium"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                )}
+                {promoError && (
+                  <p className="text-xs text-red-500 mt-2 ml-1">{promoError}</p>
+                )}
+              </div>
+
               <div className="border-t border-brand-brown/10 pt-4 space-y-2">
-                <div className="flex justify-between text-lg font-bold">
+                <div className="flex justify-between text-zinc-600">
+                  <span>Subtotal</span>
+                  <span>${subtotal.toFixed(2)}</span>
+                </div>
+                {promoCode && (
+                  <div className="flex justify-between text-green-600 font-medium">
+                    <span>Discount</span>
+                    <span>-${discountAmount.toFixed(2)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-lg font-bold pt-2 border-t border-brand-brown/5">
                   <span className="text-brand-brown">Total</span>
                   <span className="text-brand-brown">${total.toFixed(2)}</span>
                 </div>

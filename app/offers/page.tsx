@@ -2,6 +2,7 @@ import Link from "next/link";
 import { IconSparkle, IconCookie, IconGift, IconWhisk } from "@/components/ui/bakery-icons";
 import { BackButton } from "@/components/ui/back-button";
 import { getActiveOffers } from "@/lib/server/offers";
+import { PromoCodeDisplay } from "@/components/promo-code-display";
 
 export const dynamic = "force-dynamic";
 
@@ -170,6 +171,11 @@ export default async function OffersPage() {
                         })}</strong>
                       </span>
                     </div>
+
+                    {/* Promo Code Display */}
+                    {offer.promoCode && (
+                      <PromoCodeDisplay code={offer.promoCode} />
+                    )}
 
                     {/* CTA Button */}
                     <Link

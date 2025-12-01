@@ -6,7 +6,7 @@ import { ReactNode } from "react";
 interface StatsCardProps {
     title: string;
     value: string | number;
-    icon?: string;
+    icon?: ReactNode;
     trend?: {
         value: number;
         isPositive: boolean;
@@ -37,7 +37,9 @@ export default function StatsCard({
     }
 
     return (
-        <div className="group relative bg-white rounded-2xl p-6 shadow-soft border border-zinc-100 hover:shadow-medium transition-all duration-300 hover:-translate-y-1 overflow-hidden">
+        <div className="group relative bg-white/80 backdrop-blur-sm rounded-2xl p-5 sm:p-6 shadow-soft border border-white/50 hover:shadow-medium transition-all duration-300 hover:-translate-y-1 overflow-hidden">
+            {/* Subtle background gradient */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-brand-pink/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             {/* Gradient accent on hover */}
             <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-brand-pink via-brand-brown to-brand-pink opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
@@ -50,7 +52,7 @@ export default function StatsCard({
                     </p>
                 </div>
                 {icon && (
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-cream to-brand-pink/50 text-2xl group-hover:scale-110 transition-transform duration-300">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-cream to-brand-pink/50 text-2xl group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 shadow-sm group-hover:shadow-md">
                         {icon}
                     </div>
                 )}

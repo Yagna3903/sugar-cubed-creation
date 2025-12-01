@@ -17,16 +17,22 @@ export type Item = {
 
 type State = {
   items: Item[];
+  promoCode: string | null;
+  discountAmount: number;
   add: (i: Omit<Item, "qty">, qty?: number) => void;
   setQty: (id: string, qty: number) => void;
   remove: (id: string) => void;
   clear: () => void;
+  applyPromo: (code: string, amount: number) => void;
+  removePromo: () => void;
 };
 
 export const useCart = create<State>()(
   persist(
     (set) => ({
       items: [],
+      promoCode: null,
+      discountAmount: 0,
 
       add: (i, qty = 1) =>
         set((s) => {
@@ -84,7 +90,10 @@ export const useCart = create<State>()(
           items: s.items.filter((x) => x.id !== id),
         })),
 
-      clear: () => set({ items: [] }),
+      clear: () => set({ items: [], promoCode: null, discountAmount: 0 }),
+
+      applyPromo: (code, amount) => set({ promoCode: code, discountAmount: amount }),
+      removePromo: () => set({ promoCode: null, discountAmount: 0 }),
     }),
     {
       name: "scc-cart",

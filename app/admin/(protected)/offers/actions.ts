@@ -15,8 +15,14 @@ export async function createOffer(formData: FormData) {
     const ctaLink = formData.get("ctaLink") as string;
     const validFrom = new Date(formData.get("validFrom") as string);
     const validUntil = new Date(formData.get("validUntil") as string);
-    const discountValue = parseInt(formData.get("discountValue") as string) || 0;
     const active = formData.get("active") === "on";
+
+    // New fields
+    const promoCode = (formData.get("promoCode") as string)?.toUpperCase() || null;
+    const discountType = formData.get("discountType") as string || "percentage";
+    const discountValue = parseInt(formData.get("discountValue") as string) || 0;
+    // Convert minPurchase from dollars to cents
+    const minPurchase = Math.round(parseFloat(formData.get("minPurchase") as string) * 100) || 0;
 
     await prisma.offer.create({
         data: {
@@ -31,6 +37,9 @@ export async function createOffer(formData: FormData) {
             validFrom,
             validUntil,
             active,
+            promoCode,
+            discountType,
+            minPurchase,
         },
     });
 
@@ -49,8 +58,14 @@ export async function updateOffer(id: string, formData: FormData) {
     const ctaLink = formData.get("ctaLink") as string;
     const validFrom = new Date(formData.get("validFrom") as string);
     const validUntil = new Date(formData.get("validUntil") as string);
-    const discountValue = parseInt(formData.get("discountValue") as string) || 0;
     const active = formData.get("active") === "on";
+
+    // New fields
+    const promoCode = (formData.get("promoCode") as string)?.toUpperCase() || null;
+    const discountType = formData.get("discountType") as string || "percentage";
+    const discountValue = parseInt(formData.get("discountValue") as string) || 0;
+    // Convert minPurchase from dollars to cents
+    const minPurchase = Math.round(parseFloat(formData.get("minPurchase") as string) * 100) || 0;
 
     await prisma.offer.update({
         where: { id },
@@ -66,6 +81,9 @@ export async function updateOffer(id: string, formData: FormData) {
             validFrom,
             validUntil,
             active,
+            promoCode,
+            discountType,
+            minPurchase,
         },
     });
 
