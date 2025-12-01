@@ -125,11 +125,11 @@ export const posts: BlogPost[] = [
     content: `
       <p>In a world of shortcuts and substitutes, we stand firm on one thing: <strong>Butter is King.</strong></p>
 
-      <h3>Flavor Profile</h3>
-      <p>Real butter provides a rich, creamy flavor base that shortening simply cannot replicate. It carries the notes of vanilla and chocolate, amplifying them rather than muting them with a waxy aftertaste.</p>
+      <h3>Flavour Profile</h3>
+      <p>Real butter provides a rich, creamy flavour base that shortening simply cannot replicate. It carries the notes of vanilla and chocolate, amplifying them rather than muting them with a waxy aftertaste.</p>
 
       <h3>Melt-in-Your-Mouth Texture</h3>
-      <p>Butter has a melting point that is just below body temperature. This means our cookies literally melt in your mouth, releasing their flavor instantly. Shortening, with its higher melting point, can leave a coating on your tongue.</p>
+      <p>Butter has a melting point that is just below body temperature. This means our cookies literally melt in your mouth, releasing their flavour instantly. Shortening, with its higher melting point, can leave a coating on your tongue.</p>
 
       <h3>Clean Ingredients</h3>
       <p>We believe in eating food, not science experiments. Our butter has two ingredients: cream and salt. Simple, natural, and delicious. That's the Sugar Cubed Creations promise.</p>
