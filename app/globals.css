@@ -295,6 +295,97 @@
   }
 }
 
+/* Cookie Baking Animation Keyframes */
+@keyframes bakingFloat {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  25% {
+    transform: translateY(-12px) translateX(8px);
+  }
+  50% {
+    transform: translateY(-5px) translateX(-5px);
+  }
+  75% {
+    transform: translateY(-15px) translateX(5px);
+  }
+}
+
+@keyframes bakingStage1 {
+  0%, 33% {
+    opacity: 1;
+  }
+  34%, 100% {
+    opacity: 0;
+  }
+}
+
+@keyframes bakingStage2 {
+  0%, 33% {
+    opacity: 0;
+  }
+  34%, 66% {
+    opacity: 1;
+  }
+  67%, 100% {
+    opacity: 0;
+  }
+}
+
+@keyframes bakingStage3 {
+  0%, 66% {
+    opacity: 0;
+  }
+  67%, 100% {
+    opacity: 1;
+  }
+}
+
+@keyframes chips-appear {
+  0%, 20% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  30%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes steam {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px) scale(1.2);
+  }
+}
+
+.animate-baking-stage-1 {
+  animation: bakingStage1 12s ease-in-out infinite;
+}
+
+.animate-baking-stage-2 {
+  animation: bakingStage2 12s ease-in-out infinite;
+}
+
+.animate-baking-stage-3 {
+  animation: bakingStage3 12s ease-in-out infinite;
+}
+
+.animate-chips-appear {
+  animation: chips-appear 12s ease-in-out infinite;
+}
+
+.animate-steam {
+  animation: steam 2s ease-out infinite;
+}
+
 /* Admin-Specific Animations */
 @keyframes pulseGlow {
 
