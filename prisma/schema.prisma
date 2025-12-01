@@ -36,6 +36,7 @@ model Product {
   description String?
   priceCents  Int
   imageUrl    String?
+  images      String[] @default([])
   badges      String[] @default([]) // text[] in Postgres
   active      Boolean  @default(true)
   availableForCorporate Boolean @default(false)
@@ -192,6 +193,7 @@ model BlogPost {
   slug        String   @unique
   excerpt     String?
   content     String   // Rich text or Markdown
+  images      String[] @default([])
   coverImage  String?
   published   Boolean  @default(false)
   publishedAt DateTime?

@@ -1,6 +1,6 @@
 // app/shipping-returns/page.tsx
 export const metadata = {
-  title: "Pickup & Returns — Sugar Cubed Creation",
+  title: "Pickup & Returns — Sugar Cubed Creations",
   description:
     "Processing times, pickup details, and our returns policy for perishable cookies.",
 };
@@ -27,7 +27,7 @@ export default function ShippingReturnsPage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    name: "Store Policy — Sugar Cubed Creation",
+    name: "Store Policy — Sugar Cubed Creations",
     mainEntity: [
       {
         "@type": "MerchantReturnPolicy",

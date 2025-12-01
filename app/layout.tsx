@@ -6,7 +6,7 @@ import { Footer } from "@/components/footer";
 import Providers from "./providers";
 
 export const metadata: Metadata = {
-  title: "Sugar Cubed Creation",
+  title: "Sugar Cubed Creations",
   description: "Fresh, chunky, mood-lifting cookies.",
 };
 

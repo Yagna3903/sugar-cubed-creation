@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
 import { Product } from "@/lib/types";
 import { useCart } from "@/lib/cart-store";
 
@@ -12,24 +13,89 @@ export function ProductCard({ p }: { p: Product }) {
   const remove = useCart((s) => s.remove);
   const cartItem = useCart((s) => s.items.find((i) => i.id === p.id));
 
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  // Use images array if available, otherwise fall back to single image
+  const displayImages = p.images && p.images.length > 0 ? p.images : [p.image];
+
   const currentInCart = cartItem?.qty ?? 0;
   const isOutOfStock = (p.stock ?? 0) <= 0;
+
+  const handleImageChange = (index: number) => {
+    if (index === currentImageIndex) return;
+    setIsAnimating(true);
+    setTimeout(() => {
+      setCurrentImageIndex(index);
+      setIsAnimating(false);
+    }, 300);
+  };
+
+  const nextImage = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const next = (currentImageIndex + 1) % displayImages.length;
+    handleImageChange(next);
+  };
+
+  const prevImage = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const prev = (currentImageIndex - 1 + displayImages.length) % displayImages.length;
+    handleImageChange(prev);
+  };
 
   return (
     <div className="group rounded-2xl bg-white shadow-soft hover:shadow-medium transition-all duration-300 p-5 flex flex-col h-full card-pop hover-shine relative overflow-hidden">
       <Link href={`/product/${p.slug}`} className="block relative z-10">
         <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-brand-cream to-white mb-4">
-          <Image
-            src={p.image}
-            alt={p.name}
-            fill
-            className="object-cover transition-transform duration-700 ease-out group-hover:scale-110 group-hover:rotate-2"
-          />
+          <div className={`relative w-full h-full transition-opacity duration-300 ${isAnimating ? 'opacity-0' : 'opacity-100'}`}>
+            <Image
+              src={displayImages[currentImageIndex]}
+              alt={p.name}
+              fill
+              className="object-cover transition-transform duration-700 ease-out group-hover:scale-110 group-hover:rotate-2"
+            />
+          </div>
+
+          {/* Navigation Arrows */}
+          {displayImages.length > 1 && (
+            <>
+              <button
+                onClick={prevImage}
+                className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm p-1.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-all hover:bg-white hover:scale-110 z-30"
+                aria-label="Previous image"
+              >
+                <svg className="w-4 h-4 text-brand-brown" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <button
+                onClick={nextImage}
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm p-1.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-all hover:bg-white hover:scale-110 z-30"
+                aria-label="Next image"
+              >
+                <svg className="w-4 h-4 text-brand-brown" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+
+              {/* Dots Indicator */}
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                {displayImages.map((_, idx) => (
+                  <div
+                    key={idx}
+                    className={`w-1.5 h-1.5 rounded-full transition-colors ${idx === currentImageIndex ? 'bg-brand-brown' : 'bg-brand-brown/30'}`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
 
           {/* Badge overlay */}
           {p.badges && p.badges.length > 0 && (
             <div className="absolute top-3 left-3 flex flex-wrap gap-2 z-20">
-              {p.badges.slice(0, 2).map((b) => (
+              {p.badges.map((b) => (
                 <span
                   key={b}
                   className="text-xs font-medium bg-brand-brown/90 backdrop-blur-sm text-white px-3 py-1 rounded-full capitalize shadow-sm"

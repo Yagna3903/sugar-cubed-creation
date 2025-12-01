@@ -59,12 +59,12 @@ export async function POST(request: NextRequest) {
       
       <p>Someone from our team will reach out to you shortly at <strong>${body.email}</strong>.</p>
       
-      <p>Best regards,<br>Sugar Cubed Creation Team</p>
+      <p>Best regards,<br>Sugar Cubed Creations Team</p>
     `;
 
         await sendEmail({
             to: body.email,
-            subject: "Corporate Inquiry Confirmation - Sugar Cubed Creation",
+            subject: "Corporate Inquiry Confirmation - Sugar Cubed Creations",
             html: customerEmailHtml,
         });
 

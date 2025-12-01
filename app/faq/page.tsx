@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { BackButton } from "@/components/ui/back-button";
 
 export const metadata = {
-  title: "FAQs — Sugar Cubed Creation",
+  title: "FAQs — Sugar Cubed Creations",
   description:
     "Answers about flavours, printed custom cookies, lead times, pickup/shipping and orders.",
 };

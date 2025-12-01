@@ -1,10 +1,29 @@
 import Link from "next/link";
 import Image from "next/image";
 import { IconCookie, IconSparkle, IconWheat, IconWhisk } from "@/components/ui/bakery-icons";
+import { prisma } from "@/lib/db";
+import { HeroSlideshow } from "./hero-slideshow";
 
 export const dynamic = "force-dynamic";
 
-export function Hero() {
+async function getHeroImages() {
+  const content = await prisma.siteContent.findUnique({
+    where: { key: "hero" },
+  });
+
+  if (!content) return ["/images/Main-Cookie.png"];
+
+  const data = content.content as { images?: string[] };
+  const images = Array.isArray(data.images) && data.images.length > 0
+    ? data.images
+    : ["/images/Main-Cookie.png"];
+
+  return images;
+}
+
+export async function Hero() {
+  const images = await getHeroImages();
+
   return (
     <section className="relative bg-gradient-to-br from-brand-pink via-brand-cream to-brand-cream overflow-hidden">
       {/* Animated floating decorations - Custom SVGs */}
@@ -72,13 +91,7 @@ export function Hero() {
             {/* Gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-br from-brand-pink/20 via-transparent to-brand-brown/10 pointer-events-none z-10" />
 
-            <Image
-              src="/images/Main-Cookie.png"
-              alt="Delicious handcrafted cookies"
-              fill
-              priority
-              className="object-contain p-8 transition-all duration-500 ease-out group-hover:scale-110 group-hover:rotate-2"
-            />
+            <HeroSlideshow images={images} />
 
             {/* Floating badge */}
             <div className="absolute bottom-6 left-6 bg-white/90 backdrop-blur-md px-6 py-3 rounded-2xl shadow-medium z-20 animate-fade-in hover:scale-105 transition-transform">

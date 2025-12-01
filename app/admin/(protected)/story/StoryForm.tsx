@@ -10,6 +10,7 @@ interface StoryData {
     subtitle: string;
     body: string;
     imageUrl: string;
+    images?: string[];
 }
 
 export default function StoryForm({ initialData }: { initialData: StoryData }) {
@@ -23,6 +24,7 @@ export default function StoryForm({ initialData }: { initialData: StoryData }) {
                 subtitle: formData.get("subtitle"),
                 body: formData.get("body"),
                 imageUrl: formData.get("imageUrl"),
+                images: formData.getAll("images"),
             };
             await updateSiteContent("our-story", newContent);
             setShowToast(true);
@@ -63,7 +65,15 @@ export default function StoryForm({ initialData }: { initialData: StoryData }) {
                     />
                 </div>
 
-                <ImageUpload name="imageUrl" defaultValue={initialData.imageUrl} label="Cover Image" />
+                <div className="grid md:grid-cols-2 gap-6">
+                    <ImageUpload name="imageUrl" defaultValue={initialData.imageUrl} label="Cover Image" />
+                    <ImageUpload
+                        name="images"
+                        defaultValue={initialData.images || []}
+                        label="Gallery Images"
+                        multiple
+                    />
+                </div>
 
                 <div>
                     <label className="block text-sm font-bold text-brand-brown mb-2">Content</label>

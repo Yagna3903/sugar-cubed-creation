@@ -5,6 +5,7 @@ import AddToCart from "@/components/add-to-cart";
 import { prisma } from "@/lib/db";
 import { IconSparkle, IconGift, IconCookie, IconWhisk, IconRollingPin } from "@/components/ui/bakery-icons";
 import { BackButton } from "@/components/ui/back-button";
+import ProductGallery from "@/components/product/ProductGallery";
 
 export const dynamic = "force-dynamic";
 
@@ -40,46 +41,11 @@ export default async function ProductPage({ params }: { params: { slug: string }
       <section className="mx-auto max-w-7xl px-6 pb-20 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
           {/* Image Gallery */}
-          <div className="animate-scale-in sticky top-6">
-            {/* Floating decoration around image */}
-            <div className="absolute -top-8 -left-8 text-brand-brown/10 animate-float-slow pointer-events-none">
-              <IconRollingPin className="w-16 h-16 rotate-45" />
-            </div>
-            <div className="absolute -bottom-6 -right-6 text-brand-pink-dark/15 animate-bounce-gentle pointer-events-none">
-              <IconGift className="w-12 h-12" />
-            </div>
-
-            <div className="relative aspect-square rounded-3xl overflow-hidden bg-gradient-to-br from-white to-brand-cream/30 shadow-strong group transform-gpu transition-all duration-500 hover:shadow-2xl hover:scale-[1.02]">
-              <Image
-                src={p.imageUrl || "/images/Main-Cookie.png"}
-                alt={p.name}
-                fill
-                priority
-                className="object-cover p-8 transition-transform duration-700 group-hover:scale-110 group-hover:rotate-2"
-              />
-
-              {/* Shimmer overlay on hover */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transform -skew-x-12 group-hover:animate-shimmer pointer-events-none" />
-
-              {/* Stock Badge */}
-              {isOutOfStock && (
-                <div className="absolute top-6 right-6 bg-red-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg animate-pulse">
-                  Out of Stock
-                </div>
-              )}
-            </div>
-
-            {/* Optional: Image Thumbnails Placeholder */}
-            <div className="mt-4 grid grid-cols-4 gap-3">
-              {[1, 2, 3, 4].map((i) => (
-                <div
-                  key={i}
-                  className="aspect-square rounded-xl bg-zinc-100 opacity-30 hover:opacity-50 transition-opacity cursor-not-allowed"
-                  aria-hidden="true"
-                />
-              ))}
-            </div>
-          </div>
+          <ProductGallery
+            images={p.images.length > 0 ? p.images : (p.imageUrl ? [p.imageUrl] : [])}
+            name={p.name}
+            isOutOfStock={isOutOfStock}
+          />
 
           {/* Product Details */}
           <div className="animate-slide-up">

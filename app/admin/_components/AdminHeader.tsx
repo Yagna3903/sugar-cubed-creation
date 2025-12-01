@@ -1,9 +1,15 @@
 "use client";
 export const dynamic = "force-dynamic";
 
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
 import { supabaseClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
+import {
+  IconSettings,
+  IconHelp,
+  IconPhoto,
+} from "@tabler/icons-react";
 import type { User } from "@supabase/supabase-js";
 
 export default function AdminHeader() {
@@ -49,7 +55,7 @@ export default function AdminHeader() {
             <h1 className="font-display text-lg font-bold text-zinc-900">
               Admin Panel
             </h1>
-            <p className="text-xs text-zinc-500">Sugar Cubed Creation</p>
+            <p className="text-xs text-zinc-500">Sugar Cubed Creations</p>
           </div>
         </div>
 
@@ -76,5 +82,23 @@ export default function AdminHeader() {
         </div>
       </nav>
     </header>
+  );
+}
+
+function NavLink({ href, icon, children }: { href: string; icon: React.ReactNode; children: React.ReactNode }) {
+  const pathname = usePathname();
+  const isActive = pathname.startsWith(href);
+
+  return (
+    <Link
+      href={href}
+      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive
+        ? "bg-brand-brown/10 text-brand-brown"
+        : "text-zinc-600 hover:text-brand-brown hover:bg-brand-brown/5"
+        }`}
+    >
+      {icon}
+      {children}
+    </Link>
   );
 }

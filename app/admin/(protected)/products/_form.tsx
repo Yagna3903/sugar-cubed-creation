@@ -29,6 +29,7 @@ type ProductFormProps = {
     stock: number;
     maxPerOrder: number;
     imageUrl: string;
+    images: string[];
   };
 };
 
@@ -36,7 +37,7 @@ const AVAILABLE_BADGES = [
   "Seasonal",
   "Custom Printed",
   "Corporate",
-  "Best Sellers",
+  "Best Seller",
   "New"
 ];
 
@@ -130,9 +131,10 @@ export default function ProductForm({ initial, action, mode }: ProductFormProps)
                 <h2 className="font-bold text-lg">Media</h2>
               </div>
               <ImageUpload
-                name="image"
-                defaultValue={initial?.imageUrl || ""}
-                label="Product Image"
+                name="images"
+                defaultValue={initial?.images?.length ? initial.images : (initial?.imageUrl ? [initial.imageUrl] : [])}
+                label="Product Images"
+                multiple
               />
             </div>
 
@@ -268,8 +270,8 @@ export default function ProductForm({ initial, action, mode }: ProductFormProps)
                           type="button"
                           onClick={() => toggleBadge(badge)}
                           className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${isSelected
-                              ? "bg-brand-brown text-white border-brand-brown shadow-sm"
-                              : "bg-white text-zinc-600 border-zinc-200 hover:border-brand-brown/50 hover:text-brand-brown"
+                            ? "bg-brand-brown text-white border-brand-brown shadow-sm"
+                            : "bg-white text-zinc-600 border-zinc-200 hover:border-brand-brown/50 hover:text-brand-brown"
                             }`}
                         >
                           {badge}

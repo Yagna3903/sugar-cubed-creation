@@ -3,9 +3,10 @@ import Image from "next/image";
 import { IconCookie, IconWhisk, IconSparkle, IconGift } from "@/components/ui/bakery-icons";
 import { BackButton } from "@/components/ui/back-button";
 import { prisma } from "@/lib/db";
+import ImageGallery from "@/components/ImageGallery";
 
 export const metadata = {
-  title: "Our Story — Sugar Cubed Creation",
+  title: "Our Story — Sugar Cubed Creations",
   description: "From a tiny kitchen to your doorstep. The story behind our handcrafted cookies.",
 };
 
@@ -19,7 +20,7 @@ export default async function OurStoryPage() {
   const data = (dbContent?.content as any) || {
     title: "Baked with Heart",
     subtitle: "Since 2024",
-    body: `It started with a simple craving for the perfect chocolate chip cookie—crispy on the edges, chewy in the center, and loaded with premium chocolate. Disappointed by store-bought options, we took to the kitchen.\n\nHundreds of batches later (and many happy taste-testers), Sugar Cubed Creation was born. We realized that the secret ingredient wasn't just butter or sugar—it was the patience to get it right.\n\nWe believe in quality over quantity. That's why every batch is made to order, ensuring that what you receive is as fresh as if you pulled it from your own oven. No preservatives, no shortcuts, just pure cookie joy.`,
+    body: `It started with a simple craving for the perfect chocolate chip cookie—crispy on the edges, chewy in the center, and loaded with premium chocolate. Disappointed by store-bought options, we took to the kitchen.\n\nHundreds of batches later (and many happy taste-testers), Sugar Cubed Creations was born. We realized that the secret ingredient wasn't just butter or sugar—it was the patience to get it right.\n\nWe believe in quality over quantity. That's why every batch is made to order, ensuring that what you receive is as fresh as if you pulled it from your own oven. No preservatives, no shortcuts, just pure cookie joy.`,
     imageUrl: "/images/story-placeholder.png",
   };
 
@@ -108,6 +109,20 @@ export default async function OurStoryPage() {
           </div>
         </div>
       </section>
+
+      {/* Gallery Section */}
+      {data.images && data.images.length > 0 && (
+        <section className="px-6 pb-16">
+          <div className="mx-auto max-w-6xl">
+            <h3 className="font-display text-3xl font-bold text-brand-brown mb-8 text-center">
+              Moments from our Kitchen
+            </h3>
+            <div className="mt-8">
+              <ImageGallery images={data.images} title="Our Story" />
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Bottom CTA */}
       <section className="px-6 py-20">

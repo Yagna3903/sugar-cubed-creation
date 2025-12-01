@@ -6,7 +6,7 @@ import { getActiveOffers } from "@/lib/server/offers";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Special Offers — Sugar Cubed Creation",
+  title: "Special Offers — Sugar Cubed Creations",
   description: "Sweet deals and limited-time promotions on our artisan cookies",
 };
 

@@ -20,7 +20,7 @@ export function Footer() {
               </div>
               <div>
                 <h3 className="font-display font-bold text-brand-brown text-sm">Admin Portal</h3>
-                <p className="text-xs text-zinc-500">Sugar Cubed Creation</p>
+                <p className="text-xs text-zinc-500">Sugar Cubed Creations</p>
               </div>
             </div>
 
@@ -82,7 +82,7 @@ export function Footer() {
           <h3 className="font-display font-bold text-lg text-brand-brown mb-6">Contact</h3>
           <div className="flex flex-col gap-4 text-sm text-zinc-600">
             <a
-              href="mailto:hello@cookie.co?subject=Cookie%20order%20inquiry&body=Hi%20Sugar%20Cubed%20Creation%2C%0A%0A"
+              href="mailto:hello@cookie.co?subject=Cookie%20order%20inquiry&body=Hi%20Sugar%20Cubed%20Creations%2C%0A%0A"
               className="inline-flex items-center gap-2 hover:text-brand-brown transition-colors"
               aria-label="Email hello@cookie.co"
             >
@@ -130,7 +130,7 @@ export function Footer() {
       </div>
 
       <div className="border-t border-brand-brown/5 py-8 text-center text-sm text-zinc-500">
-        © {new Date().getFullYear()} Sugar Cubed Creation
+        © {new Date().getFullYear()} Sugar Cubed Creations
       </div>
     </footer>
   );

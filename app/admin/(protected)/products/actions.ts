@@ -21,15 +21,20 @@ export async function createProduct(formData: FormData): Promise<void> {
   await requireAdmin();
 
   const raw = Object.fromEntries(formData.entries());
-  const parsed = ProductCreateInput.safeParse(raw);
+  const images = formData.getAll("images") as string[];
+  const parsed = ProductCreateInput.safeParse({ ...raw, images });
+
   if (!parsed.success) {
     throw new Error(
       parsed.error.flatten().formErrors.join(", ") || "Invalid input"
     );
   }
 
-  const { name, slug, price, description, badges, active, availableForCorporate, stock, maxPerOrder } =
+  const { name, slug, price, description, badges, active, availableForCorporate, stock, maxPerOrder, images: validatedImages } =
     parsed.data;
+
+  // Use the first image as the main imageUrl for backward compatibility
+  const mainImageUrl = validatedImages.length > 0 ? validatedImages[0] : null;
 
   const product = await prisma.product.create({
     data: {
@@ -41,20 +46,14 @@ export async function createProduct(formData: FormData): Promise<void> {
       badges,
       active: active ?? true,
       availableForCorporate: availableForCorporate ?? false,
+      imageUrl: mainImageUrl,
+      images: validatedImages,
       inventory: {
         create: { stock: stock ?? 0, maxPerOrder: maxPerOrder ?? 12 },
       },
     } as any, // Type assertion to bypass TS cache issue
   });
 
-  const file = formData.get("image") as File | null;
-  if (file && file.size > 0) {
-    const url = await uploadProductImage(file, product.id);
-    await prisma.product.update({
-      where: { id: product.id },
-      data: { imageUrl: url },
-    });
-  }
 
   // 🔹 Revalidate both admin and client pages
   revalidatePath("/admin/products");
@@ -73,11 +72,16 @@ export async function updateProduct(
   await requireAdmin();
 
   const raw = { ...Object.fromEntries(formData.entries()), id };
-  const parsed = ProductUpdateInput.safeParse(raw);
+  const images = formData.getAll("images") as string[];
+  const parsed = ProductUpdateInput.safeParse({ ...raw, images });
+
   if (!parsed.success) throw new Error("Invalid input");
 
-  const { name, slug, price, description, badges, active, availableForCorporate, stock, maxPerOrder } =
+  const { name, slug, price, description, badges, active, availableForCorporate, stock, maxPerOrder, images: validatedImages } =
     parsed.data;
+
+  // Use the first image as the main imageUrl for backward compatibility
+  const mainImageUrl = validatedImages && validatedImages.length > 0 ? validatedImages[0] : undefined;
 
   const data: any = {
     ...(name != null && { name }),
@@ -87,6 +91,8 @@ export async function updateProduct(
     ...(active != null && { active }),
     ...(availableForCorporate != null && { availableForCorporate }),
     ...(price != null && { priceCents: toCents(price) }),
+    ...(validatedImages != null && { images: validatedImages }),
+    ...(mainImageUrl !== undefined && { imageUrl: mainImageUrl }),
     ...(stock != null || maxPerOrder != null
       ? {
         inventory: {
@@ -107,14 +113,6 @@ export async function updateProduct(
 
   const product = await prisma.product.update({ where: { id }, data });
 
-  const file = formData.get("image") as File | null;
-  if (file && file.size > 0) {
-    const url = await uploadProductImage(file, product.id);
-    await prisma.product.update({
-      where: { id: product.id },
-      data: { imageUrl: url },
-    });
-  }
 
   // 🔹 Revalidate both admin and client pages
   revalidatePath("/admin/products");

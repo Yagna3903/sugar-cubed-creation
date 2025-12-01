@@ -5,7 +5,7 @@ import { BackButton } from "@/components/ui/back-button";
 import { prisma } from "@/lib/db";
 
 export const metadata = {
-  title: "Blog — Sugar Cubed Creation",
+  title: "Blog — Sugar Cubed Creations",
   description: "Baking tips, stories, and sweet news from our kitchen.",
 };
 

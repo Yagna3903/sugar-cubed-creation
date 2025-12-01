@@ -8,6 +8,7 @@ function mapRow(r: {
   name: string;
   priceCents: number;
   imageUrl: string | null;
+  images: string[];
   badges: string[];
   description: string | null;
   inventory: { stock: number; maxPerOrder: number } | null;
@@ -16,8 +17,10 @@ function mapRow(r: {
     id: r.id,
     slug: r.slug,
     name: r.name,
+    // priceCents: r.priceCents, // Removed as it's not in the Product type
     price: r.priceCents / 100,
     image: r.imageUrl ?? "/images/Main-Cookie.png",
+    images: r.images.length > 0 ? r.images : [r.imageUrl ?? "/images/Main-Cookie.png"],
     badges: (r.badges ?? []) as Product["badges"],
     description: r.description ?? undefined,
     stock: r.inventory?.stock ?? null,          // ✅ add stock
@@ -36,6 +39,7 @@ export async function listProducts(): Promise<Product[]> {
       name: true,
       priceCents: true,
       imageUrl: true,
+      images: true,
       badges: true,
       description: true,
       inventory: { select: { stock: true, maxPerOrder: true } }, // ✅ include inventory
@@ -54,6 +58,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
       name: true,
       priceCents: true,
       imageUrl: true,
+      images: true,
       badges: true,
       description: true,
       inventory: { select: { stock: true, maxPerOrder: true } }, // ✅ include inventory
@@ -72,6 +77,7 @@ export async function findById(id: string): Promise<Product | null> {
       name: true,
       priceCents: true,
       imageUrl: true,
+      images: true,
       badges: true,
       description: true,
       inventory: { select: { stock: true, maxPerOrder: true } }, // ✅ include inventory

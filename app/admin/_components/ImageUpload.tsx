@@ -1,101 +1,139 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { uploadImage } from "../actions/upload";
+import { IconX, IconUpload, IconPhoto } from "@tabler/icons-react";
 
 interface ImageUploadProps {
     name: string;
-    defaultValue?: string;
+    defaultValue?: string | string[];
     label?: string;
+    multiple?: boolean;
 }
 
-export default function ImageUpload({ name, defaultValue, label = "Image" }: ImageUploadProps) {
-    const [preview, setPreview] = useState<string | null>(defaultValue || null);
+export default function ImageUpload({ name, defaultValue, label = "Image", multiple = false }: ImageUploadProps) {
+    // Normalize initial value to array
+    const initialImages = Array.isArray(defaultValue)
+        ? defaultValue
+        : defaultValue
+            ? [defaultValue]
+            : [];
+
+    const [images, setImages] = useState<string[]>(initialImages);
     const [uploading, setUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
+    // Sync internal state if defaultValue changes (e.g. after form reset)
+    useEffect(() => {
+        const newImages = Array.isArray(defaultValue)
+            ? defaultValue
+            : defaultValue
+                ? [defaultValue]
+                : [];
+        setImages(newImages);
+    }, [defaultValue]);
 
-        // Show local preview immediately
-        const objectUrl = URL.createObjectURL(file);
-        setPreview(objectUrl);
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
+
         setUploading(true);
 
         try {
-            const formData = new FormData();
-            formData.append("file", file);
-            const { url } = await uploadImage(formData);
-            setPreview(url); // Update to remote URL
+            const newUrls: string[] = [];
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const formData = new FormData();
+                formData.append("file", file);
+                const { url } = await uploadImage(formData);
+                newUrls.push(url);
+            }
+
+            if (multiple) {
+                setImages((prev) => [...prev, ...newUrls]);
+            } else {
+                setImages([newUrls[0]]); // Replace if single mode
+            }
         } catch (error) {
             console.error("Upload failed", error);
             alert("Failed to upload image");
-            setPreview(defaultValue || null); // Revert on failure
         } finally {
             setUploading(false);
+            // Reset input so same file can be selected again if needed
+            if (fileInputRef.current) fileInputRef.current.value = "";
         }
     };
 
+    const removeImage = (indexToRemove: number) => {
+        setImages((prev) => prev.filter((_, index) => index !== indexToRemove));
+    };
+
     return (
-        <div className="space-y-2">
+        <div className="space-y-3">
             <label className="block text-sm font-bold text-brand-brown">{label}</label>
 
-            {/* Hidden input to store the actual URL for the form submission */}
-            <input type="hidden" name={name} value={preview || ""} />
+            {/* Hidden inputs for form submission */}
+            {multiple ? (
+                images.map((url, index) => (
+                    <input key={index} type="hidden" name={name} value={url} />
+                ))
+            ) : (
+                <input type="hidden" name={name} value={images[0] || ""} />
+            )}
 
-            <div className="flex items-start gap-4">
-                {/* Preview Area */}
-                <div
-                    className="relative w-32 h-32 rounded-xl overflow-hidden bg-zinc-100 border border-zinc-200 flex-shrink-0 cursor-pointer group"
-                    onClick={() => fileInputRef.current?.click()}
-                >
-                    {preview ? (
+            {/* Image Grid */}
+            <div className={`grid gap-4 ${multiple ? "grid-cols-2 md:grid-cols-4" : "grid-cols-1"}`}>
+                {images.map((url, index) => (
+                    <div key={index} className="relative group aspect-square rounded-xl overflow-hidden bg-zinc-100 border border-zinc-200 shadow-sm">
                         <Image
-                            src={preview}
-                            alt="Preview"
+                            src={url}
+                            alt={`Uploaded ${index + 1}`}
                             fill
-                            className={`object-cover transition-opacity ${uploading ? 'opacity-50' : 'opacity-100'}`}
+                            className="object-cover"
                         />
-                    ) : (
-                        <div className="absolute inset-0 flex items-center justify-center text-zinc-400">
-                            <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                        </div>
-                    )}
-
-                    {/* Overlay on hover */}
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                        <span className="text-white text-xs font-medium opacity-0 group-hover:opacity-100 bg-black/50 px-2 py-1 rounded-full">
-                            Change
-                        </span>
+                        <button
+                            type="button"
+                            onClick={() => removeImage(index)}
+                            className="absolute top-2 right-2 p-1.5 bg-white/90 text-red-500 rounded-full shadow-sm hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
+                        >
+                            <IconX size={16} />
+                        </button>
                     </div>
-                </div>
+                ))}
 
-                {/* Controls */}
-                <div className="flex-1">
-                    <input
-                        type="file"
-                        ref={fileInputRef}
-                        onChange={handleFileChange}
-                        accept="image/*"
-                        className="hidden"
-                    />
-                    <button
-                        type="button"
+                {/* Upload Button */}
+                {(multiple || images.length === 0) && (
+                    <div
                         onClick={() => fileInputRef.current?.click()}
-                        disabled={uploading}
-                        className="text-sm font-medium text-brand-brown hover:underline disabled:opacity-50"
+                        className={`relative aspect-square rounded-xl border-2 border-dashed border-zinc-300 hover:border-brand-brown/50 hover:bg-brand-brown/5 transition-all cursor-pointer flex flex-col items-center justify-center gap-2 text-zinc-400 hover:text-brand-brown ${uploading ? "opacity-50 pointer-events-none" : ""
+                            }`}
                     >
-                        {uploading ? "Uploading..." : "Upload Image"}
-                    </button>
-                    <p className="text-xs text-zinc-500 mt-1">
-                        Recommended size: 1200x800px. Max 5MB.
-                    </p>
-                </div>
+                        {uploading ? (
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-brown"></div>
+                        ) : (
+                            <>
+                                <IconPhoto size={32} stroke={1.5} />
+                                <span className="text-xs font-medium">
+                                    {multiple ? "Add Photos" : "Upload Photo"}
+                                </span>
+                            </>
+                        )}
+                    </div>
+                )}
             </div>
+
+            <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept="image/*"
+                multiple={multiple}
+                className="hidden"
+            />
+            <p className="text-xs text-zinc-500">
+                Recommended: 1200x800px. Max 5MB.
+            </p>
         </div>
     );
 }

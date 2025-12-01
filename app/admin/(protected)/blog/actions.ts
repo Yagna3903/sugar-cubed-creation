@@ -12,6 +12,7 @@ const BlogPostSchema = z.object({
     excerpt: z.string().optional(),
     content: z.string().min(1, "Content is required"),
     coverImage: z.string().optional(),
+    images: z.array(z.string()).optional().default([]),
     published: z.coerce.boolean(),
 });
 
@@ -19,7 +20,8 @@ export async function createBlogPost(formData: FormData) {
     await requireAdmin();
 
     const raw = Object.fromEntries(formData.entries());
-    const parsed = BlogPostSchema.safeParse(raw);
+    const images = formData.getAll("images") as string[];
+    const parsed = BlogPostSchema.safeParse({ ...raw, images });
 
     if (!parsed.success) {
         return { error: parsed.error.flatten() };
@@ -44,7 +46,8 @@ export async function updateBlogPost(id: string, formData: FormData) {
     await requireAdmin();
 
     const raw = Object.fromEntries(formData.entries());
-    const parsed = BlogPostSchema.safeParse(raw);
+    const images = formData.getAll("images") as string[];
+    const parsed = BlogPostSchema.safeParse({ ...raw, images });
 
     if (!parsed.success) {
         return { error: parsed.error.flatten() };

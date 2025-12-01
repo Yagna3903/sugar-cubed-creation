@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import ProductCheckboxCard from "@/components/product-checkbox-card";
+import { BackButton } from "@/components/ui/back-button";
 
 import { IconChefHat } from "@/components/ui/bakery-icons";
 
@@ -156,15 +157,7 @@ export default function CorporateInquiryPage() {
       <div className="max-w-5xl mx-auto">
         {/* Back Button */}
         <div className="mb-6">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-sm font-medium text-zinc-600 hover:text-brand-brown transition-colors"
-          >
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Back to Home
-          </Link>
+          <BackButton href="/">Back to Home</BackButton>
         </div>
 
         {/* Header */}

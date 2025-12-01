@@ -146,7 +146,7 @@ export default function LoginForm() {
             <h1 className="font-display text-3xl font-bold text-brand-brown mb-2">
               Admin Portal
             </h1>
-            <p className="text-zinc-600 text-sm font-medium">Sugar Cubed Creation</p>
+            <p className="text-zinc-600 text-sm font-medium">Sugar Cubed Creations</p>
           </div>
 
           {/* Login Card */}

@@ -4,6 +4,7 @@ export type Product = {
   name: string
   price: number
   image: string
+  images: string[]
   badges?: ("best-seller" | "new" | "seasonal" | "printed" | "corporate")[]
   description?: string
   stock?: number | null;        // ✅ allow null

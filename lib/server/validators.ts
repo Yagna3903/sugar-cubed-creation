@@ -1,5 +1,6 @@
 // lib/server/validators.ts
 import { z } from "zod";
+// Force recompile
 
 //  Checkout (unchanged)
 
@@ -70,6 +71,7 @@ const ProductBaseStringPrice = z.object({
     z.string().min(1)
   ),
   imageUrl: imageUrlFromInput,
+  images: z.array(z.string()).optional().default([]),
   badges: badgesFromCommaList,
   active: boolFromForm.optional().default(true),
   availableForCorporate: boolFromForm.optional().default(false),

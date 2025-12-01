@@ -12,7 +12,7 @@ export default async function StoryAdminPage() {
     const data = (content?.content as any) || {
         title: "Baked with Heart",
         subtitle: "Since 2024",
-        body: `It started with a simple craving for the perfect chocolate chip cookie—crispy on the edges, chewy in the center, and loaded with premium chocolate. Disappointed by store-bought options, we took to the kitchen.\n\nHundreds of batches later (and many happy taste-testers), Sugar Cubed Creation was born. We realized that the secret ingredient wasn't just butter or sugar—it was the patience to get it right.\n\nWe believe in quality over quantity. That's why every batch is made to order, ensuring that what you receive is as fresh as if you pulled it from your own oven. No preservatives, no shortcuts, just pure cookie joy.`,
+        body: `It started with a simple craving for the perfect chocolate chip cookie—crispy on the edges, chewy in the center, and loaded with premium chocolate. Disappointed by store-bought options, we took to the kitchen.\n\nHundreds of batches later (and many happy taste-testers), Sugar Cubed Creations was born. We realized that the secret ingredient wasn't just butter or sugar—it was the patience to get it right.\n\nWe believe in quality over quantity. That's why every batch is made to order, ensuring that what you receive is as fresh as if you pulled it from your own oven. No preservatives, no shortcuts, just pure cookie joy.`,
         imageUrl: "/images/story-placeholder.png",
     };
 

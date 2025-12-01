@@ -1,4 +1,4 @@
-# Sugar Cubed Creation
+# Sugar Cubed Creations
 
 Full-stack storefront for a home cookie business — **Next.js (App Router) + Prisma + Supabase Postgres**.  
 Frontend & backend live in one repo. Orders are persisted; **Square** will handle payments (hosted checkout + webhooks).

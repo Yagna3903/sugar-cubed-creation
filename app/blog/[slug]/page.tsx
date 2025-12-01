@@ -1,34 +1,46 @@
 import Link from "next/link";
 import Image from "next/image";
-import { posts } from "@/lib/data";
 import { notFound } from "next/navigation";
 import { IconCookie } from "@/components/ui/bakery-icons";
+import { prisma } from "@/lib/db";
+import ImageGallery from "@/components/ImageGallery";
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
-  const post = posts.find((p) => p.slug === params.slug);
+  const post = await prisma.blogPost.findUnique({
+    where: { slug: params.slug },
+  });
   if (!post) return { title: "Post Not Found" };
 
   return {
-    title: `${post.title} — Sugar Cubed Creation`,
+    title: `${post.title} — Sugar Cubed Creations`,
     description: post.excerpt,
   };
 }
 
-export default function PostPage({ params }: { params: { slug: string } }) {
-  const post = posts.find((p) => p.slug === params.slug);
-  if (!post) return notFound();
+export default async function PostPage({ params }: { params: { slug: string } }) {
+  const post = await prisma.blogPost.findUnique({
+    where: { slug: params.slug },
+  });
+
+  if (!post || !post.published) return notFound();
 
   return (
     <article className="min-h-screen bg-white pb-20">
       {/* Hero Image */}
       <div className="relative h-[50vh] min-h-[400px] w-full">
-        <Image
-          src={post.image}
-          alt={post.title}
-          fill
-          className="object-cover"
-          priority
-        />
+        {post.coverImage ? (
+          <Image
+            src={post.coverImage}
+            alt={post.title}
+            fill
+            className="object-cover"
+            priority
+          />
+        ) : (
+          <div className="w-full h-full bg-brand-brown/10 flex items-center justify-center">
+            <IconCookie className="w-24 h-24 text-brand-brown/20" />
+          </div>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
         {/* Navigation Overlay */}
@@ -73,10 +85,10 @@ export default function PostPage({ params }: { params: { slug: string } }) {
               </div>
               <div>
                 <p className="font-bold text-zinc-900 text-sm">Sugar Cubed Team</p>
+                <p className="text-xs text-zinc-500">
+                  {post.publishedAt ? new Date(post.publishedAt).toLocaleDateString() : "Draft"}
+                </p>
               </div>
-            </div>
-            <div className="flex gap-2">
-              {/* Share buttons could go here */}
             </div>
           </div>
 
@@ -84,6 +96,21 @@ export default function PostPage({ params }: { params: { slug: string } }) {
             className="prose prose-lg prose-brown max-w-none prose-headings:font-display prose-headings:font-bold prose-p:text-zinc-600 prose-p:leading-relaxed prose-img:rounded-2xl"
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
+
+          {/* Gallery Section */}
+          {post.images && post.images.length > 0 && (
+            <div className="mt-16 pt-16 border-t border-zinc-100">
+              <h3 className="font-display text-2xl font-bold text-brand-brown mb-8 text-center">
+                More Photos
+              </h3>
+              <div className="mt-16 pt-16 border-t border-zinc-100">
+                <h3 className="font-display text-2xl font-bold text-brand-brown mb-8 text-center">
+                  More Photos
+                </h3>
+                <ImageGallery images={post.images} title={post.title} />
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </article>

@@ -33,6 +33,7 @@ export default async function ProductEditPage({ params }: { params: { id: string
           stock: p.inventory?.stock ?? 0,
           maxPerOrder: p.inventory?.maxPerOrder ?? 12,
           imageUrl: p.imageUrl ?? "",
+          images: p.images ?? [],
         }}
       />
     </div>

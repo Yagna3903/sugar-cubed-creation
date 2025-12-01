@@ -40,7 +40,7 @@ export function Header() {
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b">
       <div className="mx-auto max-w-7xl px-6 h-16 flex items-center justify-between">
         <Link href="/" className="font-extrabold text-xl">
-          Sugar Cubed Creation
+          Sugar Cubed Creations
         </Link>
 
         {/* Desktop Navigation */}

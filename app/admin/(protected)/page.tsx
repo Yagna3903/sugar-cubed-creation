@@ -281,6 +281,24 @@ export default async function AdminHome() {
             </div>
             <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-emerald-200 via-emerald-300 to-emerald-200 opacity-0 group-hover:opacity-100 transition-opacity" />
           </Link>
+
+          <Link
+            href="/admin/hero"
+            className="group relative overflow-hidden rounded-2xl border bg-white p-6 shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-1"
+          >
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-100 to-orange-200 text-2xl">
+                🖼️
+              </div>
+              <div>
+                <h3 className="font-display text-lg font-semibold mb-1">Hero Section</h3>
+                <p className="text-sm text-zinc-600">
+                  Update homepage hero images
+                </p>
+              </div>
+            </div>
+            <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-orange-200 via-orange-300 to-orange-200 opacity-0 group-hover:opacity-100 transition-opacity" />
+          </Link>
         </div>
       </div>
     </div>

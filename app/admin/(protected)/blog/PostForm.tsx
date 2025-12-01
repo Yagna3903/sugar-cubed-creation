@@ -14,6 +14,7 @@ interface PostData {
     excerpt?: string;
     content: string;
     coverImage?: string;
+    images?: string[];
     published: boolean;
 }
 
@@ -75,7 +76,19 @@ export default function PostForm({ initialData }: { initialData?: PostData }) {
                     />
                 </div>
 
-                <ImageUpload name="coverImage" defaultValue={initialData?.coverImage || ""} label="Cover Image" />
+                <div className="grid md:grid-cols-2 gap-6">
+                    <ImageUpload
+                        name="coverImage"
+                        defaultValue={initialData?.coverImage || ""}
+                        label="Cover Image"
+                    />
+                    <ImageUpload
+                        name="images"
+                        defaultValue={initialData?.images || []}
+                        label="Gallery Images"
+                        multiple
+                    />
+                </div>
 
                 <div>
                     <label className="block text-sm font-bold text-brand-brown mb-2">Excerpt</label>

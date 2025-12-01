@@ -48,7 +48,7 @@ export const OrderConfirmationEmail = ({
 }: OrderConfirmationProps) => (
     <Html>
         <Head />
-        <Preview>Your Sugar Cubed Creation order is confirmed!</Preview>
+        <Preview>Your Sugar Cubed Creations order is confirmed!</Preview>
         <Body style={main}>
             <Container style={container}>
                 <Heading style={h1}>Order Confirmed</Heading>
@@ -86,7 +86,7 @@ export const OrderConfirmationEmail = ({
                 </Section>
 
                 <Text style={footer}>
-                    Sugar Cubed Creation<br />
+                    Sugar Cubed Creations<br />
                     Made with love.
                 </Text>
             </Container>

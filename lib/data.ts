@@ -8,6 +8,7 @@ export const products: Product[] = [
     name: "Holiday Sugar Cookie — Vanilla",
     price: 4.25,
     image: "/images/holiday-vanilla-sugar.jpg",
+    images: ["/images/holiday-vanilla-sugar.jpg"],
     badges: ["seasonal", "best-seller"],
     description: "Holiday-themed sugar cookie. Standard flavour: vanilla.",
   },
@@ -17,6 +18,7 @@ export const products: Product[] = [
     name: "Holiday Special — Gingerbread ",
     price: 4.75,
     image: "/images/holiday-special-gingerbread.jpg",
+    images: ["/images/holiday-special-gingerbread.jpg"],
     badges: ["seasonal", "new"],
     description:
       "Special holiday flavour available only for this cookie (one special per season).",
@@ -27,6 +29,7 @@ export const products: Product[] = [
     name: "Printed Cookies — Vanilla",
     price: 5.0,
     image: "/images/printed-vanilla.jpg",
+    images: ["/images/printed-vanilla.jpg"],
     badges: ["printed", "corporate", "best-seller"],
     description:
       "Printed on a food-safe printer (not hand-piped). Perfect for custom designs and events.",
@@ -37,6 +40,7 @@ export const products: Product[] = [
     name: "Printed Cookies — Chocolate Chip",
     price: 5.25,
     image: "/images/printed-choc-chip.jpg",
+    images: ["/images/printed-choc-chip.jpg"],
     badges: ["printed", "corporate"],
     description:
       "Printed (not hand-piped). Ideal for corporate logo cookies in chocolate chip.",
@@ -47,6 +51,7 @@ export const products: Product[] = [
     name: "Classic Vanilla Sugar Cookie",
     price: 4.0,
     image: "/images/classic-vanilla-sugar.jpg",
+    images: ["/images/classic-vanilla-sugar.jpg"],
     badges: ["best-seller"],
     description: "Our standard flavour is vanilla—simple and delicious.",
   },
@@ -56,6 +61,7 @@ export const products: Product[] = [
     name: "Chocolate Chunk Cookie",
     price: 4.5,
     image: "/images/printed-choc-chip.jpg", // Using chocolate chip image as placeholder
+    images: ["/images/printed-choc-chip.jpg"],
     badges: ["best-seller"],
     description: "Rich chocolate chunks in every bite.",
   },
@@ -79,7 +85,7 @@ export const posts: BlogPost[] = [
     date: "2024-11-15",
     image: "/images/blog/chewy-cookies.png",
     content: `
-      <p>There's a fine line between a good cookie and a great one. At Sugar Cubed Creation, we've spent years perfecting that line, landing squarely on the side of "unforgettably chewy."</p>
+      <p>There's a fine line between a good cookie and a great one. At Sugar Cubed Creations, we've spent years perfecting that line, landing squarely on the side of "unforgettably chewy."</p>
       
       <h3>The Butter Factor</h3>
       <p>It all starts with temperature. Most recipes call for room-temperature butter, but we've found that a specific cool-room temp allows for better aeration during the creaming process without melting too quickly in the oven.</p>
@@ -126,7 +132,7 @@ export const posts: BlogPost[] = [
       <p>Butter has a melting point that is just below body temperature. This means our cookies literally melt in your mouth, releasing their flavor instantly. Shortening, with its higher melting point, can leave a coating on your tongue.</p>
 
       <h3>Clean Ingredients</h3>
-      <p>We believe in eating food, not science experiments. Our butter has two ingredients: cream and salt. Simple, natural, and delicious. That's the Sugar Cubed Creation promise.</p>
+      <p>We believe in eating food, not science experiments. Our butter has two ingredients: cream and salt. Simple, natural, and delicious. That's the Sugar Cubed Creations promise.</p>
     `
   },
 ];
