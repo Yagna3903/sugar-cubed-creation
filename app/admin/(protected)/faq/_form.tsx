@@ -18,54 +18,72 @@ type Props = {
 function Submit({ label }: { label: string }) {
   const { pending } = useFormStatus();
   return (
-    <button className="rounded-xl bg-brand-brown px-5 py-2 text-white disabled:opacity-60" disabled={pending}>
-      {pending ? "Saving…" : label}
+    <button
+      className="btn-primary w-full md:w-auto disabled:opacity-60 disabled:cursor-not-allowed shadow-lg shadow-brand-brown/20"
+      disabled={pending}
+    >
+      {pending ? "Saving..." : label}
     </button>
   );
 }
 
 export default function FaqForm({ mode, action, initial }: Props) {
   return (
-    <form action={action} className="grid max-w-2xl gap-5">
-      <div className="grid gap-2">
-        <label className="text-sm font-medium">Question</label>
-        <input
-          name="question"
-          defaultValue={initial?.question}
-          className="rounded-xl border px-3 py-2"
-          required
-        />
-      </div>
-
-      <div className="grid gap-2">
-        <label className="text-sm font-medium">Answer</label>
-        <textarea
-          name="answer"
-          defaultValue={initial?.answer}
-          rows={5}
-          className="rounded-xl border px-3 py-2"
-          required
-        />
-      </div>
-
-      <div className="flex items-center gap-4">
-        <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" name="active" defaultChecked={initial?.active ?? true} /> Active
-        </label>
-        <div className="grid gap-1">
-          <label className="text-sm">Sort (optional)</label>
+    <div className="bg-white rounded-3xl border border-brand-brown/5 shadow-soft p-6 md:p-8 max-w-3xl">
+      <form action={action} className="space-y-6">
+        <div className="space-y-2">
+          <label className="text-sm font-bold text-brand-brown ml-1">Question</label>
           <input
-            type="number"
-            name="sort"
-            className="w-28 rounded-xl border px-3 py-2"
-            defaultValue={initial?.sort ?? ""}
+            name="question"
+            defaultValue={initial?.question}
+            className="w-full rounded-xl border-2 border-zinc-100 bg-zinc-50/50 px-4 py-3 font-medium text-zinc-800 transition-all focus:border-brand-brown focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-brown/5 placeholder:text-zinc-400"
+            placeholder="e.g. Do you ship nationwide?"
+            required
           />
         </div>
-      </div>
 
-      <div className="pt-2">
-        <Submit label={mode === "create" ? "Create entry" : "Save changes"} />
-      </div>
-    </form>
+        <div className="space-y-2">
+          <label className="text-sm font-bold text-brand-brown ml-1">Answer</label>
+          <textarea
+            name="answer"
+            defaultValue={initial?.answer}
+            rows={6}
+            className="w-full rounded-xl border-2 border-zinc-100 bg-zinc-50/50 px-4 py-3 font-medium text-zinc-800 transition-all focus:border-brand-brown focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-brown/5 resize-y placeholder:text-zinc-400 leading-relaxed"
+            placeholder="Provide a helpful answer..."
+            required
+          />
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:items-center gap-6 pt-2">
+          <div className="flex items-center gap-3 bg-zinc-50 p-3 rounded-xl border border-zinc-100 hover:border-brand-brown/20 transition-colors cursor-pointer group">
+            <input
+              type="checkbox"
+              name="active"
+              id="active"
+              defaultChecked={initial?.active ?? true}
+              className="w-5 h-5 rounded text-brand-brown focus:ring-brand-brown border-zinc-300 cursor-pointer"
+            />
+            <label htmlFor="active" className="text-sm font-medium text-zinc-700 cursor-pointer select-none group-hover:text-brand-brown transition-colors">
+              Active (visible on site)
+            </label>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <label className="text-sm font-medium text-zinc-600 whitespace-nowrap">Sort Order:</label>
+            <input
+              type="number"
+              name="sort"
+              className="w-24 rounded-xl border-2 border-zinc-100 bg-zinc-50/50 px-3 py-2 text-center font-mono font-medium focus:border-brand-brown focus:outline-none transition-all"
+              defaultValue={initial?.sort ?? ""}
+              placeholder="0"
+            />
+          </div>
+        </div>
+
+        <div className="pt-6 border-t border-brand-brown/5 flex justify-end">
+          <Submit label={mode === "create" ? "Create Entry" : "Save Changes"} />
+        </div>
+      </form>
+    </div>
   );
 }
