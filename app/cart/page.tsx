@@ -39,9 +39,13 @@ export default function CartPage() {
           <div className="mb-6">
             <BackButton href="/shop">Back to Shop</BackButton>
           </div>
-          <h1 className="font-display text-4xl font-bold mb-2">Shopping Cart</h1>
+          <h1 className="font-display text-4xl font-bold mb-2">
+            Shopping Cart
+          </h1>
           <p className="text-zinc-600">
-            {items.length === 0 ? "Your cart is waiting to be filled" : `${items.length} ${items.length === 1 ? 'item' : 'items'} in your cart`}
+            {items.length === 0
+              ? "Your cart is waiting to be filled"
+              : `${items.length} ${items.length === 1 ? "item" : "items"} in your cart`}
           </p>
         </div>
 
@@ -52,14 +56,13 @@ export default function CartPage() {
               <div className="w-32 h-32 mx-auto mb-6 rounded-full bg-brand-pink/20 flex items-center justify-center">
                 <span className="text-6xl">🍪</span>
               </div>
-              <h2 className="font-display text-2xl font-bold mb-3">Your cart is empty</h2>
+              <h2 className="font-display text-2xl font-bold mb-3">
+                Your cart is empty
+              </h2>
               <p className="text-zinc-600 mb-8">
                 Time to fill it with delicious cookies!
               </p>
-              <Link
-                href="/shop"
-                className="btn-primary inline-block"
-              >
+              <Link href="/shop" className="btn-primary inline-block">
                 Start Shopping
               </Link>
             </div>
@@ -75,9 +78,9 @@ export default function CartPage() {
                 return (
                   <div
                     key={i.id}
-                    className="bg-white rounded-2xl p-6 shadow-soft hover:shadow-medium transition-all duration-200 animate-fade-in"
+                    className="bg-white rounded-2xl p-6 shadow-soft hover:shadow-medium transition-all duration-200 animate-fade-in "
                   >
-                    <div className="flex gap-6">
+                    <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start text-center sm:text-left">
                       {/* Image */}
                       <div className="relative w-28 h-28 rounded-xl overflow-hidden bg-gradient-to-br from-brand-cream to-white flex-shrink-0">
                         <Image
@@ -98,15 +101,19 @@ export default function CartPage() {
                         </Link>
                         <p className="text-2xl font-bold text-brand-brown mb-2">
                           ${i.price.toFixed(2)}{" "}
-                          <span className="text-sm font-normal text-zinc-500">each</span>
+                          <span className="text-sm font-normal text-zinc-500">
+                            each
+                          </span>
                         </p>
                         <p className="text-xs text-zinc-500">
-                          {i.maxPerOrder ? `Max ${i.maxPerOrder} per order` : ''}
+                          {i.maxPerOrder
+                            ? `Max ${i.maxPerOrder} per order`
+                            : ""}
                         </p>
                       </div>
 
                       {/* Quantity & Remove */}
-                      <div className="flex flex-col items-end gap-3">
+                      <div className="flex flex-col items-center sm:items-end gap-3 w-full sm:w-auto">
                         <div className="flex items-center gap-2 bg-zinc-50 rounded-xl p-1">
                           <button
                             onClick={() => handleQtyChange(i, i.qty - 1)}
@@ -115,7 +122,9 @@ export default function CartPage() {
                           >
                             −
                           </button>
-                          <span className="w-8 text-center font-semibold">{i.qty}</span>
+                          <span className="w-8 text-center font-semibold">
+                            {i.qty}
+                          </span>
                           <button
                             onClick={() => handleQtyChange(i, i.qty + 1)}
                             disabled={i.stock !== undefined && i.qty >= i.stock}
@@ -126,7 +135,10 @@ export default function CartPage() {
                         </div>
 
                         <p className="text-sm text-zinc-500">
-                          Total: <span className="font-bold text-zinc-900">${itemTotal.toFixed(2)}</span>
+                          Total:{" "}
+                          <span className="font-bold text-zinc-900">
+                            ${itemTotal.toFixed(2)}
+                          </span>
                         </p>
 
                         <button
@@ -145,12 +157,16 @@ export default function CartPage() {
             {/* Order Summary - Sticky */}
             <div className="lg:col-span-1">
               <div className="bg-white rounded-2xl p-6 shadow-soft sticky top-6 animate-slide-up">
-                <h2 className="font-display text-xl font-bold mb-6">Order Summary</h2>
+                <h2 className="font-display text-xl font-bold mb-6">
+                  Order Summary
+                </h2>
 
                 <div className="space-y-3 mb-6 pb-6 border-b border-zinc-200">
                   <div className="flex justify-between text-sm">
                     <span className="text-zinc-600">Subtotal</span>
-                    <span className="font-semibold">${subtotal.toFixed(2)}</span>
+                    <span className="font-semibold">
+                      ${subtotal.toFixed(2)}
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-zinc-600">HST (13%)</span>

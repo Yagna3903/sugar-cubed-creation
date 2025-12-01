@@ -14,7 +14,7 @@ export default async function OffersAdminPage() {
     const offers = await getAllOffers();
 
     return (
-        <div className="max-w-7xl mx-auto p-8">
+        <div className="max-w-7xl mx-auto p-4 sm:p-8">
             {/* Back Button */}
             <div className="mb-8">
                 <Link
@@ -33,20 +33,17 @@ export default async function OffersAdminPage() {
                 </Link>
             </div>
 
-            <div className="flex items-center justify-between mb-10">
-                <div>
-                    <h1 className="font-display font-bold text-3xl text-brand-brown mb-2">Manage Offers</h1>
-                    <p className="text-zinc-500">Create and manage promotional discounts for your store.</p>
+            <div className="mb-10">
+                <div className="flex items-center justify-between gap-4">
+                    <h1 className="font-display font-bold text-3xl text-brand-brown">Manage Offers</h1>
+                    <Link
+                        href="/admin/offers/new"
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-brand-brown text-white rounded-md font-medium shadow-soft hover:shadow-medium hover:-translate-y-0.5 transition-all duration-200 whitespace-nowrap"
+                    >
+                        Create + New Offer
+                    </Link>
                 </div>
-                <Link
-                    href="/admin/offers/new"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-brand-brown text-white rounded-xl font-medium shadow-soft hover:shadow-medium hover:-translate-y-0.5 transition-all duration-200"
-                >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                    Create New Offer
-                </Link>
+                <p className="text-zinc-500 text-sm mt-2">Create and manage promotional discounts for your store.</p>
             </div>
 
             {offers.length === 0 ? (
@@ -86,7 +83,7 @@ export default async function OffersAdminPage() {
                                     return (
                                         <tr key={offer.id} className="hover:bg-brand-cream/10 transition-colors">
                                             <td className="px-6 py-4">
-                                                <div className="font-display font-bold text-brand-brown">{offer.title}</div>
+                                                <div className="font-display font-bold text-brand-brown text-sm">{offer.title}</div>
                                                 {offer.badge && (
                                                     <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-zinc-100 text-zinc-600 mt-1">
                                                         {offer.badge}
@@ -98,7 +95,7 @@ export default async function OffersAdminPage() {
                                                     {offer.discountText}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4 text-sm text-zinc-600">
+                                            <td className="px-6 py-4 text-xs text-zinc-600">
                                                 <div className="font-medium">{format(offer.validFrom, "MMM d, yyyy")}</div>
                                                 <div className="text-xs opacity-70">to {format(offer.validUntil, "MMM d, yyyy")}</div>
                                             </td>
