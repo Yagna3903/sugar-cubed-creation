@@ -43,6 +43,10 @@ export default {
         "drift": "drift 20s ease-in-out infinite",
         "drift-reverse": "driftReverse 25s ease-in-out infinite",
         "drift-slow": "driftSlow 30s ease-in-out infinite",
+        "baking-float": "bakingFloat 6s ease-in-out infinite",
+        "baking-stage-1": "bakingStage1 12s ease-in-out infinite",
+        "baking-stage-2": "bakingStage2 12s ease-in-out infinite",
+        "baking-stage-3": "bakingStage3 12s ease-in-out infinite",
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
