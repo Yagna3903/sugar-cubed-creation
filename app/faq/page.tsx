@@ -96,7 +96,7 @@ export default async function FaqPublicPage() {
               Still have questions?
             </h2>
             <p className="text-white/80 mb-8 text-lg max-w-xl mx-auto">
-              Can't find what you're looking for? We're here to help!
+              Can&apos;t find what you&apos;re looking for? We&apos;re here to help!
             </p>
             <a
               href="mailto:Sugarcubedcreations@gmail.com"
