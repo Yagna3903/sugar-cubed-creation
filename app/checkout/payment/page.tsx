@@ -23,8 +23,7 @@ function PaymentContent() {
   const [submitting, setSubmitting] = useState(false);
 
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
-  const tax = subtotal * 0.13;
-  const total = subtotal + tax;
+  const total = subtotal;
 
   const applicationId = process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID ?? "";
   const locationId = process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID ?? "";
@@ -153,18 +152,10 @@ function PaymentContent() {
               </div>
 
               <div className="border-t border-brand-brown/10 pt-4 space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-zinc-600">Subtotal</span>
-                  <span className="font-medium text-zinc-900">${subtotal.toFixed(2)}</span>
+                <div className="flex justify-between text-lg font-bold">
+                  <span className="text-brand-brown">Total</span>
+                  <span className="text-brand-brown">${total.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-zinc-600">HST (13%)</span>
-                  <span className="font-medium text-zinc-900">${tax.toFixed(2)}</span>
-                </div>
-              </div>
-              <div className="flex justify-between text-lg font-bold pt-4 border-t border-brand-brown/10 mt-2">
-                <span className="text-brand-brown">Total</span>
-                <span className="text-brand-brown">${total.toFixed(2)}</span>
               </div>
             </div>
 
