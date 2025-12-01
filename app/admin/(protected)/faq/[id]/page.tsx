@@ -11,9 +11,12 @@ export default async function EditFaqPage({ params }: { params: { id: string } }
   if (!f) return notFound();
 
   return (
-    <section className="mx-auto max-w-3xl">
+    <div className="mx-auto max-w-3xl">
       <BackLink href="/admin/faq">Back to FAQ</BackLink>
-      <h1 className="mt-3 text-2xl font-semibold">Edit FAQ</h1>
+      <div className="mt-6 mb-8">
+        <h1 className="font-display text-3xl font-bold text-brand-brown">Edit FAQ</h1>
+        <p className="text-zinc-500 mt-1">Update the details for this question.</p>
+      </div>
 
       <div className="mt-5">
         <FaqForm
@@ -28,6 +31,6 @@ export default async function EditFaqPage({ params }: { params: { id: string } }
           }}
         />
       </div>
-    </section>
+    </div>
   );
 }
