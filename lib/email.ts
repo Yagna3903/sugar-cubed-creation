@@ -77,12 +77,20 @@ export async function sendOrderEmail(
       OrderConfirmationEmail({
         orderId: order.id,
         customerName: order.customerName || "Valued Customer",
-        items: order.items.map((item) => ({
-          name: item.product.name,
-          quantity: item.qty,
-          price: item.unitPriceCents / 100,
-          imageUrl: item.product.imageUrl,
-        })),
+        items: order.items.map((item) => {
+          const img = item.product.imageUrl;
+          const absoluteImg =
+            img && img.startsWith("/")
+              ? `${process.env.NEXT_PUBLIC_APP_URL}${img}`
+              : img;
+
+          return {
+            name: item.product.name,
+            quantity: item.qty,
+            price: item.unitPriceCents / 100,
+            imageUrl: absoluteImg,
+          };
+        }),
         total: order.totalCents / 100,
         orderUrl: `${process.env.NEXT_PUBLIC_APP_URL}/orders/${order.id}`,
         shippingAddress: {
