@@ -72,6 +72,15 @@ export async function sendOrderEmail(
   }
 
   try {
+    const getBaseUrl = () => {
+      if (process.env.NEXT_PUBLIC_APP_URL)
+        return process.env.NEXT_PUBLIC_APP_URL;
+      if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+      return "https://sugar-cubed-creation.vercel.app";
+    };
+
+    const baseUrl = getBaseUrl();
+
     // Render shared HTML template
     const emailHtml = await render(
       OrderConfirmationEmail({
@@ -80,9 +89,7 @@ export async function sendOrderEmail(
         items: order.items.map((item) => {
           const img = item.product.imageUrl;
           const absoluteImg =
-            img && img.startsWith("/")
-              ? `${process.env.NEXT_PUBLIC_APP_URL}${img}`
-              : img;
+            img && img.startsWith("/") ? `${baseUrl}${img}` : img;
 
           return {
             name: item.product.name,
@@ -92,7 +99,7 @@ export async function sendOrderEmail(
           };
         }),
         total: order.totalCents / 100,
-        orderUrl: `${process.env.NEXT_PUBLIC_APP_URL}/orders/${order.id}`,
+        orderUrl: `${baseUrl}/checkout/success?o=${order.id}`,
         shippingAddress: {
           line1: "",
           city: "",
