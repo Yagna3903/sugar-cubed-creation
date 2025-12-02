@@ -82,7 +82,7 @@ export function Footer() {
           <h3 className="font-display font-bold text-lg text-brand-brown mb-6">Contact</h3>
           <div className="flex flex-col gap-4 text-sm text-zinc-600">
             <a
-              href="mailto:hello@cookie.co?subject=Cookie%20order%20inquiry&body=Hi%20Sugar%20Cubed%20Creations%2C%0A%0A"
+              href="mailto:Sugarcubedcreations@gmail.com?subject=Cookie%20order%20inquiry&body=Hi%20Sugar%20Cubed%20Creations%2C%0A%0A"
               className="inline-flex items-center gap-2 hover:text-brand-brown transition-colors"
               aria-label="Email hello@cookie.co"
             >
