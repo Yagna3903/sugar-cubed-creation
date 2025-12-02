@@ -1,10 +1,7 @@
-import { Resend } from "resend";
 import nodemailer from "nodemailer";
 import { render } from "@react-email/render";
 import OrderConfirmationEmail from "@/components/emails/OrderConfirmation";
 import { Order, OrderItem, Product } from "@prisma/client";
-
-const resend = new Resend(process.env.RESEND_API_KEY || "re_123");
 
 type OrderWithItemsAndProducts = Order & {
   items: (OrderItem & { product: Product })[];
@@ -16,6 +13,25 @@ export type EmailType =
   | "shipped"
   | "cancelled"
   | "refunded";
+
+const getTransporter = () => {
+  const port = Number(process.env.SMTP_PORT || 587);
+  return nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port,
+    secure: port === 465,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+};
+
+const getFromEmail = () => {
+  return (
+    process.env.EMAIL_FROM || `Sugar Cubed Creation <${process.env.SMTP_USER}>`
+  );
+};
 
 export async function sendOrderEmail(
   order: OrderWithItemsAndProducts,
@@ -76,55 +92,27 @@ export async function sendOrderEmail(
       })
     );
 
-    const hasSmtp = !!(
-      process.env.SMTP_HOST &&
-      process.env.SMTP_USER &&
-      process.env.SMTP_PASS
-    );
-
-    if (hasSmtp) {
-      const port = Number(process.env.SMTP_PORT || 587);
-      const transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port,
-        secure: port === 465,
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
-        },
-      });
-      const from =
-        process.env.EMAIL_FROM ||
-        `Sugar Cubed Creation <${process.env.SMTP_USER}>`;
-      const info = await transporter.sendMail({
-        from,
-        to: customerEmail,
-        subject,
-        html: emailHtml,
-      });
-      // @ts-ignore
-      const previewUrl = (nodemailer as any).getTestMessageUrl?.(info);
-      if (previewUrl) console.log("Email preview:", previewUrl);
-      return { success: true, data: info };
+    if (
+      !process.env.SMTP_HOST ||
+      !process.env.SMTP_USER ||
+      !process.env.SMTP_PASS
+    ) {
+      console.warn("SMTP not configured. Skipping email.");
+      return { success: false, error: "SMTP not configured" };
     }
 
-    if (!process.env.RESEND_API_KEY) {
-      console.warn("No SMTP or RESEND configured. Skipping email.");
-      return { success: false, error: "No email provider configured" };
-    }
-
-    const from = process.env.RESEND_FROM || "onboarding@resend.dev";
-    const { data, error } = await resend.emails.send({
-      from,
-      to: [customerEmail],
+    const transporter = getTransporter();
+    const info = await transporter.sendMail({
+      from: getFromEmail(),
+      to: customerEmail,
       subject,
       html: emailHtml,
     });
-    if (error) {
-      console.error(`Error sending ${emailType} email:`, error);
-      return { success: false, error };
-    }
-    return { success: true, data };
+
+    // @ts-ignore
+    const previewUrl = (nodemailer as any).getTestMessageUrl?.(info);
+    if (previewUrl) console.log("Email preview:", previewUrl);
+    return { success: true, data: info };
   } catch (error) {
     console.error(`Exception sending ${emailType} email:`, error);
     return { success: false, error };
@@ -140,18 +128,22 @@ export async function sendOrderConfirmation(
 }
 
 export async function sendAdminNewOrderEmail(order: OrderWithItemsAndProducts) {
-  if (!process.env.RESEND_API_KEY) return;
+  if (
+    !process.env.SMTP_HOST ||
+    !process.env.SMTP_USER ||
+    !process.env.SMTP_PASS
+  ) {
+    return { success: false, error: "SMTP not configured" };
+  }
 
-  const adminEmail =
-    process.env.ADMIN_EMAIL ||
-    process.env.RESEND_FROM ||
-    "admin@sugar-cubed.com"; // Fallback
-  const from = process.env.RESEND_FROM || "onboarding@resend.dev";
+  const adminEmail = process.env.ADMIN_EMAIL || process.env.SMTP_USER;
+  if (!adminEmail) return { success: false, error: "No admin email configured" };
 
   try {
-    const { data, error } = await resend.emails.send({
-      from: from,
-      to: [adminEmail],
+    const transporter = getTransporter();
+    const info = await transporter.sendMail({
+      from: getFromEmail(),
+      to: adminEmail,
       subject: `[ADMIN] New Order #${order.id.slice(-6).toUpperCase()}`,
       html: `
                 <h1>New Order Received</h1>
@@ -160,12 +152,12 @@ export async function sendAdminNewOrderEmail(order: OrderWithItemsAndProducts) {
                 <p>Total: $${(order.totalCents / 100).toFixed(2)}</p>
                 <p>Status: ${order.status}</p>
                 <br/>
-                <a href="${process.env.NEXT_PUBLIC_APP_URL}/admin/orders/${order.id}">View Order in Admin</a>
+                <a href="${process.env.NEXT_PUBLIC_APP_URL}/admin/orders/${order.id
+        }">View Order in Admin</a>
             `,
     });
 
-    if (error) console.error("Error sending admin email:", error);
-    return { success: !error, error };
+    return { success: true, data: info };
   } catch (error) {
     console.error("Exception sending admin email:", error);
     return { success: false, error };
@@ -182,46 +174,27 @@ export async function sendEmail({
   html: string;
 }) {
   try {
-    const hasSmtp = !!(
-      process.env.SMTP_HOST &&
-      process.env.SMTP_USER &&
-      process.env.SMTP_PASS
-    );
-    if (hasSmtp) {
-      const port = Number(process.env.SMTP_PORT || 587);
-      const transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port,
-        secure: port === 465,
-        auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
-      });
-      const from =
-        process.env.EMAIL_FROM ||
-        `Sugar Cubed Creation <${process.env.SMTP_USER}>`;
-      const info = await transporter.sendMail({ from, to, subject, html });
-      // @ts-ignore
-      const previewUrl = (nodemailer as any).getTestMessageUrl?.(info);
-      if (previewUrl) console.log("Email preview:", previewUrl);
-      return { success: true, data: info };
+    if (
+      !process.env.SMTP_HOST ||
+      !process.env.SMTP_USER ||
+      !process.env.SMTP_PASS
+    ) {
+      console.warn("SMTP not configured. Skipping email.");
+      return { success: false, error: "SMTP not configured" };
     }
 
-    if (!process.env.RESEND_API_KEY) {
-      console.warn("No SMTP or RESEND configured. Skipping email.");
-      return { success: false, error: "No email provider configured" };
-    }
-
-    const from = process.env.RESEND_FROM || "onboarding@resend.dev";
-    const { data, error } = await resend.emails.send({
-      from,
-      to: [to],
+    const transporter = getTransporter();
+    const info = await transporter.sendMail({
+      from: getFromEmail(),
+      to,
       subject,
       html,
     });
-    if (error) {
-      console.error("Error sending email:", error);
-      return { success: false, error };
-    }
-    return { success: true, data };
+
+    // @ts-ignore
+    const previewUrl = (nodemailer as any).getTestMessageUrl?.(info);
+    if (previewUrl) console.log("Email preview:", previewUrl);
+    return { success: true, data: info };
   } catch (error) {
     console.error("Exception sending email:", error);
     return { success: false, error };
