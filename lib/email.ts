@@ -72,21 +72,8 @@ export async function sendOrderEmail(
   }
 
   try {
-    const getBaseUrl = () => {
-      let url = process.env.NEXT_PUBLIC_APP_URL;
-      if (!url && process.env.VERCEL_URL) {
-        url = `https://${process.env.VERCEL_URL}`;
-      }
-      if (!url) {
-        url = "https://sugar-cubed-creation.vercel.app";
-      }
-      if (url && !url.startsWith("http")) {
-        url = `https://${url}`;
-      }
-      return url;
-    };
-
-    const baseUrl = getBaseUrl();
+    // Hardcoded for reliability as requested
+    const baseUrl = "https://sugar-cubed-creation.vercel.app";
 
     // Render shared HTML template
     const emailHtml = await render(

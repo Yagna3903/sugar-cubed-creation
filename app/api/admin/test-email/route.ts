@@ -24,13 +24,19 @@ export async function POST(req: Request) {
                     id: "item_1",
                     qty: 2,
                     unitPriceCents: 1000,
-                    product: { name: "Test Cookie" },
+                    product: {
+                        name: "Test Cookie",
+                        imageUrl: "/images/holiday-vanilla-sugar.jpg"
+                    },
                 },
                 {
                     id: "item_2",
                     qty: 1,
                     unitPriceCents: 500,
-                    product: { name: "Another Cookie" },
+                    product: {
+                        name: "Another Cookie",
+                        imageUrl: "/images/classic-vanilla-sugar.jpg"
+                    },
                 },
             ],
             shippingAddress: "123 Test St",
