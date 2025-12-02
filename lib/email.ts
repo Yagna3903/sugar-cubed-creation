@@ -50,16 +50,16 @@ export async function sendOrderEmail(
     case "pending":
       subject = `Order Received #${order.id.slice(-6).toUpperCase()}`;
       statusMessage =
-        "We have received your order and it is currently pending.";
+        "We have received your order. We are currently verifying your payment.";
       break;
     case "paid":
       subject = `Order Confirmed #${order.id.slice(-6).toUpperCase()}`;
       statusMessage =
-        "Thank you! Your payment has been received and your order is confirmed.";
+        "Thank you! Your payment has been verified and your order is confirmed.";
       break;
     case "shipped":
-      subject = `Order Shipped #${order.id.slice(-6).toUpperCase()}`;
-      statusMessage = "Great news! Your order is on its way.";
+      subject = `Order Ready #${order.id.slice(-6).toUpperCase()}`;
+      statusMessage = "Great news! Your order is ready for pickup.";
       break;
     case "cancelled":
       subject = `Order Cancelled #${order.id.slice(-6).toUpperCase()}`;
@@ -81,8 +81,10 @@ export async function sendOrderEmail(
           name: item.product.name,
           quantity: item.qty,
           price: item.unitPriceCents / 100,
+          imageUrl: item.product.imageUrl,
         })),
         total: order.totalCents / 100,
+        orderUrl: `${process.env.NEXT_PUBLIC_APP_URL}/orders/${order.id}`,
         shippingAddress: {
           line1: "",
           city: "",

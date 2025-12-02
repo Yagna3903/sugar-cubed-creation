@@ -1,11 +1,13 @@
 import {
   Body,
+  Button,
   Container,
   Head,
   Heading,
   Hr,
   Html,
   Img,
+  Link,
   Preview,
   Section,
   Text,
@@ -16,6 +18,7 @@ interface OrderItem {
   name: string;
   quantity: number;
   price: number;
+  imageUrl?: string | null;
 }
 
 interface OrderConfirmationProps {
@@ -23,7 +26,8 @@ interface OrderConfirmationProps {
   customerName: string;
   items: OrderItem[];
   total: number;
-  shippingAddress: {
+  orderUrl?: string;
+  shippingAddress?: {
     line1: string;
     city: string;
     state: string;
@@ -35,27 +39,40 @@ export const OrderConfirmationEmail = ({
   orderId = "ORD-123",
   customerName = "Valued Customer",
   items = [
-    { name: "Holiday Sugar Cookie", quantity: 2, price: 4.25 },
-    { name: "Classic Vanilla", quantity: 1, price: 4.0 },
+    {
+      name: "Holiday Sugar Cookie",
+      quantity: 2,
+      price: 4.25,
+      imageUrl: "https://via.placeholder.com/150",
+    },
+    {
+      name: "Classic Vanilla",
+      quantity: 1,
+      price: 4.0,
+      imageUrl: "https://via.placeholder.com/150",
+    },
   ],
   total = 12.5,
-  // shippingAddress = {
-  //     line1: "123 Cookie Lane",
-  //     city: "Sweet City",
-  //     state: "SC",
-  //     postalCode: "12345",
-  // },
+  orderUrl = "https://sugar-cubed-creation.vercel.app",
 }: OrderConfirmationProps) => (
   <Html>
     <Head />
     <Preview>Your Sugar Cubed Creations order is confirmed!</Preview>
     <Body style={main}>
       <Container style={container}>
+        <Section style={logoSection}>
+          <Img
+            src="https://sugar-cubed-creation.vercel.app/images/Main-Cookie.png"
+            width="80"
+            height="80"
+            alt="Sugar Cubed Creations"
+            style={logo}
+          />
+        </Section>
         <Heading style={h1}>Order Confirmed</Heading>
         <Text style={text}>Hi {customerName},</Text>
         <Text style={text}>
           Thank you for your order! We&apos;re getting your cookies ready!
-          You&apos;ll receive another email when they ship.
         </Text>
 
         <Section style={orderSection}>
@@ -63,12 +80,25 @@ export const OrderConfirmationEmail = ({
           <Hr style={hr} />
           {items.map((item, index) => (
             <div key={index} style={itemRow}>
-              <Text style={itemText}>
-                {item.quantity}x {item.name}
-              </Text>
-              <Text style={itemPrice}>
-                ${(item.price * item.quantity).toFixed(2)}
-              </Text>
+              <div style={itemImageContainer}>
+                {item.imageUrl && (
+                  <Img
+                    src={item.imageUrl}
+                    alt={item.name}
+                    width="64"
+                    height="64"
+                    style={itemImage}
+                  />
+                )}
+              </div>
+              <div style={itemDetails}>
+                <Text style={itemText}>
+                  {item.quantity}x {item.name}
+                </Text>
+                <Text style={itemPrice}>
+                  ${(item.price * item.quantity).toFixed(2)}
+                </Text>
+              </div>
             </div>
           ))}
           <Hr style={hr} />
@@ -78,21 +108,27 @@ export const OrderConfirmationEmail = ({
           </div>
         </Section>
 
-        <Section style={addressSection}>
-          {/* <Heading style={h2}>Shipping to:</Heading> */}
-          {/* <Text style={addressText}>
-            {shippingAddress.line1}
-            <br />
-            {shippingAddress.city}, {shippingAddress.state}{" "}
-            {shippingAddress.postalCode}
-          </Text> */}
+        <Section style={btnSection}>
+          <Button style={btn} href={orderUrl}>
+            View Your Order
+          </Button>
         </Section>
 
-        <Text style={footer}>
-          Sugar Cubed Creations
-          <br />
-          Made with love.
-        </Text>
+        <Section style={footer}>
+          <Text style={footerText}>
+            Sugar Cubed Creations
+            <br />
+            Made with love.
+          </Text>
+          <div style={socialLinks}>
+            <Link
+              href="https://www.instagram.com/sugarcubedcreationscanada/?hl=en"
+              style={socialLink}
+            >
+              Follow us on Instagram
+            </Link>
+          </div>
+        </Section>
       </Container>
     </Body>
   </Html>
@@ -110,25 +146,28 @@ const container = {
   maxWidth: "560px",
 };
 
+const logoSection = {
+  textAlign: "center" as const,
+  marginBottom: "32px",
+};
+
+const logo = {
+  margin: "0 auto",
+};
+
 const h1 = {
   fontSize: "24px",
   fontWeight: "bold",
   color: "#5C4033", // Brand brown
   marginBottom: "24px",
-};
-
-const h2 = {
-  fontSize: "18px",
-  fontWeight: "bold",
-  color: "#5C4033",
-  marginTop: "24px",
-  marginBottom: "12px",
+  textAlign: "center" as const,
 };
 
 const text = {
   fontSize: "16px",
   lineHeight: "26px",
   color: "#484848",
+  textAlign: "center" as const,
 };
 
 const orderSection = {
@@ -151,14 +190,31 @@ const hr = {
 
 const itemRow = {
   display: "flex",
+  marginBottom: "16px",
+  alignItems: "center",
+};
+
+const itemImageContainer = {
+  marginRight: "16px",
+};
+
+const itemImage = {
+  borderRadius: "8px",
+  objectFit: "cover" as const,
+};
+
+const itemDetails = {
+  flex: 1,
+  display: "flex",
   justifyContent: "space-between",
-  marginBottom: "8px",
+  alignItems: "center",
 };
 
 const itemText = {
   fontSize: "16px",
   color: "#484848",
   margin: "0",
+  fontWeight: "500",
 };
 
 const itemPrice = {
@@ -188,21 +244,46 @@ const totalPrice = {
   margin: "0",
 };
 
-const addressSection = {
-  marginTop: "24px",
+const btnSection = {
+  textAlign: "center" as const,
+  marginTop: "32px",
 };
 
-const addressText = {
+const btn = {
+  backgroundColor: "#5C4033",
+  borderRadius: "8px",
+  color: "#fff",
   fontSize: "16px",
-  lineHeight: "24px",
-  color: "#484848",
+  fontWeight: "bold",
+  textDecoration: "none",
+  textAlign: "center" as const,
+  display: "inline-block",
+  padding: "12px 24px",
 };
 
 const footer = {
-  fontSize: "12px",
-  color: "#888888",
   marginTop: "48px",
   textAlign: "center" as const,
+  borderTop: "1px solid #e6e6e6",
+  paddingTop: "24px",
+};
+
+const footerText = {
+  fontSize: "12px",
+  color: "#888888",
+  marginBottom: "12px",
+};
+
+const socialLinks = {
+  display: "flex",
+  justifyContent: "center",
+  gap: "16px",
+};
+
+const socialLink = {
+  fontSize: "12px",
+  color: "#5C4033",
+  textDecoration: "underline",
 };
 
 export default OrderConfirmationEmail;
