@@ -73,10 +73,17 @@ export async function sendOrderEmail(
 
   try {
     const getBaseUrl = () => {
-      if (process.env.NEXT_PUBLIC_APP_URL)
-        return process.env.NEXT_PUBLIC_APP_URL;
-      if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-      return "https://sugar-cubed-creation.vercel.app";
+      let url = process.env.NEXT_PUBLIC_APP_URL;
+      if (!url && process.env.VERCEL_URL) {
+        url = `https://${process.env.VERCEL_URL}`;
+      }
+      if (!url) {
+        url = "https://sugar-cubed-creation.vercel.app";
+      }
+      if (url && !url.startsWith("http")) {
+        url = `https://${url}`;
+      }
+      return url;
     };
 
     const baseUrl = getBaseUrl();
