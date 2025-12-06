@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { Confetti } from "@/components/confetti";
-import SendReceiptClient from "./send-receipt-client";
 
 export const dynamic = "force-dynamic";
 
@@ -78,8 +77,6 @@ export default async function SuccessPage({
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-brand-cream/20 to-white py-20 px-4">
-      {/* Trigger email send (mark paid) on client-side */}
-      <SendReceiptClient orderId={order.id} />
       <Confetti />
 
       <div className="mx-auto max-w-2xl text-center animate-slide-up">
@@ -168,7 +165,9 @@ export default async function SuccessPage({
             </div>
             {order.discountTotal > 0 && (
               <div className="flex justify-between text-sm text-green-600 font-medium">
-                <span>Discount {order.promoCode ? `(${order.promoCode})` : ""}</span>
+                <span>
+                  Discount {order.promoCode ? `(${order.promoCode})` : ""}
+                </span>
                 <span>
                   -
                   {new Intl.NumberFormat("en-CA", {
