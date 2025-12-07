@@ -62,7 +62,7 @@ export const OrderConfirmationEmail = ({
       <Container style={container}>
         <Section style={logoSection}>
           <Img
-            src="https://sugar-cubed-creation.vercel.app/images/Main-Cookie.png"
+            src="https://sugar-cubed-creations.vercel.app/images/Main-Cookie.png"
             width="120"
             alt="Sugar Cubed Creations"
             style={logo}
