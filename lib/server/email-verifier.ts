@@ -14,7 +14,7 @@ const SMTP_VERIFICATION_SENDER =
   process.env.SMTP_VERIFICATION_SENDER ??
   extractEmailAddress(process.env.EMAIL_FROM) ??
   process.env.SMTP_USER ??
-  "verify@sugarcubedcreation.com";
+  "verify@sugarcubedcreations.com";
 
 export type EmailVerificationResult = {
   deliverable: boolean;

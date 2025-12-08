@@ -50,40 +50,52 @@ export async function sendOrderEmail(
     case "pending":
       subject = `Order Received #${order.id.slice(-6).toUpperCase()}`;
       statusMessage =
-        "We have received your order. We are currently verifying your payment.";
+        "Thanks for your order! We have received it and are currently verifying your payment. You will receive another email once your order is confirmed.";
       break;
     case "paid":
       subject = `Order Confirmed #${order.id.slice(-6).toUpperCase()}`;
       statusMessage =
-        "Thank you! Your payment has been verified and your order is confirmed.";
+        "Great news! Your payment has been verified and we are starting to prepare your order.";
       break;
     case "shipped":
-      subject = `Order Ready #${order.id.slice(-6).toUpperCase()}`;
-      statusMessage = "Great news! Your order is ready for pickup.";
+      subject = `Order Fulfilled #${order.id.slice(-6).toUpperCase()}`;
+      statusMessage = "Your order has been fulfilled and is on its way!";
       break;
     case "cancelled":
       subject = `Order Cancelled #${order.id.slice(-6).toUpperCase()}`;
-      statusMessage = "Your order has been cancelled.";
+      statusMessage = "Your order has been cancelled. If you have any questions, please reply to this email.";
       break;
     case "refunded":
       subject = `Order Refunded #${order.id.slice(-6).toUpperCase()}`;
-      statusMessage = "A refund has been processed for your order.";
+      statusMessage = "A refund has been processed for your order. Please allow 5-10 business days for it to appear on your statement.";
       break;
   }
 
   try {
     // Hardcoded for reliability as requested
-    const baseUrl = "https://sugar-cubed-creation.vercel.app";
+    const baseUrl = "https://sugar-cubed-creations.vercel.app";
 
     // Render shared HTML template
     const emailHtml = await render(
       OrderConfirmationEmail({
+        heading: subject,
+        message: statusMessage,
         orderId: order.id,
         customerName: order.customerName || "Valued Customer",
         items: order.items.map((item) => {
           const img = item.product.imageUrl;
-          const absoluteImg =
-            img && img.startsWith("/") ? `${baseUrl}${img}` : img;
+          let absoluteImg = `${baseUrl}/images/Main-Cookie.png`; // Default fallback
+
+          if (img) {
+            if (img.startsWith("http")) {
+              absoluteImg = img;
+            } else if (img.startsWith("/")) {
+              absoluteImg = `${baseUrl}${img}`;
+            } else {
+              // Handle relative path without leading slash
+              absoluteImg = `${baseUrl}/${img}`;
+            }
+          }
 
           return {
             name: item.product.name,

@@ -113,7 +113,7 @@ export default function CheckoutClient() {
     const emailResult = EMAIL_SCHEMA.safeParse(normalizedEmail);
 
     if (!emailResult.success) {
-      setError(emailResult.error.issues[0].message);
+      setEmailNotice(emailResult.error.issues[0].message);
       return;
     }
 
@@ -126,7 +126,8 @@ export default function CheckoutClient() {
       });
       router.push(`/checkout/payment?${params.toString()}`);
     } catch (err: any) {
-      setError(err?.message || "Something went wrong.");
+      // Most likely an email verification error, so show it on the field
+      setEmailNotice(err?.message || "Something went wrong.");
     } finally {
       setSubmitting(false);
     }
@@ -175,20 +176,18 @@ export default function CheckoutClient() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your.email@example.com"
                 />
-                <div className="flex items-center justify-between text-xs">
-                  {checkingEmail && normalizedEmail && (
-                    <span className="flex items-center gap-2 text-zinc-500">
-                      <span className="w-3 h-3 border-2 border-zinc-300 border-t-brand-brown rounded-full animate-spin" />
-                      Checking deliverability…
+                <div className="h-4 mt-1">
+                  {checkingEmail && normalizedEmail ? (
+                    <span className="flex items-center gap-2 text-xs text-zinc-500 animate-pulse">
+                      <span className="w-2 h-2 bg-zinc-400 rounded-full" />
+                      Checking validty...
                     </span>
-                  )}
-                  {!checkingEmail && !emailNotice && normalizedEmail && (
-                    <span className="text-green-600">Looks good!</span>
-                  )}
+                  ) : emailNotice ? (
+                    <p className="text-xs text-red-600 animate-fade-in font-medium">
+                      {emailNotice}
+                    </p>
+                  ) : null}
                 </div>
-                {emailNotice && (
-                  <p className="text-xs text-red-600">{emailNotice}</p>
-                )}
               </div>
               {error && (
                 <div className="p-4 rounded-xl bg-red-50 text-red-600 text-sm font-medium border border-red-100">
