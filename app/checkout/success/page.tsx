@@ -80,29 +80,26 @@ export default async function SuccessPage({
       <Confetti />
 
       <div className="mx-auto max-w-2xl text-center animate-slide-up">
-        <div className="mx-auto mb-8 grid h-20 w-20 place-items-center rounded-full bg-green-100 shadow-sm animate-bounce-subtle">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M20 7L9 18l-5-5"
-              stroke="#16a34a"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+        <div className="text-center mb-8">
+          <div className="mx-auto mb-8 grid h-20 w-20 place-items-center rounded-full bg-green-100 shadow-sm animate-bounce-subtle">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M20 7L9 18l-5-5"
+                stroke="#16a34a"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
+          <h1 className="text-3xl font-display font-bold text-brand-brown mb-2">
+            Order Confirmed! (v2.0)
+          </h1>
+          <p className="text-zinc-600">
+            Thanks, {order.customerName}! We&apos;ve emailed your receipt to{" "}
+            <span className="font-semibold text-zinc-900">{order.email}</span>.
+          </p>
         </div>
-
-        <h1 className="font-display text-4xl font-bold text-zinc-900 mb-4">
-          Order Confirmed!
-        </h1>
-        <p className="text-lg text-zinc-600 mb-8">
-          Thanks{order.customerName ? `, ${order.customerName}` : ""}! We’ve
-          emailed your receipt to{" "}
-          <span className="font-medium text-zinc-900">
-            {order.email ?? "your email"}
-          </span>
-          .
-        </p>
 
         <div className="bg-white rounded-3xl shadow-soft p-8 text-left border border-zinc-100 relative overflow-hidden mb-8">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-brown/20 via-brand-brown to-brand-brown/20"></div>
