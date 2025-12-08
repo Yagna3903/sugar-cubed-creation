@@ -38,8 +38,10 @@ export async function verifyEmailDeliverable(
     validateRegex: true,
     validateTypo: true,
     validateDisposable: true,
-    validateMx: true,
-    validateSMTP: true,
+    // Vercel blocks port 25, causing SMTP checks to fail or timeout.
+    // We disable them to prevent blocking legitimate users.
+    validateMx: false,
+    validateSMTP: false,
   })) as DeepEmailValidationResult;
 
   if (!result.valid) {
