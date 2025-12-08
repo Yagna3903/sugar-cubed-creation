@@ -2,12 +2,14 @@
 "use client";
 export const dynamic = "force-dynamic";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/cart-store";
 import { z } from "zod";
 import { BackButton } from "@/components/ui/back-button";
 import Image from "next/image";
+
+const EMAIL_SCHEMA = z.string().email("Please enter a valid email address.");
 
 export default function CheckoutClient() {
   const router = useRouter();
@@ -16,9 +18,82 @@ export default function CheckoutClient() {
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [emailNotice, setEmailNotice] = useState<string | null>(null);
+  const [checkingEmail, setCheckingEmail] = useState(false);
+  const normalizedEmail = email.trim();
 
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
   const total = Math.max(0, subtotal - discountAmount);
+
+  useEffect(() => {
+    setEmailNotice(null);
+    setCheckingEmail(false);
+
+    if (!normalizedEmail) {
+      return;
+    }
+
+    const validation = EMAIL_SCHEMA.safeParse(normalizedEmail);
+    if (!validation.success) {
+      setEmailNotice(validation.error.issues[0].message);
+      return;
+    }
+
+    const controller = new AbortController();
+    let isActive = true;
+    const timeout = setTimeout(async () => {
+      setCheckingEmail(true);
+      try {
+        const resp = await fetch("/api/email/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: normalizedEmail }),
+          signal: controller.signal,
+        });
+        const data = await resp.json().catch(() => ({}));
+
+        if (!isActive) {
+          return;
+        }
+
+        if (!resp.ok || data.deliverable === false) {
+          setEmailNotice("Please use a legitimate and existing email.");
+        } else {
+          setEmailNotice(null);
+        }
+      } catch (err) {
+        if (isActive && !controller.signal.aborted) {
+          setEmailNotice("Unable to verify email right now.");
+        }
+      } finally {
+        if (isActive) {
+          setCheckingEmail(false);
+        }
+      }
+    }, 600);
+
+    return () => {
+      isActive = false;
+      controller.abort();
+      clearTimeout(timeout);
+    };
+  }, [normalizedEmail]);
+
+  async function verifyEmailDeliverable(emailToCheck: string) {
+    const resp = await fetch("/api/email/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: emailToCheck }),
+    });
+
+    const data = await resp.json().catch(() => ({}));
+
+    if (!resp.ok || data.deliverable === false) {
+      throw new Error(
+        data?.error || "Please use a legitimate and existing email."
+      );
+    }
+  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -35,8 +110,7 @@ export default function CheckoutClient() {
       return;
     }
 
-    const emailSchema = z.string().email("Please enter a valid email address.");
-    const emailResult = emailSchema.safeParse(email.trim());
+    const emailResult = EMAIL_SCHEMA.safeParse(normalizedEmail);
 
     if (!emailResult.success) {
       setError(emailResult.error.issues[0].message);
@@ -45,9 +119,10 @@ export default function CheckoutClient() {
 
     setSubmitting(true);
     try {
+      await verifyEmailDeliverable(normalizedEmail);
       const params = new URLSearchParams({
         name: name.trim(),
-        email: email.trim(),
+        email: normalizedEmail,
       });
       router.push(`/checkout/payment?${params.toString()}`);
     } catch (err: any) {
@@ -74,29 +149,58 @@ export default function CheckoutClient() {
           <form onSubmit={onSubmit} className="space-y-6">
             <div className="space-y-4">
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-zinc-700">Full Name</label>
+                <label className="block text-sm font-medium text-zinc-700">
+                  Full Name
+                </label>
                 <input
                   className="w-full rounded-xl border-2 border-zinc-100 px-4 py-3 focus:border-brand-brown focus:ring-4 focus:ring-brand-brown/10 transition-all outline-none bg-zinc-50/50"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Jane Doe"
+                  placeholder="Your Name"
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-zinc-700">Email Address</label>
+                <label className="block text-sm font-medium text-zinc-700">
+                  Email Address
+                </label>
+                <p className="text-xs text-zinc-500">
+                  Please use an existing, active email account so we can send
+                  your receipt.
+                </p>
                 <input
                   type="email"
                   className="w-full rounded-xl border-2 border-zinc-100 px-4 py-3 focus:border-brand-brown focus:ring-4 focus:ring-brand-brown/10 transition-all outline-none bg-zinc-50/50"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="jane@example.com"
+                  placeholder="your.email@example.com"
                 />
+                <div className="flex items-center justify-between text-xs">
+                  {checkingEmail && normalizedEmail && (
+                    <span className="flex items-center gap-2 text-zinc-500">
+                      <span className="w-3 h-3 border-2 border-zinc-300 border-t-brand-brown rounded-full animate-spin" />
+                      Checking deliverability…
+                    </span>
+                  )}
+                  {!checkingEmail && !emailNotice && normalizedEmail && (
+                    <span className="text-green-600">Looks good!</span>
+                  )}
+                </div>
+                {emailNotice && (
+                  <p className="text-xs text-red-600">{emailNotice}</p>
+                )}
               </div>
+              {error && (
+                <div className="p-4 rounded-xl bg-red-50 text-red-600 text-sm font-medium border border-red-100">
+                  {error}
+                </div>
+              )}
             </div>
 
             <div className="bg-brand-cream/30 rounded-2xl p-6 space-y-3 border border-brand-brown/5">
-              <h3 className="font-display font-semibold text-lg mb-4">Order Summary</h3>
+              <h3 className="font-display font-semibold text-lg mb-4">
+                Order Summary
+              </h3>
 
               <div className="space-y-3 mb-4 max-h-60 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-brand-brown/20">
                 {items.map((item) => (
@@ -110,7 +214,9 @@ export default function CheckoutClient() {
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-zinc-900 truncate">{item.name}</p>
+                      <p className="text-sm font-medium text-zinc-900 truncate">
+                        {item.name}
+                      </p>
                       <p className="text-xs text-zinc-500">Qty: {item.qty}</p>
                     </div>
                     <div className="text-sm font-medium text-zinc-900">
@@ -137,12 +243,6 @@ export default function CheckoutClient() {
                 </div>
               </div>
             </div>
-
-            {error && (
-              <div className="p-4 rounded-xl bg-red-50 text-red-600 text-sm font-medium border border-red-100">
-                {error}
-              </div>
-            )}
 
             <button
               type="submit"

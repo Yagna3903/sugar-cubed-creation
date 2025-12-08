@@ -3,11 +3,19 @@ import { Hero } from "@/components/hero";
 import { ProductGrid } from "@/components/product-grid";
 import { listProducts } from "@/lib/server/products";
 import Link from "next/link";
-import { IconBriefcase, IconChefHat, IconCookie, IconGift, IconRollingPin, IconSparkle, IconWheat, IconWhisk } from "@/components/ui/bakery-icons";
+import {
+  IconBriefcase,
+  IconChefHat,
+  IconCookie,
+  IconGift,
+  IconRollingPin,
+  IconSparkle,
+  IconWheat,
+  IconWhisk,
+} from "@/components/ui/bakery-icons";
 import { CookieWave } from "@/components/ui/cookie-wave";
 
 export const dynamic = "force-dynamic";
-
 
 export default async function HomePage() {
   // fetch products from DB
@@ -42,13 +50,18 @@ export default async function HomePage() {
           <h2 className="text-3xl font-bold animate-slide-up text-zinc-900 drop-shadow-sm">
             Our cookies
           </h2>
-          <Link href="/shop" className="text-sm font-semibold underline decoration-brand-brown/30 hover:decoration-brand-brown transition-all hover:text-brand-brown">
+          <Link
+            href="/shop"
+            className="text-sm font-semibold underline decoration-brand-brown/30 hover:decoration-brand-brown transition-all hover:text-brand-brown"
+          >
             See all
           </Link>
         </div>
         <div className="mt-6 relative z-10">
           <div className="flex items-center gap-2 mb-4">
-            <h3 className="font-semibold text-xl text-brand-brown">Best-sellers</h3>
+            <h3 className="font-semibold text-xl text-brand-brown">
+              Best-sellers
+            </h3>
             <span className="text-brand-brown animate-wiggle">
               <IconWheat className="w-6 h-6" />
             </span>
@@ -66,7 +79,9 @@ export default async function HomePage() {
 
         <div className="mt-16 relative z-10">
           <div className="flex items-center gap-2 mb-4">
-            <h3 className="font-semibold text-xl text-brand-brown">New products</h3>
+            <h3 className="font-semibold text-xl text-brand-brown">
+              New products
+            </h3>
             <span className="text-brand-brown animate-pulse-gentle">
               <IconSparkle className="w-6 h-6" />
             </span>
@@ -116,12 +131,23 @@ export default async function HomePage() {
                 Corporate Inquiry
               </h3>
               <p className="text-white/90 mb-6 leading-relaxed">
-                Custom printed logo cookies perfect for events, corporate gifts, and special occasions.
+                Custom printed logo cookies perfect for events, corporate gifts,
+                and special occasions.
               </p>
               <div className="inline-flex items-center gap-2 font-semibold group-hover:gap-3 transition-all">
                 Start Your Inquiry
-                <svg className="h-5 w-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                <svg
+                  className="h-5 w-5 group-hover:translate-x-1 transition-transform"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 8l4 4m0 0l-4 4m4-4H3"
+                  />
                 </svg>
               </div>
             </div>
@@ -158,12 +184,23 @@ export default async function HomePage() {
                 Our Story
               </h3>
               <p className="text-zinc-700 mb-6 leading-relaxed">
-                Handcrafted with love since day one. Every cookie tells a story of quality ingredients and passion for baking.
+                Handcrafted with love since day one. Every cookie tells a story
+                of quality ingredients and passion for baking.
               </p>
               <div className="inline-flex items-center gap-2 text-brand-brown font-semibold group-hover:gap-3 transition-all">
                 Learn More About Us
-                <svg className="h-5 w-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                <svg
+                  className="h-5 w-5 group-hover:translate-x-1 transition-transform"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 8l4 4m0 0l-4 4m4-4H3"
+                  />
                 </svg>
               </div>
             </div>
@@ -176,9 +213,12 @@ export default async function HomePage() {
             <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-brand-cream text-brand-brown group-hover:scale-110 transition-transform">
               <IconWheat className="w-6 h-6" />
             </div>
-            <h4 className="font-display text-lg font-semibold mb-2 text-zinc-900">Quality Ingredients</h4>
+            <h4 className="font-display text-lg font-semibold mb-2 text-zinc-900">
+              Quality Ingredients
+            </h4>
             <p className="text-sm text-zinc-600">
-              We use only the finest, ethically sourced ingredients in every batch.
+              We use only the finest, ethically sourced ingredients in every
+              batch.
             </p>
           </div>
 
@@ -186,7 +226,9 @@ export default async function HomePage() {
             <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-brand-pink/30 text-brand-brown group-hover:rotate-12 transition-transform">
               <IconWhisk className="w-6 h-6" />
             </div>
-            <h4 className="font-display text-lg font-semibold mb-2 text-zinc-900">Freshly Baked</h4>
+            <h4 className="font-display text-lg font-semibold mb-2 text-zinc-900">
+              Freshly Baked
+            </h4>
             <p className="text-sm text-zinc-600">
               Every order is baked fresh to ensure maximum flavor and quality.
             </p>
@@ -196,9 +238,12 @@ export default async function HomePage() {
             <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-brand-brown/10 text-brand-brown group-hover:scale-110 transition-transform">
               <IconRollingPin className="w-6 h-6" />
             </div>
-            <h4 className="font-display text-lg font-semibold mb-2 text-zinc-900">Custom Designs</h4>
+            <h4 className="font-display text-lg font-semibold mb-2 text-zinc-900">
+              Custom Designs
+            </h4>
             <p className="text-sm text-zinc-600">
-              Need something special? We love creating custom cookies for your events!
+              Need something special? We love creating custom cookies for your
+              events!
             </p>
           </div>
         </div>

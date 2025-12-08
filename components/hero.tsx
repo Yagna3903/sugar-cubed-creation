@@ -1,6 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
-import { IconCookie, IconSparkle, IconWheat, IconWhisk } from "@/components/ui/bakery-icons";
+import {
+  IconCookie,
+  IconSparkle,
+  IconWheat,
+  IconWhisk,
+} from "@/components/ui/bakery-icons";
 import { prisma } from "@/lib/db";
 import { HeroSlideshow } from "./hero-slideshow";
 
@@ -14,9 +19,10 @@ async function getHeroImages() {
   if (!content) return ["/images/Main-Cookie.png"];
 
   const data = content.content as { images?: string[] };
-  const images = Array.isArray(data.images) && data.images.length > 0
-    ? data.images
-    : ["/images/Main-Cookie.png"];
+  const images =
+    Array.isArray(data.images) && data.images.length > 0
+      ? data.images
+      : ["/images/Main-Cookie.png"];
 
   return images;
 }
@@ -57,13 +63,14 @@ export async function Hero() {
           </div>
 
           <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6">
-            Gift for your{" "}
-            <span className="text-gradient">mood</span>
+            Gift for your <span className="text-gradient">mood</span>
           </h1>
 
           <p className="text-lg md:text-xl text-zinc-700 mb-8 leading-relaxed max-w-lg">
-            Handcrafted cookies made with <span className="font-semibold text-brand-brown">love</span> and the finest ingredients.
-            Perfect for gifts, celebrations, or just because.
+            Handcrafted cookies made with{" "}
+            <span className="font-semibold text-brand-brown">love</span> and the
+            finest ingredients. Perfect for gifts, celebrations, or just
+            because.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4">
@@ -72,8 +79,18 @@ export async function Hero() {
               className="group btn-primary inline-flex items-center justify-center gap-2"
             >
               <span>Shop Now</span>
-              <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              <svg
+                className="w-5 h-5 transition-transform group-hover:translate-x-1"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 8l4 4m0 0l-4 4m4-4H3"
+                />
               </svg>
             </Link>
 
@@ -95,7 +112,9 @@ export async function Hero() {
 
             {/* Floating badge */}
             <div className="absolute bottom-6 left-6 bg-white/90 backdrop-blur-md px-6 py-3 rounded-2xl shadow-medium z-20 animate-fade-in hover:scale-105 transition-transform">
-              <p className="text-sm font-medium text-brand-brown">⭐ Rated 5.0/5.0</p>
+              <p className="text-sm font-medium text-brand-brown">
+                ⭐ Rated 5.0/5.0
+              </p>
               <p className="text-xs text-zinc-600">by 200+ customers</p>
             </div>
           </div>
