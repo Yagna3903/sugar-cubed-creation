@@ -6,8 +6,6 @@ import { Footer } from "@/components/footer";
 import Providers from "./providers";
 import { Analytics } from "@vercel/analytics/react";
 
-import { SpeedInsights } from "@vercel/speed-insights/next";
-
 export const metadata: Metadata = {
   title: "Sugar Cubed Creations",
   description: "Fresh, chunky, mood-lifting cookies.",
@@ -26,7 +24,6 @@ export default function RootLayout({
           <main className="min-h-screen">{children}</main>
           <Footer />
           <Analytics />
-          <SpeedInsights />
         </Providers>
       </body>
     </html>
