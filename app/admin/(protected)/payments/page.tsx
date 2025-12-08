@@ -147,23 +147,20 @@ export default async function AdminPaymentsPage() {
                       <td className="px-6 py-4 align-top">
                         <span
                           className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium border ${p.status === "completed"
-                              ? "bg-green-50 text-green-700 border-green-100"
-                              : p.status === "pending"
-                                ? "bg-amber-50 text-amber-700 border-amber-100"
-                                : p.status === "refunded"
-                                  ? "bg-purple-50 text-purple-700 border-purple-100"
-                                  : "bg-red-50 text-red-700 border-red-100"
+                            ? "bg-green-50 text-green-700 border-green-100"
+                            : p.status === "pending"
+                              ? "bg-amber-50 text-amber-700 border-amber-100"
+                              : p.status === "refunded"
+                                ? "bg-purple-50 text-purple-700 border-purple-100"
+                                : "bg-red-50 text-red-700 border-red-100"
                             }`}
                         >
-                          <span className={`w-1.5 h-1.5 rounded-full ${p.status === "completed"
-                              ? "bg-green-500"
-                              : p.status === "pending"
-                                ? "bg-amber-500"
-                                : p.status === "refunded"
-                                  ? "bg-purple-500"
-                                  : "bg-red-500"
-                            }`} />
-                          {p.status.charAt(0).toUpperCase() + p.status.slice(1)}
+                          <span className="text-[10px]">
+                            {p.status === "completed" ? "✓" :
+                              p.status === "pending" ? "•" :
+                                p.status === "refunded" ? "↩" : "✗"}
+                          </span>
+                          {p.status === "completed" ? "Paid" : p.status.charAt(0).toUpperCase() + p.status.slice(1)}
                         </span>
                         {isPending && (
                           <div className="mt-2 text-[10px] leading-tight text-zinc-500 max-w-[140px]">

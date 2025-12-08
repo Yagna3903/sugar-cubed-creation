@@ -24,13 +24,13 @@ const statusConfig: Record<
     { bg: string; text: string; icon: string }
 > = {
     pending: {
-        bg: "bg-amber-100",
-        text: "text-amber-800",
-        icon: "⏳",
+        bg: "bg-amber-50",
+        text: "text-amber-700",
+        icon: "•",
     },
     paid: {
-        bg: "bg-blue-100",
-        text: "text-blue-800",
+        bg: "bg-green-50",
+        text: "text-green-700",
         icon: "✓",
     },
     fulfilled: {

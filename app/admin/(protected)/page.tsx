@@ -4,6 +4,7 @@ export const dynamic = "force-dynamic";
 import Link from "next/link";
 import BackLink from "../_components/BackLink";
 import StatsCard from "../_components/StatsCard";
+import StatusBadge from "../_components/StatusBadge";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/server/admin";
 import {
@@ -144,12 +145,7 @@ export default async function AdminHome() {
 
           <div className="bg-white rounded-2xl shadow-soft border border-zinc-100 divide-y">
             {recentOrders.map((order) => {
-              const statusColors: Record<string, string> = {
-                pending: "bg-amber-100 text-amber-800",
-                paid: "bg-blue-100 text-blue-800",
-                fulfilled: "bg-green-100 text-green-800",
-                cancelled: "bg-red-100 text-red-700",
-              };
+
 
               return (
                 <Link
@@ -162,17 +158,11 @@ export default async function AdminHome() {
                       <p className="font-medium text-zinc-900 truncate">
                         {order.customerName || order.email}
                       </p>
-                      <span
-                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium border ${statusColors[order.status] || "bg-zinc-100 text-zinc-700 border-zinc-200"
-                          } shadow-sm`}
-                      >
-                        <span className={`mr-1.5 h-1.5 w-1.5 rounded-full ${order.status === 'pending' ? 'bg-amber-500 animate-pulse' :
-                          order.status === 'paid' ? 'bg-blue-500' :
-                            order.status === 'fulfilled' ? 'bg-green-500' :
-                              'bg-red-500'
-                          }`} />
-                        {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                      </span>
+                      <StatusBadge
+                        status={
+                          order.status as "pending" | "paid" | "fulfilled" | "cancelled" | "refunded"
+                        }
+                      />
                     </div>
                     <p className="text-sm text-zinc-500">
                       {new Date(order.createdAt).toLocaleDateString()} •{" "}
