@@ -93,6 +93,97 @@ export async function markFulfilled(id: string) {
   revalidateAll(id);
 }
 
+export async function approveOrder(id: string) {
+  await requireAdmin();
+  // Try to find any related pending/authorized payment
+  const payment = await (prisma as any).payment.findFirst({
+    where: { orderId: id, status: { in: ["pending", "authorized", "approved"] } },
+    orderBy: { createdAt: "desc" },
+  });
+
+  const squareBase =
+    process.env.SQUARE_API_BASE_URL ?? "https://connect.squareupsandbox.com";
+  const squareVersion = process.env.SQUARE_API_VERSION ?? "2025-08-20";
+  const accessToken = process.env.SQUARE_ACCESS_TOKEN;
+
+  try {
+    if (payment && payment.provider === "square" && payment.providerPaymentId) {
+      const providerId = payment.providerPaymentId;
+
+      if (!accessToken) {
+        // Fallback: just mark paid locally
+        await prisma.order.update({ where: { id }, data: { status: "paid" } });
+        await (prisma as any).payment.update({ where: { id: payment.id }, data: { status: "completed" } });
+        revalidateAll(id);
+        return;
+      }
+
+      // Call Square Complete Payment (Capture)
+      const resp = await fetch(
+        `${squareBase}/v2/payments/${providerId}/complete`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+            "Square-Version": squareVersion,
+          },
+        }
+      );
+      const data = await resp.json().catch(() => ({}));
+
+      if (!resp.ok) {
+        console.error("[admin.approveOrder] failed to capture Square payment", {
+          providerId,
+          data,
+        });
+        // Do not update status if capture failed
+        return { success: false, error: "Failed to capture payment with Square" };
+      }
+
+      // Update payment + order in a transaction
+      await prisma.$transaction(async (tx) => {
+        await (tx as any).payment.update({
+          where: { id: payment.id },
+          data: { status: "completed", metadata: data },
+        });
+        await tx.order.update({
+          where: { id },
+          data: { status: "paid" },
+        });
+      });
+
+      // Send email
+      const order = await prisma.order.findUnique({
+        where: { id },
+        include: { items: { include: { product: true } } }
+      });
+      if (order) await sendOrderEmail(order, "paid");
+
+      revalidateAll(id);
+      return { success: true };
+    }
+
+    // No square payment found, just mark paid locally
+    await prisma.order.update({ where: { id }, data: { status: "paid" } });
+    if (payment) {
+      await (prisma as any).payment.update({ where: { id: payment.id }, data: { status: "completed" } });
+    }
+
+    // Send email
+    const order = await prisma.order.findUnique({
+      where: { id },
+      include: { items: { include: { product: true } } }
+    });
+    if (order) await sendOrderEmail(order, "paid");
+
+    revalidateAll(id);
+  } catch (err: any) {
+    console.error("[admin.approveOrder] unexpected error:", err?.message ?? err);
+    return { success: false, error: "Unexpected error confirming order" };
+  }
+}
+
 export async function cancelOrder(id: string) {
   await requireAdmin();
   // Try to find any related payment (most recent)

@@ -50,40 +50,61 @@ export async function sendOrderEmail(
     case "pending":
       subject = `Order Received #${order.id.slice(-6).toUpperCase()}`;
       statusMessage =
-        "We have received your order. We are currently verifying your payment.";
+        "Thanks for your order! We have received it and are currently verifying your payment. You will receive another email once your order is confirmed.";
       break;
     case "paid":
       subject = `Order Confirmed #${order.id.slice(-6).toUpperCase()}`;
       statusMessage =
-        "Thank you! Your payment has been verified and your order is confirmed.";
+        "Great news! Your payment has been verified and we are starting to prepare your order.";
       break;
     case "shipped":
-      subject = `Order Ready #${order.id.slice(-6).toUpperCase()}`;
-      statusMessage = "Great news! Your order is ready for pickup.";
+      subject = `Order Fulfilled #${order.id.slice(-6).toUpperCase()}`;
+      statusMessage = "Your order has been fulfilled and is on its way!";
       break;
     case "cancelled":
       subject = `Order Cancelled #${order.id.slice(-6).toUpperCase()}`;
-      statusMessage = "Your order has been cancelled.";
+      statusMessage = "Your order has been cancelled. If you have any questions, please reply to this email.";
       break;
     case "refunded":
       subject = `Order Refunded #${order.id.slice(-6).toUpperCase()}`;
-      statusMessage = "A refund has been processed for your order.";
+      statusMessage = "A refund has been processed for your order. Please allow 5-10 business days for it to appear on your statement.";
       break;
   }
 
   try {
+    console.log(`[Email] Preparing to send '${emailType}' email to: ${customerEmail}`);
+
+    // Check Env Vars explicitly
+    if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
+      console.error("[Email] CRITICAL: SMTP environment variables are missing!");
+      return { success: false, error: "SMTP not configured" };
+    }
+
     // Hardcoded for reliability as requested
-    const baseUrl = "https://sugar-cubed-creation.vercel.app";
+    const baseUrl = "https://sugar-cubed-creations.vercel.app";
 
     // Render shared HTML template
+    console.log("[Email] Rendering HTML template...");
     const emailHtml = await render(
       OrderConfirmationEmail({
+        heading: subject,
+        message: statusMessage,
         orderId: order.id,
         customerName: order.customerName || "Valued Customer",
         items: order.items.map((item) => {
           const img = item.product.imageUrl;
-          const absoluteImg =
-            img && img.startsWith("/") ? `${baseUrl}${img}` : img;
+          let absoluteImg = `${baseUrl}/images/Main-Cookie.png`; // Default fallback
+
+          if (img) {
+            if (img.startsWith("http")) {
+              absoluteImg = img;
+            } else if (img.startsWith("/")) {
+              absoluteImg = `${baseUrl}${img}`;
+            } else {
+              // Handle relative path without leading slash
+              absoluteImg = `${baseUrl}/${img}`;
+            }
+          }
 
           return {
             name: item.product.name,
@@ -103,16 +124,12 @@ export async function sendOrderEmail(
       })
     );
 
-    if (
-      !process.env.SMTP_HOST ||
-      !process.env.SMTP_USER ||
-      !process.env.SMTP_PASS
-    ) {
-      console.warn("SMTP not configured. Skipping email.");
-      return { success: false, error: "SMTP not configured" };
-    }
-
     const transporter = getTransporter();
+    console.log("[Email] Sending via Transporter:", {
+      host: process.env.SMTP_HOST,
+      user: process.env.SMTP_USER
+    });
+
     const info = await transporter.sendMail({
       from: getFromEmail(),
       to: customerEmail,
@@ -120,12 +137,14 @@ export async function sendOrderEmail(
       html: emailHtml,
     });
 
+    console.log("[Email] SUCCESS! Message ID:", info.messageId);
+
     // @ts-ignore
     const previewUrl = (nodemailer as any).getTestMessageUrl?.(info);
     if (previewUrl) console.log("Email preview:", previewUrl);
     return { success: true, data: info };
   } catch (error) {
-    console.error(`Exception sending ${emailType} email:`, error);
+    console.error(`[Email] EXCEPTION sending ${emailType} email:`, error);
     return { success: false, error };
   }
 }

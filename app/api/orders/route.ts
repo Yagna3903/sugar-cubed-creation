@@ -5,6 +5,7 @@ import { CreateOrderInput } from "@/lib/server/validators";
 import { prisma } from "@/lib/db";
 import { OrderStatus, Prisma } from "@prisma/client";
 import { sendOrderEmail, sendAdminNewOrderEmail } from "@/lib/email";
+import { verifyEmailDeliverable } from "@/lib/server/email-verifier";
 
 export async function POST(req: Request) {
   let body: unknown;
@@ -23,6 +24,27 @@ export async function POST(req: Request) {
   }
 
   const { customer, items } = parsed.data;
+  const normalizedEmail = customer.email.trim();
+
+  try {
+    const verification = await verifyEmailDeliverable(normalizedEmail);
+    if (!verification.deliverable) {
+      return NextResponse.json(
+        {
+          error:
+            "We couldn't verify that email can receive receipts. Please use another address.",
+          reason: verification.reason,
+          suggestion: verification.suggestion,
+        },
+        { status: 422 }
+      );
+    }
+  } catch (error: any) {
+    return NextResponse.json(
+      { error: error?.message ?? "Email verification failed" },
+      { status: 502 }
+    );
+  }
 
   try {
     const order = await prisma.$transaction(async (tx) => {
@@ -79,7 +101,9 @@ export async function POST(req: Request) {
             // Check min purchase
             if (!offer.minPurchase || totalCents >= offer.minPurchase) {
               if (offer.discountType === "percentage") {
-                discountTotal = Math.round(totalCents * (offer.discountValue / 100));
+                discountTotal = Math.round(
+                  totalCents * (offer.discountValue / 100)
+                );
               } else {
                 discountTotal = offer.discountValue; // Value is in cents
               }
@@ -87,7 +111,7 @@ export async function POST(req: Request) {
               // Increment usage
               await tx.offer.update({
                 where: { id: offer.id },
-                data: { usageCount: { increment: 1 } }
+                data: { usageCount: { increment: 1 } },
               });
             }
           }
@@ -97,7 +121,7 @@ export async function POST(req: Request) {
       const finalTotal = Math.max(0, totalCents - discountTotal);
 
       const orderData = {
-        email: customer.email,
+        email: normalizedEmail,
         customerName: customer.name,
         status: OrderStatus.pending,
         // subtotal is defined in schema and generated types
@@ -125,12 +149,19 @@ export async function POST(req: Request) {
     // Send emails (fire and forget)
     const orderWithItems = await prisma.order.findUnique({
       where: { id: order.id },
-      include: { items: { include: { product: true } } }
+      include: { items: { include: { product: true } } },
     });
 
     if (orderWithItems) {
-      sendOrderEmail(orderWithItems, "pending");
-      sendAdminNewOrderEmail(orderWithItems);
+      console.log("[OrderAPI] Sending confirmation emails...");
+      await Promise.all([
+        sendOrderEmail(orderWithItems, "pending").catch((err) =>
+          console.error("Failed to send customer email:", err)
+        ),
+        sendAdminNewOrderEmail(orderWithItems).catch((err) =>
+          console.error("Failed to send admin email:", err)
+        ),
+      ]);
     }
 
     const origin = new URL(req.url).origin;

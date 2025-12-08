@@ -212,18 +212,18 @@ export default function CartPage() {
                 <div className="mb-6">
                   {!promoCode ? (
                     <div className="space-y-2">
-                      <div className="flex gap-2">
+                      <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row gap-2">
                         <input
                           type="text"
                           value={promoInput}
                           onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
                           placeholder="Promo Code"
-                          className="flex-1 rounded-xl border-2 border-zinc-100 px-4 py-2 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/10 outline-none bg-zinc-50 text-sm uppercase"
+                          className="flex-1 rounded-xl border-2 border-zinc-100 px-4 py-2 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/10 outline-none bg-zinc-50 text-sm uppercase w-full"
                         />
                         <button
                           onClick={handleApplyPromo}
                           disabled={validating || !promoInput}
-                          className="bg-zinc-900 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          className="bg-zinc-900 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors w-full sm:w-auto lg:w-full xl:w-auto"
                         >
                           {validating ? "..." : "Apply"}
                         </button>

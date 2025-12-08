@@ -21,7 +21,6 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
   const status: AdminStatus =
     raw === "all" ||
       raw === "paid" ||
-      raw === "fulfilled" ||
       raw === "cancelled" ||
       raw === "refunded" ||
       raw === "archived"

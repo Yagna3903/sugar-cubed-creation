@@ -1,107 +1,85 @@
-import { z } from "zod";
 import validate from "deep-email-validator";
+
+type ValidatorKey = "regex" | "typo" | "disposable" | "mx" | "smtp";
+
+type DeepEmailValidationResult = {
+  valid: boolean;
+  reason?: ValidatorKey;
+  validators?: Partial<
+    Record<ValidatorKey, { valid: boolean; reason?: string }>
+  >;
+};
+
+const SMTP_VERIFICATION_SENDER =
+  process.env.SMTP_VERIFICATION_SENDER ??
+  extractEmailAddress(process.env.EMAIL_FROM) ??
+  process.env.SMTP_USER ??
+  "verify@sugarcubedcreations.com";
 
 export type EmailVerificationResult = {
   deliverable: boolean;
   reason?: string | null;
   suggestion?: string | null;
-};
-
-type ValidatorResult = {
-  valid: boolean;
-  reason?: string | null;
-  validators: {
-    smtp?: { valid?: boolean | null; reason?: string | null };
-    [key: string]:
-      | { valid?: boolean | null; reason?: string | null }
-      | undefined;
-  };
-};
-
-const emailSchema = z.string().trim().min(1).email();
-
-const resolveVerificationSender = () => {
-  return (
-    process.env.SMTP_VERIFICATION_SENDER ||
-    process.env.EMAIL_FROM ||
-    process.env.SMTP_USER ||
-    "postmaster@sugarcubedcreation.com"
-  );
-};
-
-const isSoftSmtpFailure = (result: ValidatorResult) => {
-  if (result.reason !== "smtp") return false;
-  const smtp = result.validators.smtp;
-  if (!smtp) return false;
-
-  const text = (smtp.reason || "").toLowerCase();
-  if (!text) return true;
-
-  const fatalPatterns = [
-    "does not exist",
-    "no such user",
-    "unknown user",
-    "unknown recipient",
-    "mailbox unavailable",
-    "user not found",
-    "invalid mailbox",
-    "relay access denied",
-    "mailbox not found",
-  ];
-
-  if (fatalPatterns.some((pattern) => text.includes(pattern))) {
-    return false;
-  }
-
-  return true;
+  didSkip?: boolean;
 };
 
 export async function verifyEmailDeliverable(
-  emailInput: string
+  email: string
 ): Promise<EmailVerificationResult> {
-  const parsed = emailSchema.safeParse(emailInput);
-  if (!parsed.success) {
+  const normalizedEmail = email.trim();
+
+  if (!normalizedEmail || !normalizedEmail.includes("@")) {
+    return { deliverable: false, reason: "invalid-format" };
+  }
+
+  const result = (await validate({
+    email: normalizedEmail,
+    sender: SMTP_VERIFICATION_SENDER,
+    validateRegex: true,
+    validateTypo: true,
+    validateDisposable: true,
+    // Vercel blocks port 25, causing SMTP checks to fail or timeout.
+    // We disable them to prevent blocking legitimate users.
+    validateMx: false,
+    validateSMTP: false,
+  })) as DeepEmailValidationResult;
+
+  if (!result.valid) {
     return {
       deliverable: false,
-      reason: "Invalid email syntax",
-      suggestion: "Please double-check the spelling.",
+      reason: deriveReason(result),
+      suggestion: deriveSuggestion(result),
     };
   }
 
-  const email = parsed.data.toLowerCase();
+  return { deliverable: true };
+}
 
-  try {
-    const result = (await validate({
-      email,
-      sender: resolveVerificationSender(),
-      validateRegex: true,
-      validateTypo: true,
-      validateDisposable: true,
-      validateMx: true,
-      validateSMTP: true,
-    })) as ValidatorResult;
-
-    if (!result.valid && isSoftSmtpFailure(result)) {
-      return {
-        deliverable: true,
-        reason: null,
-        suggestion:
-          result.validators.smtp?.reason ||
-          "SMTP verification skipped due to provider restrictions.",
-      };
-    }
-
-    return {
-      deliverable: result.valid,
-      reason: result.reason || undefined,
-      suggestion: result.validators.smtp?.reason || result.reason || undefined,
-    };
-  } catch (error) {
-    console.error("Failed to verify email delivery:", error);
-    return {
-      deliverable: true,
-      reason: null,
-      suggestion: "We could not verify your email due to a network error.",
-    };
+function deriveReason(result: DeepEmailValidationResult): string | null {
+  const reasonKey = result.reason;
+  if (!reasonKey) {
+    return null;
   }
+  const details = result.validators?.[reasonKey];
+  return details?.reason ?? reasonKey;
+}
+
+function deriveSuggestion(result: DeepEmailValidationResult): string | null {
+  const typoReason = result.validators?.typo?.reason;
+  if (!typoReason) {
+    return null;
+  }
+  const match = typoReason.match(/suggested email:\s*(.+)$/i);
+  return match?.[1]?.trim() ?? null;
+}
+
+function extractEmailAddress(value?: string): string | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const match = value.match(/<([^>]+)>/);
+  if (match) {
+    return match[1];
+  }
+  return value.includes("@") ? value : undefined;
 }

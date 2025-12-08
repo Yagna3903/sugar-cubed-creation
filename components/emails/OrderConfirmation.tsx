@@ -22,6 +22,8 @@ interface OrderItem {
 }
 
 interface OrderConfirmationProps {
+  heading?: string;
+  message?: string;
   orderId: string;
   customerName: string;
   items: OrderItem[];
@@ -36,6 +38,8 @@ interface OrderConfirmationProps {
 }
 
 export const OrderConfirmationEmail = ({
+  heading = "Order Confirmed",
+  message = "Thank you for your order! We're getting your cookies ready!",
   orderId = "ORD-123",
   customerName = "Valued Customer",
   items = [
@@ -53,25 +57,25 @@ export const OrderConfirmationEmail = ({
     },
   ],
   total = 12.5,
-  orderUrl = "https://sugar-cubed-creation.vercel.app",
+  orderUrl = "https://sugar-cubed-creations.vercel.app",
 }: OrderConfirmationProps) => (
   <Html>
     <Head />
-    <Preview>Your Sugar Cubed Creations order is confirmed!</Preview>
+    <Preview>{heading}</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={logoSection}>
           <Img
-            src="https://sugar-cubed-creation.vercel.app/images/Main-Cookie.png"
+            src="https://sugar-cubed-creations.vercel.app/images/Main-Cookie.png"
             width="120"
             alt="Sugar Cubed Creations"
             style={logo}
           />
         </Section>
-        <Heading style={h1}>Order Confirmed</Heading>
+        <Heading style={h1}>{heading}</Heading>
         <Text style={text}>Hi {customerName},</Text>
         <Text style={text}>
-          Thank you for your order! We&apos;re getting your cookies ready!
+          {message}
         </Text>
 
         <Section style={orderSection}>

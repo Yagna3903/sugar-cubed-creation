@@ -4,6 +4,7 @@ export const dynamic = "force-dynamic";
 import Link from "next/link";
 import BackLink from "../_components/BackLink";
 import StatsCard from "../_components/StatsCard";
+import StatusBadge from "../_components/StatusBadge";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/server/admin";
 import {
@@ -14,7 +15,7 @@ import {
   IconGift,
   IconBriefcase,
   IconHelp,
-  IconMail,
+
   IconBook,
   IconPencil,
   IconPhoto,
@@ -144,12 +145,7 @@ export default async function AdminHome() {
 
           <div className="bg-white rounded-2xl shadow-soft border border-zinc-100 divide-y">
             {recentOrders.map((order) => {
-              const statusColors: Record<string, string> = {
-                pending: "bg-amber-100 text-amber-800",
-                paid: "bg-blue-100 text-blue-800",
-                fulfilled: "bg-green-100 text-green-800",
-                cancelled: "bg-red-100 text-red-700",
-              };
+
 
               return (
                 <Link
@@ -162,17 +158,11 @@ export default async function AdminHome() {
                       <p className="font-medium text-zinc-900 truncate">
                         {order.customerName || order.email}
                       </p>
-                      <span
-                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium border ${statusColors[order.status] || "bg-zinc-100 text-zinc-700 border-zinc-200"
-                          } shadow-sm`}
-                      >
-                        <span className={`mr-1.5 h-1.5 w-1.5 rounded-full ${order.status === 'pending' ? 'bg-amber-500 animate-pulse' :
-                          order.status === 'paid' ? 'bg-blue-500' :
-                            order.status === 'fulfilled' ? 'bg-green-500' :
-                              'bg-red-500'
-                          }`} />
-                        {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                      </span>
+                      <StatusBadge
+                        status={
+                          order.status as "pending" | "paid" | "fulfilled" | "cancelled" | "refunded"
+                        }
+                      />
                     </div>
                     <p className="text-sm text-zinc-500">
                       {new Date(order.createdAt).toLocaleDateString()} •{" "}
@@ -252,24 +242,7 @@ export default async function AdminHome() {
             <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-amber-200 via-amber-300 to-amber-200 opacity-0 group-hover:opacity-100 transition-opacity" />
           </Link>
 
-          <Link
-            href="/admin/test-email"
-            className="group relative overflow-hidden rounded-2xl border border-white/50 bg-white/80 backdrop-blur-sm p-6 shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-1 animate-slide-up [animation-delay:550ms]"
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-brand-pink/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-100 to-blue-200 text-blue-700 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300">
-                <IconMail size={24} />
-              </div>
-              <div>
-                <h3 className="font-display text-lg font-semibold mb-1">Test Email</h3>
-                <p className="text-sm text-zinc-600">
-                  Send test emails for debugging
-                </p>
-              </div>
-            </div>
-            <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-blue-200 via-blue-300 to-blue-200 opacity-0 group-hover:opacity-100 transition-opacity" />
-          </Link>
+
 
           <Link
             href="/admin/story"

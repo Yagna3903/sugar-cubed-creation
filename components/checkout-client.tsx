@@ -9,35 +9,7 @@ import { z } from "zod";
 import { BackButton } from "@/components/ui/back-button";
 import Image from "next/image";
 
-const emailSchema = z
-  .string()
-  .email("Please enter a valid email address.")
-  .transform((value) => value.trim().toLowerCase());
-
-async function assertEmailDeliverable(
-  email: string,
-  options?: { signal?: AbortSignal }
-) {
-  const res = await fetch("/api/email/verify", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email }),
-    signal: options?.signal,
-  });
-
-  if (!res.ok) {
-    let errorMessage = "We couldn't verify that email. Please try again.";
-    try {
-      const data = await res.json();
-      errorMessage = data?.error || errorMessage;
-    } catch (error) {
-      console.error("Failed to parse email verification response", error);
-    }
-    throw new Error(errorMessage);
-  }
-
-  return true;
-}
+const EMAIL_SCHEMA = z.string().email("Please enter a valid email address.");
 
 export default function CheckoutClient() {
   const router = useRouter();
@@ -48,55 +20,80 @@ export default function CheckoutClient() {
   const [error, setError] = useState<string | null>(null);
   const [emailNotice, setEmailNotice] = useState<string | null>(null);
   const [checkingEmail, setCheckingEmail] = useState(false);
+  const normalizedEmail = email.trim();
 
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
   const total = Math.max(0, subtotal - discountAmount);
 
   useEffect(() => {
-    const trimmed = email.trim();
-    if (!trimmed) {
-      setEmailNotice(null);
-      setCheckingEmail(false);
+    setEmailNotice(null);
+    setCheckingEmail(false);
+
+    if (!normalizedEmail) {
       return;
     }
 
-    const parsed = emailSchema.safeParse(email);
-    if (!parsed.success) {
-      setEmailNotice(parsed.error.issues[0].message);
-      setCheckingEmail(false);
+    const validation = EMAIL_SCHEMA.safeParse(normalizedEmail);
+    if (!validation.success) {
+      setEmailNotice(validation.error.issues[0].message);
       return;
     }
 
-    let cancelled = false;
     const controller = new AbortController();
-    setCheckingEmail(true);
-
-    const timeoutId = window.setTimeout(async () => {
+    let isActive = true;
+    const timeout = setTimeout(async () => {
+      setCheckingEmail(true);
       try {
-        await assertEmailDeliverable(parsed.data, {
+        const resp = await fetch("/api/email/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: normalizedEmail }),
           signal: controller.signal,
         });
-        if (!cancelled) {
-          setEmailNotice(null);
-        }
-      } catch (err: any) {
-        if (cancelled || err?.name === "AbortError") {
+        const data = await resp.json().catch(() => ({}));
+
+        if (!isActive) {
           return;
         }
-        setEmailNotice(err?.message || "Please enter existing email");
+
+        if (!resp.ok || data.deliverable === false) {
+          setEmailNotice("Please use a legitimate and existing email.");
+        } else {
+          setEmailNotice(null);
+        }
+      } catch (err) {
+        if (isActive && !controller.signal.aborted) {
+          setEmailNotice("Unable to verify email right now.");
+        }
       } finally {
-        if (!cancelled) {
+        if (isActive) {
           setCheckingEmail(false);
         }
       }
     }, 600);
 
     return () => {
-      cancelled = true;
+      isActive = false;
       controller.abort();
-      clearTimeout(timeoutId);
+      clearTimeout(timeout);
     };
-  }, [email]);
+  }, [normalizedEmail]);
+
+  async function verifyEmailDeliverable(emailToCheck: string) {
+    const resp = await fetch("/api/email/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: emailToCheck }),
+    });
+
+    const data = await resp.json().catch(() => ({}));
+
+    if (!resp.ok || data.deliverable === false) {
+      throw new Error(
+        data?.error || "Please use a legitimate and existing email."
+      );
+    }
+  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -113,23 +110,24 @@ export default function CheckoutClient() {
       return;
     }
 
-    const emailResult = emailSchema.safeParse(email);
+    const emailResult = EMAIL_SCHEMA.safeParse(normalizedEmail);
 
     if (!emailResult.success) {
-      setError(emailResult.error.issues[0].message);
+      setEmailNotice(emailResult.error.issues[0].message);
       return;
     }
 
     setSubmitting(true);
     try {
-      await assertEmailDeliverable(emailResult.data);
+      await verifyEmailDeliverable(normalizedEmail);
       const params = new URLSearchParams({
         name: name.trim(),
-        email: emailResult.data,
+        email: normalizedEmail,
       });
       router.push(`/checkout/payment?${params.toString()}`);
     } catch (err: any) {
-      setError(err?.message || "Something went wrong.");
+      // Most likely an email verification error, so show it on the field
+      setEmailNotice(err?.message || "Something went wrong.");
     } finally {
       setSubmitting(false);
     }
@@ -167,6 +165,10 @@ export default function CheckoutClient() {
                 <label className="block text-sm font-medium text-zinc-700">
                   Email Address
                 </label>
+                <p className="text-xs text-zinc-500">
+                  Please use an existing, active email account so we can send
+                  your receipt.
+                </p>
                 <input
                   type="email"
                   className="w-full rounded-xl border-2 border-zinc-100 px-4 py-3 focus:border-brand-brown focus:ring-4 focus:ring-brand-brown/10 transition-all outline-none bg-zinc-50/50"
@@ -174,21 +176,22 @@ export default function CheckoutClient() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your.email@example.com"
                 />
-                {checkingEmail && (
-                  <div className="flex items-center gap-2 text-sm text-zinc-500">
-                    <span className="w-4 h-4 border-2 border-zinc-300 border-t-brand-brown rounded-full animate-spin" />
-                    Verifying email...
-                  </div>
-                )}
-                {!checkingEmail && emailNotice && (
-                  <div className="p-3 rounded-lg bg-red-50 text-red-600 text-sm border border-red-100">
-                    {emailNotice}
-                  </div>
-                )}
+                <div className="h-4 mt-1">
+                  {checkingEmail && normalizedEmail ? (
+                    <span className="flex items-center gap-2 text-xs text-zinc-500 animate-pulse">
+                      <span className="w-2 h-2 bg-zinc-400 rounded-full" />
+                      Checking validty...
+                    </span>
+                  ) : emailNotice ? (
+                    <p className="text-xs text-red-600 animate-fade-in font-medium">
+                      {emailNotice}
+                    </p>
+                  ) : null}
+                </div>
               </div>
               {error && (
                 <div className="p-4 rounded-xl bg-red-50 text-red-600 text-sm font-medium border border-red-100">
-                  Please enter existing email
+                  {error}
                 </div>
               )}
             </div>

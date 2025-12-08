@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import BackLink from "@/app/admin/_components/BackLink";
 import { prisma } from "@/lib/db";
-import { setOrderStatus, archiveOrder, deleteOrder, resendOrderEmail } from "../actions";
+import { setOrderStatus, archiveOrder, deleteOrder, resendOrderEmail, markFulfilled, cancelOrder, approveOrder } from "../actions";
 
 export default async function OrderDetailPage({ params }: { params: { id: string } }) {
   const o = await prisma.order.findUnique({
@@ -154,30 +154,76 @@ export default async function OrderDetailPage({ params }: { params: { id: string
           {/* Status Management */}
           <div className="bg-white rounded-3xl border border-brand-brown/5 shadow-soft p-4 md:p-6">
             <h2 className="font-display font-bold text-lg text-brand-brown mb-4">Order Status</h2>
-            <form action={setOrderStatus.bind(null, o.id)}>
+            {o.status === "paid" && (
               <div className="space-y-4">
-                <div className="relative">
-                  <select
-                    name="status"
-                    defaultValue={o.status}
-                    className="w-full appearance-none rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm font-medium text-zinc-700 focus:border-brand-brown focus:ring-4 focus:ring-brand-brown/5 outline-none transition-all"
-                  >
-                    <option value="pending">Pending</option>
-                    <option value="paid">Paid</option>
-                    <option value="fulfilled">Fulfilled</option>
-                    <option value="cancelled">Cancelled</option>
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-zinc-500">
-                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
+                <div className="bg-green-50 rounded-xl p-4 border border-green-100 text-center">
+                  <p className="text-sm text-green-800 font-medium mb-1">Payment Successful</p>
+                  <p className="text-xs text-green-600">Order has been paid and is ready to fulfill.</p>
                 </div>
-                <button className="w-full rounded-xl bg-brand-brown px-4 py-3 text-sm font-bold text-white shadow-lg shadow-brand-brown/20 hover:bg-brand-brown-dark hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200">
-                  Update Status
-                </button>
+
+                <form action={async () => {
+                  "use server";
+                  await cancelOrder(o.id);
+                }}>
+                  <button className="w-full rounded-xl bg-white border border-red-200 px-4 py-3 text-sm font-bold text-red-600 hover:bg-red-50 hover:border-red-300 transition-all duration-200 flex items-center justify-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                    </svg>
+                    Refund & Cancel Order
+                  </button>
+                  <p className="mt-3 text-xs text-center text-zinc-500">
+                    This will refund the payment and cancel the order.
+                  </p>
+                </form>
               </div>
-            </form>
+            )}
+
+            {o.status === "pending" && (
+              <div className="space-y-3">
+                <div className="bg-amber-50 rounded-xl p-4 border border-amber-100 text-center mb-4">
+                  <p className="text-sm text-amber-800 font-medium mb-1">Payment Authorized</p>
+                  <p className="text-xs text-amber-600">Payment is authorized but not yet captured.</p>
+                </div>
+
+                <form action={async () => {
+                  "use server";
+                  await approveOrder(o.id);
+                }}>
+                  <button className="w-full rounded-xl bg-brand-brown px-4 py-3 text-sm font-bold text-white shadow-lg shadow-brand-brown/20 hover:bg-brand-brown-dark hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Accept Order & Capture Payment
+                  </button>
+                </form>
+
+                <form action={async () => {
+                  "use server";
+                  await cancelOrder(o.id);
+                }}>
+                  <button className="w-full rounded-xl bg-white border border-red-200 px-4 py-3 text-sm font-bold text-red-600 hover:bg-red-50 hover:border-red-300 transition-all duration-200 flex items-center justify-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Reject & Cancel Order
+                  </button>
+                </form>
+              </div>
+            )}
+
+            {o.status === "cancelled" && (
+              <div className="bg-red-50 rounded-xl p-4 border border-red-100 text-center">
+                <p className="text-sm text-red-800 font-medium mb-1">Order Cancelled</p>
+                <p className="text-xs text-red-600">This order has been cancelled.</p>
+              </div>
+            )}
+
+            {o.status === "refunded" && (
+              <div className="bg-purple-50 rounded-xl p-4 border border-purple-100 text-center">
+                <p className="text-sm text-purple-800 font-medium mb-1">Order Refunded</p>
+                <p className="text-xs text-purple-600">Payment has been refunded.</p>
+              </div>
+            )}
           </div>
 
           {/* Email Actions */}
