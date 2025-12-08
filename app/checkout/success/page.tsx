@@ -93,7 +93,7 @@ export default async function SuccessPage({
             </svg>
           </div>
           <h1 className="text-3xl font-display font-bold text-brand-brown mb-2">
-            Order Confirmed! (v2.0)
+            Order Confirmed!
           </h1>
           <p className="text-zinc-600">
             Thanks, {order.customerName}! We&apos;ve emailed your receipt to{" "}
