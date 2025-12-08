@@ -216,7 +216,7 @@ function PaymentContent() {
               {/* Promo Code Input */}
               <div className="border-t border-brand-brown/10 pt-4 pb-4">
                 {!promoCode ? (
-                  <div className="flex gap-2">
+                  <div className="flex flex-col gap-3 sm:flex-row">
                     <input
                       type="text"
                       value={promoInput}
@@ -224,13 +224,13 @@ function PaymentContent() {
                         setPromoInput(e.target.value.toUpperCase())
                       }
                       placeholder="Promo Code"
-                      className="flex-1 rounded-xl border-2 border-zinc-100 px-4 py-2 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/10 outline-none bg-white text-sm uppercase"
+                      className="flex-1 rounded-xl border-2 border-zinc-100 px-4 py-2 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/10 outline-none bg-white text-sm uppercase text-center sm:text-left"
                     />
                     <button
                       type="button"
                       onClick={handleApplyPromo}
                       disabled={validatingPromo || !promoInput}
-                      className="bg-zinc-900 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="bg-zinc-900 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors w-full sm:w-auto"
                     >
                       {validatingPromo ? "..." : "Apply"}
                     </button>
@@ -345,7 +345,7 @@ function PaymentContent() {
                       <label className="block text-sm font-medium text-zinc-700 mb-2">
                         Card Information
                       </label>
-                      <div className="p-1 rounded-xl border border-zinc-200 shadow-sm focus-within:border-brand-brown focus-within:ring-4 focus-within:ring-brand-brown/10 transition-all bg-white">
+                      <div className="payment-card-shell p-1 rounded-xl border border-zinc-200 shadow-sm focus-within:border-brand-brown focus-within:ring-4 focus-within:ring-brand-brown/10 transition-all bg-white">
                         <PaymentForm
                           applicationId={applicationId}
                           locationId={locationId}

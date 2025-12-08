@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -58,7 +58,12 @@
   body {
     background: var(--bg-base);
     color: #18181b;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family:
+      "Inter",
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      sans-serif;
     font-weight: 400;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
@@ -71,7 +76,7 @@
   h4,
   h5,
   h6 {
-    font-family: 'Outfit', sans-serif;
+    font-family: "Outfit", sans-serif;
     font-weight: 700;
     line-height: 1.2;
     letter-spacing: -0.02em;
@@ -90,11 +95,61 @@
   }
 }
 
-@layer components {
+/* Square Credit Card element — keep it responsive on narrow viewports */
+.payment-card-shell {
+  width: 100%;
+  overflow: hidden;
+}
 
+.payment-card-shell div[id^="card-container"],
+.payment-card-shell div[id*="card-container"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+}
+
+.payment-card-shell iframe {
+  width: 100% !important;
+}
+
+@media (max-width: 480px) {
+  .payment-card-shell {
+    padding: 0.25rem;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .payment-card-shell div[id^="card-container"],
+  .payment-card-shell div[id*="card-container"] {
+    max-width: 380px;
+    transform-origin: top center;
+    transform: scale(0.98);
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 360px) {
+  .payment-card-shell {
+    padding: 0.15rem;
+  }
+
+  .payment-card-shell div[id^="card-container"],
+  .payment-card-shell div[id*="card-container"] {
+    max-width: 320px;
+    transform: scale(0.9);
+  }
+}
+
+@layer components {
   /* Card Animations */
   .card-pop {
-    transition: transform var(--transition-base), box-shadow var(--transition-base);
+    transition:
+      transform var(--transition-base),
+      box-shadow var(--transition-base);
   }
 
   .card-pop:hover {
@@ -136,46 +191,45 @@
     animation: scaleIn var(--transition-base) ease-out;
   }
 
-  .stagger-children>* {
+  .stagger-children > * {
     opacity: 0;
     animation: fadeInUp 0.8s ease-out forwards;
   }
 
-  .stagger-children>*:nth-child(1) {
+  .stagger-children > *:nth-child(1) {
     animation-delay: 0.05s;
   }
 
-  .stagger-children>*:nth-child(2) {
+  .stagger-children > *:nth-child(2) {
     animation-delay: 0.1s;
   }
 
-  .stagger-children>*:nth-child(3) {
+  .stagger-children > *:nth-child(3) {
     animation-delay: 0.15s;
   }
 
-  .stagger-children>*:nth-child(4) {
+  .stagger-children > *:nth-child(4) {
     animation-delay: 0.2s;
   }
 
-  .stagger-children>*:nth-child(5) {
+  .stagger-children > *:nth-child(5) {
     animation-delay: 0.25s;
   }
 
-  .stagger-children>*:nth-child(6) {
+  .stagger-children > *:nth-child(6) {
     animation-delay: 0.3s;
   }
 
-  .stagger-children>*:nth-child(7) {
+  .stagger-children > *:nth-child(7) {
     animation-delay: 0.35s;
   }
 
-  .stagger-children>*:nth-child(8) {
+  .stagger-children > *:nth-child(8) {
     animation-delay: 0.4s;
   }
 }
 
 @layer utilities {
-
   /* Gradient Text */
   .text-gradient {
     background: var(--gradient-brand);
@@ -193,8 +247,12 @@
 
   /* Background Patterns */
   .bg-pattern-sprinkles {
-    background-image: radial-gradient(#6b4226 1px, transparent 1px), radial-gradient(#6b4226 1px, transparent 1px);
-    background-position: 0 0, 25px 25px;
+    background-image:
+      radial-gradient(#6b4226 1px, transparent 1px),
+      radial-gradient(#6b4226 1px, transparent 1px);
+    background-position:
+      0 0,
+      25px 25px;
     background-size: 50px 50px;
     opacity: 0.03;
   }
@@ -206,13 +264,18 @@
   }
 
   .hover-shine::after {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: -100%;
     width: 50%;
     height: 100%;
-    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3), transparent);
+    background: linear-gradient(
+      to right,
+      transparent,
+      rgba(255, 255, 255, 0.3),
+      transparent
+    );
     transform: skewX(-25deg);
     transition: 0.5s;
     pointer-events: none;
@@ -297,7 +360,6 @@
 
 /* Admin-Specific Animations */
 @keyframes pulseGlow {
-
   0%,
   100% {
     box-shadow: 0 0 0 0 rgba(107, 66, 38, 0.4);
@@ -352,7 +414,6 @@
 
 /* Continuous Animations for Dynamic Elements */
 @keyframes float {
-
   0%,
   100% {
     transform: translateY(0px);
@@ -364,7 +425,6 @@
 }
 
 @keyframes floatSlow {
-
   0%,
   100% {
     transform: translateY(0px);
@@ -376,7 +436,6 @@
 }
 
 @keyframes floatReverse {
-
   0%,
   100% {
     transform: translateY(0px);
@@ -388,7 +447,6 @@
 }
 
 @keyframes bounceGentle {
-
   0%,
   100% {
     transform: translateY(0px);
@@ -462,7 +520,6 @@
 }
 
 @keyframes pulseGentleAnim {
-
   0%,
   100% {
     opacity: 1;
@@ -476,7 +533,6 @@
 }
 
 @keyframes pulseSlow {
-
   0%,
   100% {
     opacity: 0.05;
@@ -488,7 +544,6 @@
 }
 
 @keyframes pulseSlower {
-
   0%,
   100% {
     opacity: 0.2;
@@ -510,7 +565,6 @@
 }
 
 @keyframes wiggle {
-
   0%,
   100% {
     transform: rotate(0deg);
@@ -526,7 +580,6 @@
 }
 
 @keyframes twinkle {
-
   0%,
   100% {
     opacity: 0.2;
@@ -541,7 +594,6 @@
 
 /* Accessibility: Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
-
   *,
   *::before,
   *::after {
@@ -575,7 +627,6 @@
 }
 
 @keyframes bob {
-
   0%,
   100% {
     transform: translateY(0);
