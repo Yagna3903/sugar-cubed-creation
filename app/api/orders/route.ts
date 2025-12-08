@@ -153,8 +153,15 @@ export async function POST(req: Request) {
     });
 
     if (orderWithItems) {
-      sendOrderEmail(orderWithItems, "pending");
-      sendAdminNewOrderEmail(orderWithItems);
+      console.log("[OrderAPI] Sending confirmation emails...");
+      await Promise.all([
+        sendOrderEmail(orderWithItems, "pending").catch((err) =>
+          console.error("Failed to send customer email:", err)
+        ),
+        sendAdminNewOrderEmail(orderWithItems).catch((err) =>
+          console.error("Failed to send admin email:", err)
+        ),
+      ]);
     }
 
     const origin = new URL(req.url).origin;
