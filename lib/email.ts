@@ -72,10 +72,19 @@ export async function sendOrderEmail(
   }
 
   try {
+    console.log(`[Email] Preparing to send '${emailType}' email to: ${customerEmail}`);
+
+    // Check Env Vars explicitly
+    if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
+      console.error("[Email] CRITICAL: SMTP environment variables are missing!");
+      return { success: false, error: "SMTP not configured" };
+    }
+
     // Hardcoded for reliability as requested
     const baseUrl = "https://sugar-cubed-creations.vercel.app";
 
     // Render shared HTML template
+    console.log("[Email] Rendering HTML template...");
     const emailHtml = await render(
       OrderConfirmationEmail({
         heading: subject,
@@ -115,16 +124,12 @@ export async function sendOrderEmail(
       })
     );
 
-    if (
-      !process.env.SMTP_HOST ||
-      !process.env.SMTP_USER ||
-      !process.env.SMTP_PASS
-    ) {
-      console.warn("SMTP not configured. Skipping email.");
-      return { success: false, error: "SMTP not configured" };
-    }
-
     const transporter = getTransporter();
+    console.log("[Email] Sending via Transporter:", {
+      host: process.env.SMTP_HOST,
+      user: process.env.SMTP_USER
+    });
+
     const info = await transporter.sendMail({
       from: getFromEmail(),
       to: customerEmail,
@@ -132,12 +137,14 @@ export async function sendOrderEmail(
       html: emailHtml,
     });
 
+    console.log("[Email] SUCCESS! Message ID:", info.messageId);
+
     // @ts-ignore
     const previewUrl = (nodemailer as any).getTestMessageUrl?.(info);
     if (previewUrl) console.log("Email preview:", previewUrl);
     return { success: true, data: info };
   } catch (error) {
-    console.error(`Exception sending ${emailType} email:`, error);
+    console.error(`[Email] EXCEPTION sending ${emailType} email:`, error);
     return { success: false, error };
   }
 }
