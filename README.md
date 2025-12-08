@@ -138,6 +138,10 @@ NEXTAUTH_SECRET=""
 
 Set `OBSERVABILITY_WEBHOOK_URL` to any HTTPS webhook (Slack, Teams, Logtail, etc.) to receive warn/error events produced by our logging layer. The `lib/logger.ts` helper automatically POSTs JSON payloads for payment/promo anomalies when this env var is present (both locally and on Vercel). Leave it empty if you only want console logs.
 
+### Email Verification
+
+To block fake receipt emails, we run DNS + SMTP probes directly from the server using [`deep-email-validator`](https://github.com/mfbx9da4/deep-email-validator). No third-party API key is required—the `/api/email/verify` endpoint checks for typos, disposable domains, valid MX records, and finally attempts an SMTP handshake before allowing checkout/order creation. If you need to control the MAIL FROM value used during that probe, set `SMTP_VERIFICATION_SENDER` (otherwise we fall back to `EMAIL_FROM` or `SMTP_USER`). Note that some hosts block outbound traffic on port 25; if that happens, the verification route will return 502 until SMTP egress is allowed.
+
 ## Database Schema (Prisma)
 
 ### Core models (simplified):
