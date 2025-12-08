@@ -2,6 +2,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { CreateOrderInput } from "@/lib/server/validators";
+import { sendInvoiceEmail } from "@/lib/server/email";
+
 import { OrderStatus } from "@prisma/client";
 import { z } from "zod";
 
@@ -29,7 +31,10 @@ export async function POST(req: Request) {
     );
   }
 
-  const { customer, items, token, cardBrand, cardLast4, promoCode } = parsed.data;
+  const { customer, items, token, cardBrand, cardLast4, promoCode } =
+    parsed.data;
+
+  const normalizedEmail = customer.email.trim().toLowerCase();
 
   try {
     const { order, payment } = await prisma.$transaction(async (tx) => {
@@ -90,9 +95,14 @@ export async function POST(req: Request) {
       // Apply discount if offer is valid
       if (appliedOffer) {
         // Check min purchase
-        if (!appliedOffer.minPurchase || totalCents >= appliedOffer.minPurchase) {
+        if (
+          !appliedOffer.minPurchase ||
+          totalCents >= appliedOffer.minPurchase
+        ) {
           if (appliedOffer.discountType === "percentage") {
-            discountAmount = Math.round((totalCents * appliedOffer.discountValue) / 100);
+            discountAmount = Math.round(
+              (totalCents * appliedOffer.discountValue) / 100
+            );
           } else {
             discountAmount = appliedOffer.discountValue;
           }
@@ -113,7 +123,7 @@ export async function POST(req: Request) {
       // Create order as pending (client can accept/cancel later)
       const order = await tx.order.create({
         data: {
-          email: customer.email,
+          email: normalizedEmail,
           customerName: customer.name,
           status: OrderStatus.pending,
           subtotal: totalCents + discountAmount, // Original total before discount
@@ -130,7 +140,7 @@ export async function POST(req: Request) {
           orderId: order.id,
           provider: "square",
           providerPaymentId: token, // use token as provider ID for admin view
-          status: "pending",        // NOT auto-completed
+          status: "pending", // NOT auto-completed
           amountCents: totalCents,
           currency: "CAD",
           cardBrand: cardBrand ?? null,
@@ -153,6 +163,12 @@ export async function POST(req: Request) {
       }
 
       return { order, payment };
+    });
+
+    // Best-effort: send confirmation/invoice email right away so the customer
+    // gets notified even before Square webhook events fire.
+    sendInvoiceEmail(order.id).catch((err) => {
+      console.warn("Failed to send invoice email", err);
     });
 
     const origin = new URL(req.url).origin;

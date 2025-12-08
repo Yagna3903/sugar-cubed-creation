@@ -2,12 +2,42 @@
 "use client";
 export const dynamic = "force-dynamic";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/cart-store";
 import { z } from "zod";
 import { BackButton } from "@/components/ui/back-button";
 import Image from "next/image";
+
+const emailSchema = z
+  .string()
+  .email("Please enter a valid email address.")
+  .transform((value) => value.trim().toLowerCase());
+
+async function assertEmailDeliverable(
+  email: string,
+  options?: { signal?: AbortSignal }
+) {
+  const res = await fetch("/api/email/verify", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+    signal: options?.signal,
+  });
+
+  if (!res.ok) {
+    let errorMessage = "We couldn't verify that email. Please try again.";
+    try {
+      const data = await res.json();
+      errorMessage = data?.error || errorMessage;
+    } catch (error) {
+      console.error("Failed to parse email verification response", error);
+    }
+    throw new Error(errorMessage);
+  }
+
+  return true;
+}
 
 export default function CheckoutClient() {
   const router = useRouter();
@@ -16,9 +46,57 @@ export default function CheckoutClient() {
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [emailNotice, setEmailNotice] = useState<string | null>(null);
+  const [checkingEmail, setCheckingEmail] = useState(false);
 
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
   const total = Math.max(0, subtotal - discountAmount);
+
+  useEffect(() => {
+    const trimmed = email.trim();
+    if (!trimmed) {
+      setEmailNotice(null);
+      setCheckingEmail(false);
+      return;
+    }
+
+    const parsed = emailSchema.safeParse(email);
+    if (!parsed.success) {
+      setEmailNotice(parsed.error.issues[0].message);
+      setCheckingEmail(false);
+      return;
+    }
+
+    let cancelled = false;
+    const controller = new AbortController();
+    setCheckingEmail(true);
+
+    const timeoutId = window.setTimeout(async () => {
+      try {
+        await assertEmailDeliverable(parsed.data, {
+          signal: controller.signal,
+        });
+        if (!cancelled) {
+          setEmailNotice(null);
+        }
+      } catch (err: any) {
+        if (cancelled || err?.name === "AbortError") {
+          return;
+        }
+        setEmailNotice(err?.message || "Please enter existing email");
+      } finally {
+        if (!cancelled) {
+          setCheckingEmail(false);
+        }
+      }
+    }, 600);
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+      clearTimeout(timeoutId);
+    };
+  }, [email]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -35,8 +113,7 @@ export default function CheckoutClient() {
       return;
     }
 
-    const emailSchema = z.string().email("Please enter a valid email address.");
-    const emailResult = emailSchema.safeParse(email.trim());
+    const emailResult = emailSchema.safeParse(email);
 
     if (!emailResult.success) {
       setError(emailResult.error.issues[0].message);
@@ -45,9 +122,10 @@ export default function CheckoutClient() {
 
     setSubmitting(true);
     try {
+      await assertEmailDeliverable(emailResult.data);
       const params = new URLSearchParams({
         name: name.trim(),
-        email: email.trim(),
+        email: emailResult.data,
       });
       router.push(`/checkout/payment?${params.toString()}`);
     } catch (err: any) {
@@ -96,7 +174,23 @@ export default function CheckoutClient() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your.email@example.com"
                 />
+                {checkingEmail && (
+                  <div className="flex items-center gap-2 text-sm text-zinc-500">
+                    <span className="w-4 h-4 border-2 border-zinc-300 border-t-brand-brown rounded-full animate-spin" />
+                    Verifying email...
+                  </div>
+                )}
+                {!checkingEmail && emailNotice && (
+                  <div className="p-3 rounded-lg bg-red-50 text-red-600 text-sm border border-red-100">
+                    {emailNotice}
+                  </div>
+                )}
               </div>
+              {error && (
+                <div className="p-4 rounded-xl bg-red-50 text-red-600 text-sm font-medium border border-red-100">
+                  Please enter existing email
+                </div>
+              )}
             </div>
 
             <div className="bg-brand-cream/30 rounded-2xl p-6 space-y-3 border border-brand-brown/5">
@@ -145,12 +239,6 @@ export default function CheckoutClient() {
                 </div>
               </div>
             </div>
-
-            {error && (
-              <div className="p-4 rounded-xl bg-red-50 text-red-600 text-sm font-medium border border-red-100">
-                {error}
-              </div>
-            )}
 
             <button
               type="submit"
