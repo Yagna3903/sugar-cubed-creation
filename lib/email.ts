@@ -29,7 +29,7 @@ const getTransporter = () => {
 
 const getFromEmail = () => {
   return (
-    process.env.EMAIL_FROM || `Sugar Cubed Creation <${process.env.SMTP_USER}>`
+    process.env.EMAIL_FROM || `Sugar Cubed Creations <${process.env.SMTP_USER}>`
   );
 };
 
