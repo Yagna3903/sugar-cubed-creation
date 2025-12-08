@@ -134,6 +134,10 @@ RESEND_API_KEY=""
 NEXTAUTH_URL=""
 NEXTAUTH_SECRET=""
 
+### Observability Alerts
+
+Set `OBSERVABILITY_WEBHOOK_URL` to any HTTPS webhook (Slack, Teams, Logtail, etc.) to receive warn/error events produced by our logging layer. The `lib/logger.ts` helper automatically POSTs JSON payloads for payment/promo anomalies when this env var is present (both locally and on Vercel). Leave it empty if you only want console logs.
+
 ## Database Schema (Prisma)
 
 ### Core models (simplified):

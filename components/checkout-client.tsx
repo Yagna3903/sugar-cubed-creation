@@ -74,29 +74,35 @@ export default function CheckoutClient() {
           <form onSubmit={onSubmit} className="space-y-6">
             <div className="space-y-4">
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-zinc-700">Full Name</label>
+                <label className="block text-sm font-medium text-zinc-700">
+                  Full Name
+                </label>
                 <input
                   className="w-full rounded-xl border-2 border-zinc-100 px-4 py-3 focus:border-brand-brown focus:ring-4 focus:ring-brand-brown/10 transition-all outline-none bg-zinc-50/50"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Jane Doe"
+                  placeholder="Your Name"
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-zinc-700">Email Address</label>
+                <label className="block text-sm font-medium text-zinc-700">
+                  Email Address
+                </label>
                 <input
                   type="email"
                   className="w-full rounded-xl border-2 border-zinc-100 px-4 py-3 focus:border-brand-brown focus:ring-4 focus:ring-brand-brown/10 transition-all outline-none bg-zinc-50/50"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="jane@example.com"
+                  placeholder="your.email@example.com"
                 />
               </div>
             </div>
 
             <div className="bg-brand-cream/30 rounded-2xl p-6 space-y-3 border border-brand-brown/5">
-              <h3 className="font-display font-semibold text-lg mb-4">Order Summary</h3>
+              <h3 className="font-display font-semibold text-lg mb-4">
+                Order Summary
+              </h3>
 
               <div className="space-y-3 mb-4 max-h-60 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-brand-brown/20">
                 {items.map((item) => (
@@ -110,7 +116,9 @@ export default function CheckoutClient() {
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-zinc-900 truncate">{item.name}</p>
+                      <p className="text-sm font-medium text-zinc-900 truncate">
+                        {item.name}
+                      </p>
                       <p className="text-xs text-zinc-500">Qty: {item.qty}</p>
                     </div>
                     <div className="text-sm font-medium text-zinc-900">

@@ -9,12 +9,23 @@ import { useCart } from "@/lib/cart-store";
 import { BackButton } from "@/components/ui/back-button";
 import Image from "next/image";
 
-type PaymentResponse = { orderId: string; paymentId: string; checkoutUrl: string };
+type PaymentResponse = {
+  orderId: string;
+  paymentId: string;
+  checkoutUrl: string;
+};
 
 function PaymentContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { items, clear, promoCode, discountAmount, applyPromo: setStorePromo, removePromo: removeStorePromo } = useCart();
+  const {
+    items,
+    clear,
+    promoCode,
+    discountAmount,
+    applyPromo: setStorePromo,
+    removePromo: removeStorePromo,
+  } = useCart();
 
   const name = searchParams.get("name") ?? "";
   const email = searchParams.get("email") ?? "";
@@ -75,15 +86,15 @@ function PaymentContent() {
     });
 
     if (!res.ok) {
-      const data = (await res.json().catch(() => null)) as
-        | { error?: any }
-        | null;
+      const data = (await res.json().catch(() => null)) as {
+        error?: any;
+      } | null;
       const message =
         typeof data?.error === "string"
           ? data.error
           : data?.error?.message ||
-          data?.error ||
-          "Payment could not be created.";
+            data?.error ||
+            "Payment could not be created.";
       throw new Error(message);
     }
 
@@ -92,7 +103,6 @@ function PaymentContent() {
     clear();
     router.push(data.checkoutUrl);
   }
-
 
   async function handleApplyPromo() {
     if (!promoInput.trim()) return;
@@ -106,7 +116,7 @@ function PaymentContent() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           code: promoInput,
-          cartTotal: subtotal * 100 // API expects cents
+          cartTotal: subtotal * 100, // API expects cents
         }),
       });
 
@@ -145,9 +155,7 @@ function PaymentContent() {
         </div>
         <div className="mb-8 text-center animate-slide-up">
           <h1 className="font-display text-4xl font-bold mb-2">Payment</h1>
-          <p className="text-zinc-600">
-            Securely complete your purchase
-          </p>
+          <p className="text-zinc-600">Securely complete your purchase</p>
         </div>
 
         <div className="bg-white rounded-3xl shadow-soft p-8 animate-fade-in">
@@ -156,10 +164,16 @@ function PaymentContent() {
             <div className="bg-zinc-50 rounded-2xl p-4 border border-zinc-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">Customer</span>
+                  <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+                    Customer
+                  </span>
                 </div>
-                <div className="font-medium text-zinc-900">{name || "Guest"}</div>
-                <div className="text-sm text-zinc-500">{email || "Not provided"}</div>
+                <div className="font-medium text-zinc-900">
+                  {name || "Guest"}
+                </div>
+                <div className="text-sm text-zinc-500">
+                  {email || "Not provided"}
+                </div>
               </div>
               <button
                 onClick={() => router.back()}
@@ -171,7 +185,9 @@ function PaymentContent() {
 
             {/* Order Summary */}
             <div className="bg-brand-cream/30 rounded-2xl p-6 space-y-3 border border-brand-brown/5">
-              <h3 className="font-display font-semibold text-lg mb-4">Order Summary</h3>
+              <h3 className="font-display font-semibold text-lg mb-4">
+                Order Summary
+              </h3>
 
               <div className="space-y-3 mb-4 max-h-60 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-brand-brown/20">
                 {items.map((item) => (
@@ -185,7 +201,9 @@ function PaymentContent() {
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-zinc-900 truncate">{item.name}</p>
+                      <p className="text-sm font-medium text-zinc-900 truncate">
+                        {item.name}
+                      </p>
                       <p className="text-xs text-zinc-500">Qty: {item.qty}</p>
                     </div>
                     <div className="text-sm font-medium text-zinc-900">
@@ -202,7 +220,9 @@ function PaymentContent() {
                     <input
                       type="text"
                       value={promoInput}
-                      onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+                      onChange={(e) =>
+                        setPromoInput(e.target.value.toUpperCase())
+                      }
                       placeholder="Promo Code"
                       className="flex-1 rounded-xl border-2 border-zinc-100 px-4 py-2 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/10 outline-none bg-white text-sm uppercase"
                     />
@@ -219,12 +239,22 @@ function PaymentContent() {
                   <div className="flex items-center justify-between bg-green-50 border border-green-100 p-3 rounded-xl">
                     <div className="flex items-center gap-2">
                       <div className="bg-green-100 p-1 rounded-full">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-green-700">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          className="w-4 h-4 text-green-700"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clipRule="evenodd"
+                          />
                         </svg>
                       </div>
                       <span className="text-sm font-medium text-green-800">
-                        Code <span className="font-bold">{promoCode}</span> applied
+                        Code <span className="font-bold">{promoCode}</span>{" "}
+                        applied
                       </span>
                     </div>
                     <button
@@ -260,7 +290,9 @@ function PaymentContent() {
 
             {!isSquareConfigured && (
               <div className="p-4 rounded-xl bg-red-50 text-red-600 text-sm font-medium border border-red-100">
-                Square is not configured. Please set NEXT_PUBLIC_SQUARE_APPLICATION_ID and NEXT_PUBLIC_SQUARE_LOCATION_ID in your environment.
+                Square is not configured. Please set
+                NEXT_PUBLIC_SQUARE_APPLICATION_ID and
+                NEXT_PUBLIC_SQUARE_LOCATION_ID in your environment.
               </div>
             )}
 
@@ -275,19 +307,34 @@ function PaymentContent() {
                 <div className="bg-white rounded-2xl border border-zinc-100 shadow-lg overflow-hidden">
                   {/* Payment Header */}
                   <div className="bg-zinc-50/50 px-6 py-4 border-b border-zinc-100 flex items-center justify-between">
-                    <h3 className="font-display font-semibold text-lg text-zinc-900">Payment Method</h3>
+                    <h3 className="font-display font-semibold text-lg text-zinc-900">
+                      Payment Method
+                    </h3>
                     <div className="flex items-center gap-2">
-                      <div className="h-6 w-10 bg-white border border-zinc-200 rounded flex items-center justify-center" title="Visa">
-                        <span className="text-[10px] font-bold text-blue-800 italic">VISA</span>
+                      <div
+                        className="h-6 w-10 bg-white border border-zinc-200 rounded flex items-center justify-center"
+                        title="Visa"
+                      >
+                        <span className="text-[10px] font-bold text-blue-800 italic">
+                          VISA
+                        </span>
                       </div>
-                      <div className="h-6 w-10 bg-white border border-zinc-200 rounded flex items-center justify-center" title="Mastercard">
+                      <div
+                        className="h-6 w-10 bg-white border border-zinc-200 rounded flex items-center justify-center"
+                        title="Mastercard"
+                      >
                         <div className="flex -space-x-1">
                           <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
                           <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
                         </div>
                       </div>
-                      <div className="h-6 w-10 bg-white border border-zinc-200 rounded flex items-center justify-center" title="Amex">
-                        <span className="text-[8px] font-bold text-blue-600">AMEX</span>
+                      <div
+                        className="h-6 w-10 bg-white border border-zinc-200 rounded flex items-center justify-center"
+                        title="Amex"
+                      >
+                        <span className="text-[8px] font-bold text-blue-600">
+                          AMEX
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -295,12 +342,17 @@ function PaymentContent() {
                   {/* Payment Body */}
                   <div className="p-6 space-y-6">
                     <div>
-                      <label className="block text-sm font-medium text-zinc-700 mb-2">Card Information</label>
+                      <label className="block text-sm font-medium text-zinc-700 mb-2">
+                        Card Information
+                      </label>
                       <div className="p-1 rounded-xl border border-zinc-200 shadow-sm focus-within:border-brand-brown focus-within:ring-4 focus-within:ring-brand-brown/10 transition-all bg-white">
                         <PaymentForm
                           applicationId={applicationId}
                           locationId={locationId}
-                          cardTokenizeResponseReceived={async (tokenResult, _buyer) => {
+                          cardTokenizeResponseReceived={async (
+                            tokenResult,
+                            _buyer
+                          ) => {
                             if (submitting) return;
 
                             setError(null);
@@ -310,7 +362,7 @@ function PaymentContent() {
                             } catch (err: any) {
                               setError(
                                 err?.message ||
-                                "Something went wrong while processing your payment."
+                                  "Something went wrong while processing your payment."
                               );
                             } finally {
                               setSubmitting(false);
@@ -318,7 +370,6 @@ function PaymentContent() {
                           }}
                         >
                           <CreditCard
-
                             buttonProps={{
                               css: {
                                 backgroundColor: "#6b4226",
@@ -332,7 +383,8 @@ function PaymentContent() {
                                 borderRadius: "0.75rem",
                                 height: "3.5rem",
                                 marginTop: "1.5rem",
-                                boxShadow: "0 4px 6px -1px rgba(107, 66, 38, 0.2), 0 2px 4px -1px rgba(107, 66, 38, 0.1)",
+                                boxShadow:
+                                  "0 4px 6px -1px rgba(107, 66, 38, 0.2), 0 2px 4px -1px rgba(107, 66, 38, 0.1)",
                               },
                             }}
                           />
@@ -341,10 +393,21 @@ function PaymentContent() {
                     </div>
 
                     <div className="flex items-center justify-center gap-2 text-xs text-zinc-400 pt-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3 text-green-500">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        className="w-3 h-3 text-green-500"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
                       </svg>
-                      <span>Payments are securely encrypted with 256-bit SSL</span>
+                      <span>
+                        Payments are securely encrypted with 256-bit SSL
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -359,7 +422,9 @@ function PaymentContent() {
 
 export default function PaymentPage() {
   return (
-    <Suspense fallback={<div className="p-10 text-center">Loading payment...</div>}>
+    <Suspense
+      fallback={<div className="p-10 text-center">Loading payment...</div>}
+    >
       <PaymentContent />
     </Suspense>
   );
